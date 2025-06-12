@@ -253,7 +253,7 @@
     </footer>
     
     <!-- Gemini Modal -->
-    <div id="gemini-modal" class="hidden fixed inset-0 z-60 modal-backdrop flex items-center justify-center p-4">
+    <div id="gemini-modal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center p-4 border-b">
                 <h3 id="gemini-modal-title" class="text-xl font-bold primary-blue"></h3>
@@ -380,7 +380,7 @@
                     
                     if (result.candidates && result.candidates.length > 0) {
                         const text = result.candidates[0].content.parts[0].text;
-                        modalOutput.innerHTML = text.replace(/\n/g, '<br>').replace(/\*/g, '<strong>').replace(/ \*/g, '</strong>');
+                        modalOutput.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
                     } else {
                         throw new Error('پاسخ معتبری از سرویس دریافت نشد.');
                     }
