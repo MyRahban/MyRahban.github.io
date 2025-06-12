@@ -280,13 +280,6 @@
                 mobileMenu.classList.toggle('hidden');
             });
 
-            // Auto-close mobile menu when a link is clicked
-            document.querySelectorAll('#mobile-menu a').forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenu.classList.add('hidden');
-                });
-            });
-
             const modal = document.getElementById('gemini-modal');
             const modalCloseBtn = document.getElementById('gemini-modal-close');
             const modalTitle = document.getElementById('gemini-modal-title');
@@ -331,12 +324,18 @@
                 modalOutput.innerHTML = '';
                 modalDisclaimer.classList.add('hidden');
             }
-
-            document.querySelectorAll('[data-feature]').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.preventDefault(); // Prevents page jump for '#' hrefs
-                    openModal(button.dataset.feature);
-                });
+            
+            // Refactored Event Listener using Event Delegation
+            document.body.addEventListener('click', (event) => {
+                const targetButton = event.target.closest('[data-feature]');
+                if (targetButton) {
+                    event.preventDefault();
+                    openModal(targetButton.dataset.feature);
+                    // Close mobile menu if it's open
+                    if (!mobileMenu.classList.contains('hidden')) {
+                         mobileMenu.classList.add('hidden');
+                    }
+                }
             });
 
             modalCloseBtn.addEventListener('click', closeModal);
@@ -373,7 +372,8 @@
                     });
                     
                     if (!response.ok) {
-                        throw new Error(`API request failed with status ${response.status}`);
+                        const errorData = await response.json();
+                        throw new Error(`API request failed with status ${response.status}: ${errorData.error.message}`);
                     }
 
                     const result = await response.json();
@@ -381,8 +381,9 @@
                     if (result.candidates && result.candidates.length > 0) {
                         const text = result.candidates[0].content.parts[0].text;
                         modalOutput.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+                        modalDisclaimer.classList.remove('hidden');
                     } else {
-                        throw new Error('پاسخ معتبری از سرویس دریافت نشد.');
+                        modalOutput.textContent = 'پاسخ معتبری از سرویس دریافت نشد. ممکن است سوال شما ناقض قوانین ایمنی سرویس باشد.';
                     }
 
                 } catch (error) {
