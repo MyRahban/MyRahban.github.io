@@ -85,6 +85,9 @@
             height: calc(100% - 8rem);
             background-color: #cbd5e1;
         }
+        #fab-google-form {
+            transition: opacity 0.3s, transform 0.3s;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -303,6 +306,11 @@
             </div>
         </div>
     </div>
+
+    <!-- Floating Action Button -->
+    <a href="https://forms.gle/cJdyKmKY4Y4HRQHKA" target="_blank" id="fab-google-form" class="hidden fixed bottom-8 right-8 bg-accent-color text-white w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-lg transform hover:scale-110 transition-transform z-40" title="فرم نظرسنجی/درخواست">
+        📝
+    </a>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -643,7 +651,7 @@
                 });
                 
                 // Update current flag
-                const flags = { fa: '🇮🇷', en: '🇬🇧', zh: '🇨🇳', tr: '🇹🇷' };
+                const flags = { fa: '�🇷', en: '🇬🇧', zh: '🇨🇳', tr: '🇹🇷' };
                 currentLangFlag.textContent = flags[lang];
                 langSwitcherMenu.classList.add('hidden');
             }
@@ -801,6 +809,7 @@
                     
                     if (!response.ok) {
                         const errorData = await response.json();
+                        console.error("API Error Data:", errorData);
                         throw new Error(`API request failed with status ${response.status}: ${errorData?.error?.message || 'Unknown error'}`);
                     }
                     const result = await response.json();
@@ -817,6 +826,7 @@
                             zh: '未从服务收到有效回应。您的查询可能违反了安全政策。',
                             tr: 'Servisten geçerli bir yanıt alınamadı. Sorgunuz güvenlik politikasını ihlal etmiş olabilir.'
                         };
+                        console.log("No candidates in response, or response blocked by safety settings.", result);
                         geminiModalOutput.textContent = messages[lang];
                     }
                 } catch (error) {
@@ -834,6 +844,16 @@
                     geminiModalSubmit.disabled = false;
                 }
             });
+
+             // Floating Action Button (FAB) for Google Form
+            const fab = document.getElementById('fab-google-form');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 200) {
+                    fab.classList.remove('hidden');
+                } else {
+                    fab.classList.add('hidden');
+                }
+            });
             
              // Set initial language
             switchLanguage('fa');
@@ -841,3 +861,4 @@
     </script>
 </body>
 </html>
+�
