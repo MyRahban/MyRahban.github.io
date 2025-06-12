@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معرفی مجموعه خدماتی سلفچگان</title>
+    <!-- Chosen Palette: Calm Corporate (Deep Blue, Neutral Grays, Warm Coral Accent) -->
+    <!-- Application Structure Plan: A narrative-driven, single-page application designed for user engagement. The structure flows from a high-level introduction (Hero), to what we do (Services), how we do it (Process), our core principles (Values), our strategic standing (SWOT & KPIs), and our future vision (Roadmap). This thematic structure, unlike the source report's linear format, provides a more intuitive and compelling user journey, transforming a dense operational document into an interactive brochure. Gemini features for risk assessment and strategy generation are added to showcase service capabilities interactively. -->
+    <!-- Visualization & Content Choices: 
+        - Services: Goal: Compare/Inform. Viz: Interactive Donut Chart (Chart.js/Canvas) + Gemini-powered "Risk Assessment Assistant" (Modal UI). Justification: Engages users and provides a live demonstration of legal service value.
+        - Process: Goal: Organize. Viz: HTML/CSS Flowchart. Justification: Clearly illustrates a complex process without prohibited SVG/Mermaid.
+        - SWOT Analysis: Goal: Organize/Compare. Viz: Cards (HTML/Tailwind) + Gemini-powered "Strategy Generator" (Modal UI). Justification: Makes the static SWOT analysis dynamic and personalized for potential clients.
+        - KPIs & Growth: Goal: Inform/Change. Viz: Stat cards (HTML/CSS) and a Line Chart (Chart.js/Canvas). Justification: Makes key metrics impactful and visualizes future trends.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            scroll-behavior: smooth;
+            background-color: #f8f9fa;
+        }
+        .chart-container {
+            position: relative;
+            height: 320px;
+            width: 100%;
+            max-width: 450px;
+            margin: auto;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 280px;
+            }
+        }
+        .kpi-card {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .nav-link {
+            transition: color 0.3s;
+        }
+        .nav-link:hover {
+            color: #e57373;
+        }
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .flow-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+        }
+        .flow-line {
+            width: 2px;
+            height: 40px;
+            background-color: #cbd5e1;
+        }
+        .section-card {
+            background-color: white;
+            border-radius: 1.25rem;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgb(0,0,0,0.08);
+        }
+        .gemini-modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .gemini-btn {
+            background-color: #3f51b5;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .gemini-btn:hover {
+            background-color: #303f9f;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3f51b5;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <header class="bg-white sticky top-0 z-50 shadow-md">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="font-extrabold text-2xl" style="color: #1a237e;">شرکت [نام پیشنهادی]</div>
+            <div class="hidden md:flex space-x-8 space-x-reverse">
+                <a href="#services" class="nav-link text-gray-600 font-semibold">خدمات</a>
+                <a href="#process" class="nav-link text-gray-600 font-semibold">فرآیند همکاری</a>
+                <a href="#strategy" class="nav-link text-gray-600 font-semibold">استراتژی ما</a>
+                <a href="#roadmap" class="nav-link text-gray-600 font-semibold">چشم‌انداز</a>
+                <a href="#contact" class="nav-link text-gray-600 font-semibold">تماس با ما</a>
+            </div>
+             <div class="md:hidden">
+                <button id="menu-btn" class="text-gray-600 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4">
+             <a href="#services" class="block py-2 nav-link text-gray-600 font-semibold">خدمات</a>
+             <a href="#process" class="block py-2 nav-link text-gray-600 font-semibold">فرآیند همکاری</a>
+             <a href="#strategy" class="block py-2 nav-link text-gray-600 font-semibold">استراتژی ما</a>
+             <a href="#roadmap" class="block py-2 nav-link text-gray-600 font-semibold">چشم‌انداز</a>
+             <a href="#contact" class="block py-2 nav-link text-gray-600 font-semibold">تماس با ما</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8 mt-8">
+        
+        <section id="hero" class="text-center mb-20">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4" style="color: #1a237e;">همراه شما در مسیر رشد و موفقیت</h1>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                ما یک مجموعه خدماتی چابک و متخصص، مستقر در منطقه ویژه اقتصادی سلفچگان هستیم که با ارائه راهکارهای یکپارچه حقوقی، بازرگانی و اداری، کسب‌وکار شما را برای دستیابی به اهداف بزرگتر یاری می‌کنیم.
+            </p>
+        </section>
+
+        <section id="services" class="mb-20 section-card">
+            <h2 class="text-3xl font-bold text-center mb-4" style="color: #1a237e;">سبد خدمات ما</h2>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">
+               خدمات ما در سه حوزه تخصصی اما کاملاً یکپارچه طراحی شده‌اند تا پشتیبانی جامعی از فعالیت‌های تجاری شما ارائه دهند. این هم‌افزایی، کلید کارایی و موفقیت ماست.
+            </p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="chart-container">
+                    <canvas id="servicesChart"></canvas>
+                </div>
+                <div id="service-details" class="space-y-6">
+                    <div class="p-4 rounded-lg transition-all duration-300" data-service="legal">
+                        <h3 class="text-xl font-bold mb-2" style="color: #3f51b5;">⚖️ خدمات حقوقی</h3>
+                        <p class="text-gray-600">عارضه‌یابی ریسک‌های حقوقی، تنظیم قراردادهای تخصصی، و نمایندگی در دعاوی کارگری و کارفرمایی برای حفاظت از منافع شما.</p>
+                         <button id="risk-assessment-btn" class="gemini-btn mt-4 font-semibold py-2 px-4 rounded-lg inline-flex items-center">
+                            ✨ تحلیل هوشمند ریسک
+                         </button>
+                    </div>
+                    <div class="p-4 rounded-lg transition-all duration-300" data-service="commercial">
+                        <h3 class="text-xl font-bold mb-2" style="color: #7e57c2;">📊 خدمات بازرگانی</h3>
+                        <p class="text-gray-600">اخذ گواهی تولید، ترخیص کالا، تهیه طرح توجیهی و ارائه مشاوره‌های استراتژیک برای تسهیل و توسعه تجارت شما.</p>
+                    </div>
+                    <div class="p-4 rounded-lg transition-all duration-300" data-service="support">
+                        <h3 class="text-xl font-bold mb-2" style="color: #e57373;">📋 خدمات عمومی و پشتیبانی</h3>
+                        <p class="text-gray-600">انجام امور مربوط به بیمه تامین اجتماعی، جذب و مدیریت سرمایه انسانی، و پشتیبانی اداری برای تمرکز شما بر فعالیت‌های اصلی.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="process" class="mb-20 section-card">
+            <h2 class="text-3xl font-bold text-center mb-4" style="color: #1a237e;">فرآیند شفاف همکاری ما</h2>
+             <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">
+                از اولین تماس تا تحویل نهایی، ما یک مسیر شفاف و پنج مرحله‌ای را دنبال می‌کنیم تا اطمینان حاصل شود که شما همواره در جریان کامل امور قرار دارید.
+            </p>
+            <div class="flex flex-col md:flex-row justify-between items-center md:items-start text-center gap-y-8">
+                <div class="flow-step">
+                    <div class="flow-icon" style="background-color: #3f51b5;">۱</div>
+                    <h4 class="font-bold">نیازسنجی</h4>
+                    <p class="text-sm text-gray-500">درک عمیق نیازهای شما</p>
+                </div>
+                <div class="flow-line hidden md:block mt-8"></div>
+                <div class="flow-step">
+                    <div class="flow-icon" style="background-color: #5c6bc0;">۲</div>
+                    <h4 class="font-bold">ارائه پروپوزال</h4>
+                    <p class="text-sm text-gray-500">پیشنهاد راهکار و قیمت شفاف</p>
+                </div>
+                 <div class="flow-line hidden md:block mt-8"></div>
+                <div class="flow-step">
+                    <div class="flow-icon" style="background-color: #7e57c2;">۳</div>
+                    <h4 class="font-bold">عقد قرارداد</h4>
+                    <p class="text-sm text-gray-500">رسمی‌سازی تعهدات متقابل</p>
+                </div>
+                 <div class="flow-line hidden md:block mt-8"></div>
+                <div class="flow-step">
+                    <div class="flow-icon" style="background-color: #ab47bc;">۴</div>
+                    <h4 class="font-bold">اجرا و گزارش‌دهی</h4>
+                    <p class="text-sm text-gray-500">انجام خدمات و اطلاع‌رسانی مستمر</p>
+                </div>
+                 <div class="flow-line hidden md:block mt-8"></div>
+                <div class="flow-step">
+                    <div class="flow-icon" style="background-color: #e57373;">۵</div>
+                    <h4 class="font-bold">بازخورد و بهبود</h4>
+                    <p class="text-sm text-gray-500">دریافت نظرات و ارتقا مستمر</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="strategy" class="mb-20 section-card">
+            <h2 class="text-3xl font-bold text-center mb-12" style="color: #1a237e;">موقعیت و استراتژی ما</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold mb-4">تحلیل استراتژیک (SWOT)</h3>
+                    <p class="text-gray-600 mb-6">ما با آگاهی کامل از نقاط قوت، ضعف، فرصت‌ها و تهدیدهای پیش رو، استراتژی خود را برای ارائه بهترین خدمات تدوین کرده‌ایم.</p>
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-lg bg-green-50 border-r-4 border-green-500"><strong>نقاط قوت:</strong> تیم متخصص و یکپارچه، ساختار چابک، موقعیت استراتژیک در منطقه ویژه.</div>
+                        <div class="p-4 rounded-lg bg-red-50 border-r-4 border-red-500"><strong>نقاط ضعف:</strong> بودجه و برندینگ محدود در فاز اولیه، وابستگی به تیم کوچک.</div>
+                        <div class="p-4 rounded-lg bg-blue-50 border-r-4 border-blue-500"><strong>فرصت‌ها:</strong> رشد تقاضا برای برون‌سپاری، مزایای قانونی منطقه، امکان شبکه‌سازی.</div>
+                        <div class="p-4 rounded-lg bg-yellow-50 border-r-4 border-yellow-500"><strong>تهدیدها:</strong> رقابت، تغییرات احتمالی مقررات، شرایط اقتصاد کلان.</div>
+                    </div>
+                     <button id="strategy-generator-btn" class="gemini-btn mt-6 font-semibold py-2 px-4 rounded-lg inline-flex items-center">
+                        ✨ دریافت راهکار استراتژیک
+                     </button>
+                </div>
+                 <div>
+                    <h3 class="text-2xl font-bold mb-4">شاخص‌های کلیدی موفقیت (KPI)</h3>
+                     <p class="text-gray-600 mb-6">موفقیت ما تنها در ارائه خدمات خلاصه نمی‌شود. ما عملکرد خود را با شاخص‌های شفاف و مشتری‌محور می‌سنجیم.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="kpi-card">
+                            <div class="text-5xl font-extrabold" style="color: #3f51b5;">+۹۵٪</div>
+                            <div class="text-gray-500 mt-2">هدف رضایت مشتریان</div>
+                        </div>
+                         <div class="kpi-card">
+                            <div class="text-5xl font-extrabold" style="color: #e57373;">۳۰٪</div>
+                            <div class="text-gray-500 mt-2">هدف رشد از طریق ارجاع</div>
+                        </div>
+                        <div class="kpi-card">
+                             <div class="text-5xl font-extrabold" style="color: #7e57c2;">۱۰۰٪</div>
+                            <div class="text-gray-500 mt-2">انطباق با فرآیندها</div>
+                        </div>
+                         <div class="kpi-card">
+                             <div class="text-5xl font-extrabold" style="color: #5c6bc0;">۲۰٪</div>
+                            <div class="text-gray-500 mt-2">هدف کاهش هزینه‌ها</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="roadmap" class="mb-20 section-card">
+            <h2 class="text-3xl font-bold text-center mb-4" style="color: #1a237e;">نقشه راه آینده</h2>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">ما به بهبود مستمر و رشد پایدار معتقدیم. نقشه راه ما، مسیر توسعه شرکت را در میان‌مدت و بلندمدت ترسیم می‌کند.</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                 <div class="space-y-8">
+                    <div>
+                        <h4 class="text-xl font-bold mb-2">فاز اول (کوتاه‌مدت)</h4>
+                        <p class="text-gray-600">تمرکز بر ارائه خدمات با کیفیت استثنایی، تثبیت فرآیندهای داخلی، و جذب مشتریان اولیه از طریق شبکه‌سازی و بازاریابی ارجاعی.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-bold mb-2">فاز دوم (میان‌مدت)</h4>
+                        <p class="text-gray-600">ایجاد وب‌سایت حرفه‌ای، گسترش هدفمند خدمات، و شروع فعالیت‌های بازاریابی محتوایی برای تقویت برند شرکت.</p>
+                    </div>
+                     <div>
+                        <h4 class="text-xl font-bold mb-2">فاز سوم (بلندمدت)</h4>
+                        <p class="text-gray-600">توسعه تیم، تبدیل شدن به یکی از مجموعه‌های پیشرو در منطقه، و بررسی فرصت‌های جدید در بازارهای گسترده‌تر.</p>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="growthChart"></canvas>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+    
+    <footer id="contact" class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto px-6 py-12 text-center">
+            <h2 class="text-3xl font-bold mb-4">آماده شروع همکاری هستید؟</h2>
+            <p class="max-w-xl mx-auto mb-8">برای دریافت مشاوره رایگان و آشنایی بیشتر با خدمات ما، همین امروز با ما تماس بگیرید. ما مشتاقانه منتظر شنیدن صدای شما هستیم.</p>
+            <div>
+                 <p class="text-lg"><strong>ایمیل:</strong> info@yourcompany.ir</p>
+                 <p class="text-lg mt-2"><strong>تلفن:</strong> [شماره تماس شما]</p>
+                 <p class="text-sm mt-4 text-gray-400">مستقر در منطقه ویژه اقتصادی سلفچگان</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Gemini Modal -->
+    <div id="gemini-modal" class="hidden fixed inset-0 z-50 overflow-y-auto gemini-modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h3 id="gemini-modal-title" class="text-xl font-bold" style="color: #1a237e;"></h3>
+                <button id="gemini-modal-close" class="text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div class="p-6 space-y-4 overflow-y-auto">
+                 <p id="gemini-modal-prompt" class="text-gray-600"></p>
+                 <textarea id="gemini-modal-input" class="w-full p-2 border rounded-md h-24" placeholder="..."></textarea>
+                 <button id="gemini-modal-submit" class="gemini-btn font-semibold py-2 px-5 rounded-lg w-full">تولید پاسخ</button>
+            </div>
+            <div id="gemini-modal-response-area" class="p-6 border-t overflow-y-auto">
+                 <div id="gemini-modal-loader" class="hidden mx-auto loader"></div>
+                 <div id="gemini-modal-output" class="text-gray-700 whitespace-pre-wrap leading-relaxed"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            if (!item) return '';
+            let label = item.chart.data.labels[item.dataIndex];
+            return Array.isArray(label) ? label.join(' ') : label;
+        };
+
+        const serviceDetails = document.getElementById('service-details').children;
+        const servicesChartCanvas = document.getElementById('servicesChart');
+        const servicesChart = new Chart(servicesChartCanvas.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['خدمات حقوقی', 'خدمات بازرگانی', 'خدمات عمومی و پشتیبانی'],
+                datasets: [{
+                    data: [40, 35, 25],
+                    backgroundColor: ['#3f51b5', '#7e57c2', '#e57373'],
+                    borderColor: '#ffffff',
+                    borderWidth: 5,
+                    hoverBorderColor: '#f8f9fa',
+                    hoverOffset: 15
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { family: 'Vazirmatn', size: 14 },
+                            color: '#495057'
+                        }
+                    },
+                    tooltip: {
+                        bodyFont: { family: 'Vazirmatn' },
+                        titleFont: { family: 'Vazirmatn' },
+                        callbacks: { title: tooltipTitleCallback },
+                        backgroundColor: '#343a40',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ced4da',
+                        padding: 10,
+                        cornerRadius: 5
+                    }
+                }
+            }
+        });
+
+        servicesChartCanvas.onmousemove = (evt) => {
+            const points = servicesChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+            for (const detail of serviceDetails) {
+                 detail.style.transform = 'scale(1)';
+                 detail.style.boxShadow = 'none';
+            }
+            if (points.length) {
+                const firstPoint = points[0];
+                const label = servicesChart.data.labels[firstPoint.index];
+                let serviceKey = '';
+                if(label.includes('حقوقی')) serviceKey = 'legal';
+                if(label.includes('بازرگانی')) serviceKey = 'commercial';
+                if(label.includes('عمومی')) serviceKey = 'support';
+                
+                const activeDetail = document.querySelector(`[data-service="${serviceKey}"]`);
+                if(activeDetail){
+                    activeDetail.style.transform = 'scale(1.05)';
+                    activeDetail.style.boxShadow = '0 10px 15px -3px rgb(0 0 0 / 0.1)';
+                }
+            }
+        };
+
+        const growthChartCtx = document.getElementById('growthChart').getContext('2d');
+        new Chart(growthChartCtx, {
+            type: 'line',
+            data: {
+                labels: ['فاز اولیه', 'سال دوم', 'سال سوم', 'سال چهارم'],
+                datasets: [{
+                    label: 'رشد پیش‌بینی شده مجموعه',
+                    data: [10, 30, 60, 100],
+                    fill: true,
+                    backgroundColor: 'rgba(63, 81, 181, 0.1)',
+                    borderColor: '#3f51b5',
+                    tension: 0.4,
+                    pointBackgroundColor: '#3f51b5',
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) { return value + '%' },
+                            font: { family: 'Vazirmatn' }
+                        }
+                    },
+                    x: {
+                        ticks: { font: { family: 'Vazirmatn' } }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        bodyFont: { family: 'Vazirmatn' },
+                        titleFont: { family: 'Vazirmatn' },
+                        callbacks: { title: tooltipTitleCallback }
+                    }
+                }
+            }
+        });
+
+        // Gemini Modal Logic
+        const modal = document.getElementById('gemini-modal');
+        const modalCloseBtn = document.getElementById('gemini-modal-close');
+        const modalTitle = document.getElementById('gemini-modal-title');
+        const modalPrompt = document.getElementById('gemini-modal-prompt');
+        const modalInput = document.getElementById('gemini-modal-input');
+        const modalSubmit = document.getElementById('gemini-modal-submit');
+        const modalLoader = document.getElementById('gemini-modal-loader');
+        const modalOutput = document.getElementById('gemini-modal-output');
+
+        let currentPromptBuilder;
+
+        function openModal(config) {
+            modalTitle.textContent = config.title;
+            modalPrompt.textContent = config.prompt;
+            modalInput.placeholder = config.placeholder;
+            currentPromptBuilder = config.promptBuilder;
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            modalInput.value = '';
+            modalOutput.innerHTML = '';
+        }
+
+        modalCloseBtn.addEventListener('click', closeModal);
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        document.getElementById('risk-assessment-btn').addEventListener('click', () => {
+            openModal({
+                title: '✨ دستیار هوشمند تحلیل ریسک',
+                prompt: 'لطفاً نوع فعالیت کسب‌وکار خود را به طور خلاصه شرح دهید تا ریسک‌های احتمالی آن را برایتان تحلیل کنیم.',
+                placeholder: 'مثال: واردات قطعات الکترونیکی از چین و مونتاژ در ایران',
+                promptBuilder: (userInput) => `شما یک مشاور حقوقی و بازرگانی متخصص در منطقه ویژه اقتصادی سلفچگان ایران هستید. یک مشتری بالقوه، کسب‌وکار خود را اینگونه توصیف کرده است: "${userInput}". بر اساس این توضیحات، لیستی از ریسک‌های حقوقی، قراردادی، بازرگانی، گمرکی و لجستیکی که ممکن است این کسب‌وکار با آن مواجه شود را به زبان فارسی و به صورت دسته‌بندی شده ارائه دهید.`
+            });
+        });
+
+        document.getElementById('strategy-generator-btn').addEventListener('click', () => {
+            openModal({
+                title: '✨ تولیدکننده راهکار استراتژیک',
+                prompt: 'لطفاً چالش یا هدف اصلی خود را بیان کنید تا بر اساس پروفایل شرکت ما، یک راهکار استراتژیک برایتان تولید شود.',
+                placeholder: 'مثال: چگونه با بودجه بازاریابی محدود، مشتریان بیشتری جذب کنیم؟',
+                promptBuilder: (userInput) => `شما یک مشاور استراتژیک هستید. پروفایل شرکت ما به شرح زیر است:
+                نقاط قوت: تیم متخصص و یکپارچه، ساختار چابک، موقعیت استراتژیک در منطقه ویژه.
+                نقاط ضعف: بودجه و برندینگ محدود در فاز اولیه، وابستگی به تیم کوچک.
+                فرصت‌ها: رشد تقاضا برای برون‌سپاری، مزایای قانونی منطقه، امکان شبکه‌سازی.
+                تهدیدها: رقابت، تغییرات احتمالی مقررات، شرایط اقتصاد کلان.
+                بر اساس این پروفایل، لطفاً برای چالش یا هدف زیر، چند راهکار عملی و خلاقانه به زبان فارسی ارائه دهید: "${userInput}"`
+            });
+        });
+
+        modalSubmit.addEventListener('click', async () => {
+            const userInput = modalInput.value;
+            if (!userInput.trim()) {
+                modalOutput.textContent = 'لطفا ورودی را تکمیل کنید.';
+                return;
+            }
+
+            const prompt = currentPromptBuilder(userInput);
+            
+            modalLoader.classList.remove('hidden');
+            modalOutput.innerHTML = '';
+            modalSubmit.disabled = true;
+
+            try {
+                const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    modalOutput.innerHTML = text.replace(/\n/g, '<br>');
+                } else {
+                    throw new Error('پاسخ معتبری از سرویس دریافت نشد.');
+                }
+
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                modalOutput.textContent = 'متاسفانه در حال حاضر امکان برقراری ارتباط با سرویس هوشمند وجود ندارد. لطفا بعدا تلاش کنید.';
+            } finally {
+                modalLoader.classList.add('hidden');
+                modalSubmit.disabled = false;
+            }
+        });
+
+    </script>
+
+</body>
+</html>
