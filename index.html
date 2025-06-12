@@ -101,7 +101,7 @@
              <a href="#why-outsource" class="block py-2 text-gray-600 font-semibold">چرا برون‌سپاری؟</a>
              <a href="#process" class="block py-2 text-gray-600 font-semibold">فرآیند کار</a>
              <a href="#contact" class="block py-2 text-gray-600 font-semibold">تماس با ما</a>
-             <a href="#services" class="block mt-2 text-center bg-primary-blue text-white font-bold py-2 px-5 rounded-lg">درخواست مشاوره</a>
+             <a href="#" class="block py-2 text-gray-600 font-semibold gemini-btn text-white text-center mt-2 rounded-lg" data-feature="consult">✨ مشاور هوشمند</a>
         </div>
     </header>
 
@@ -253,7 +253,7 @@
     </footer>
     
     <!-- Gemini Modal -->
-    <div id="gemini-modal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+    <div id="gemini-modal" class="hidden fixed inset-0 z-60 modal-backdrop flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center p-4 border-b">
                 <h3 id="gemini-modal-title" class="text-xl font-bold primary-blue"></h3>
@@ -278,6 +278,13 @@
             const mobileMenu = document.getElementById('mobile-menu');
             menuBtn.addEventListener('click', () => {
                 mobileMenu.classList.toggle('hidden');
+            });
+
+            // Auto-close mobile menu when a link is clicked
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
             });
 
             const modal = document.getElementById('gemini-modal');
@@ -326,7 +333,8 @@
             }
 
             document.querySelectorAll('[data-feature]').forEach(button => {
-                button.addEventListener('click', () => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevents page jump for '#' hrefs
                     openModal(button.dataset.feature);
                 });
             });
