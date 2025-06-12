@@ -108,7 +108,7 @@
                             <span class="mr-2">🇮🇷</span> فارسی
                         </a>
                         <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="en">
-                            <span class="mr-2">�🇧</span> English
+                            <span class="mr-2">🇬🇧</span> English
                         </a>
                         <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="zh">
                             <span class="mr-2">🇨🇳</span> 中文
@@ -791,7 +791,7 @@
                 try {
                     const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
                     const payload = { contents: chatHistory };
-                    const apiKey = ""; 
+                    const apiKey = "AIzaSyAk5R5gjFMtpo0KlXnA2mxSGt1rJxhXG_o"; 
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
                     const response = await fetch(apiUrl, {
                         method: 'POST',
@@ -838,7 +838,6 @@
              // Set initial language
             switchLanguage('fa');
         });
-    </AIzaSyAk5R5gjFMtpo0KlXnA2mxSGt1rJxhXG_o>
+    </script>
 </body>
 </html>
-�
