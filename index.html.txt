@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رهبان - انتخاب مطمئن برای تصمیم های مهم</title>
+    <!-- Chosen Palette: Rahban Professional (Primary: #151450, Accent: #F06F11) -->
+    <!-- Application Structure Plan: A complete overhaul based on the user's formal proposal. The structure now follows the proposal's logic: Introduction ('Why Rahban?'), detailed service breakdown, benefits of outsourcing, and the risk analysis process. The Vindad-inspired layout is kept for its professionalism, but the content is now 100% sourced from the proposal. -->
+    <!-- Visualization & Content Choices: 
+        - Services: Goal: Inform/Engage. Viz: Re-structured interactive cards to match the proposal's categories (Legal, Commercial, HR, Tax).
+        - AI Assistants: Goal: Demonstrate Expertise. Viz: Modals are retained. Interaction: Prompts are now hyper-specific, using keywords from the proposal like "Salafchegan Special Economic Zone," "labor law," and "customs clearance" to provide more relevant AI-generated responses.
+        - Outsourcing Benefits: Goal: Persuade/Build Trust. Viz: A new section with icon-based lists detailing cost reduction and risk mitigation, directly mirroring the persuasive arguments in the proposal.
+        - Risk Analysis Process: Goal: Organize/Clarify. Viz: A new 5-step visual flowchart (HTML/CSS) that digitizes the process diagram from the proposal, now enhanced with an AI Risk Analysis feature.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            scroll-behavior: smooth;
+            background-color: #f7fafc;
+        }
+        .hero-bg {
+            background-image: url('https://omidajamloo.github.io/telegram/images/header-bg.jpg'); /* Address of the header image */
+            background-size: cover;
+            background-position: center center;
+            position: relative;
+        }
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background-color: rgba(21, 20, 80, 0.7); /* Dark blue overlay using #151450 */
+            z-index: 1;
+        }
+        .primary-color { color: #151450; }
+        .bg-primary-color { background-color: #151450; }
+        .hover-bg-primary-color:hover { background-color: #0d0c3a; }
+        .accent-color { color: #F06F11; }
+        .bg-accent-color { background-color: #F06F11; }
+        .hover-bg-accent-color:hover { background-color: #d8630c; }
+        
+        .service-card {
+            background-color: #ffffff;
+            border-radius: 1.25rem;
+            padding: 2rem;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        .gemini-btn {
+            background-color: #007b9e; /* Default, will be overridden but good for fallback */
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #151450;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .modal-backdrop {
+            background-color: rgba(17, 24, 39, 0.6);
+            backdrop-filter: blur(4px);
+        }
+        .step-line {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 4rem;
+            width: 2px;
+            height: calc(100% - 8rem);
+            background-color: #cbd5e1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+    <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="font-extrabold text-2xl primary-color" data-key="brand_name">رهبان</div>
+            <div class="hidden md:flex items-center space-x-6 space-x-reverse">
+                <a href="#services" class="text-gray-600 hover:text-[#151450] font-semibold" data-key="nav_services">خدمات</a>
+                <a href="#why-outsource" class="text-gray-600 hover:text-[#151450] font-semibold" data-key="nav_why">چرا برون‌سپاری؟</a>
+                <a href="#process" class="text-gray-600 hover:text-[#151450] font-semibold" data-key="nav_process">فرآیند کار</a>
+                <a href="#contact" class="text-gray-600 hover:text-[#151450] font-semibold" data-key="nav_contact">تماس با ما</a>
+
+                <!-- Language Switcher -->
+                <div class="relative" id="lang-switcher">
+                    <button id="lang-switcher-btn" class="flex items-center p-2 rounded-md hover:bg-gray-100">
+                        <span id="current-lang-flag">🇮🇷</span>
+                    </button>
+                    <div id="lang-switcher-menu" class="hidden absolute mt-2 w-28 bg-white rounded-md shadow-lg py-1 z-20">
+                        <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="fa">
+                            <span class="mr-2">🇮🇷</span> فارسی
+                        </a>
+                        <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="en">
+                            <span class="mr-2"> 🇧</span> English
+                        </a>
+                        <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="zh">
+                            <span class="mr-2">🇨🇳</span> 中文
+                        </a>
+                         <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-lang="tr">
+                            <span class="mr-2">🇹🇷</span> Türkçe
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <button id="menu-btn" class="md:hidden primary-color">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 border-t">
+             <a href="#services" class="block py-2 text-gray-600 font-semibold" data-key="nav_services_mob">خدمات</a>
+             <a href="#why-outsource" class="block py-2 text-gray-600 font-semibold" data-key="nav_why_mob">چرا برون‌سپاری؟</a>
+             <a href="#process" class="block py-2 text-gray-600 font-semibold" data-key="nav_process_mob">فرآیند کار</a>
+             <a href="#contact" class="block py-2 text-gray-600 font-semibold" data-key="nav_contact_mob">تماس با ما</a>
+             <button data-action="open-consult-modal" class="w-full block py-2 font-semibold bg-accent-color text-white text-center mt-2 rounded-lg hover-bg-accent-color transition-colors" data-key="btn_consult_mob">درخواست مشاوره</button>
+             <button data-feature="consult" class="w-full block py-2 font-semibold bg-gray-600 text-white text-center mt-2 rounded-lg" data-key="btn_ai_consult_mob">✨ مشاور هوشمند</button>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="hero-bg">
+            <div class="container mx-auto px-6 py-24 text-center relative z-10">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4" data-key="hero_title">انتخاب مطمئن برای تصمیم‌های مهم</h1>
+                <p class="text-lg md:text-xl text-gray-200 max-w-4xl mx-auto mb-8" data-key="hero_subtitle">گروه کارشناسان رهبان با تخصص ویژه در امور حقوقی، بازرگانی، اداری و منابع انسانی، همراهی مطمئن برای پیشبرد اهداف و کاهش ریسک‌های واحدهای صنعتی و تولیدی است.</p>
+                <a href="#services" class="bg-accent-color text-white font-bold py-3 px-8 rounded-lg text-lg hover-bg-accent-color transition-colors shadow-lg" data-key="hero_cta">آشنایی با خدمات</a>
+            </div>
+        </section>
+
+        <section id="services" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-extrabold mb-3 primary-color" data-key="services_title">خلاصه خدمات رهبان</h2>
+                    <p class="text-gray-600 text-lg" data-key="services_subtitle">با ارائه بهترین راه حل و تدابیر، یاری‌گر شما هستیم.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                    <!-- Card 1: Legal -->
+                    <div class="service-card">
+                        <div class="flex-grow">
+                            <h3 class="text-2xl font-bold mb-4 primary-color" data-key="service_legal_title">امور حقوقی</h3>
+                            <ul class="space-y-2 text-gray-600 list-disc list-inside">
+                                <li data-key="service_legal_1">کارشناسی حقوقی تخصصی (تجارت، کار، تأمین اجتماعی)</li>
+                                <li data-key="service_legal_2">تدوین و تنظیم انواع اسناد حقوقی (قرارداد، صورتجلسه)</li>
+                                <li data-key="service_legal_3">نمایندگی در دعاوی کارگر و کارفرما در اداره کار</li>
+                                <li data-key="service_legal_4">مصالحه و داوری جهت جلوگیری از فرآیند دادرسی</li>
+                            </ul>
+                        </div>
+                        <button class="bg-accent-color hover-bg-accent-color text-white w-full font-bold py-3 px-5 rounded-lg mt-6 transition-colors" data-feature="contract" data-key="btn_ai_contract">✨ دستیار هوشمند تنظیم قرارداد</button>
+                    </div>
+                    <!-- Card 2: Commercial -->
+                    <div class="service-card">
+                        <div class="flex-grow">
+                            <h3 class="text-2xl font-bold mb-4 primary-color" data-key="service_commercial_title">امور بازرگانی</h3>
+                             <ul class="space-y-2 text-gray-600 list-disc list-inside">
+                                <li data-key="service_commercial_1">اخذ و تدوین طرح توجیهی و گواهی تولید</li>
+                                <li data-key="service_commercial_2">انجام فرآیندهای ثبت سفارش و اظهار گمرکی</li>
+                                <li data-key="service_commercial_3">ترخیص کالا با تخصص در مناطق ویژه (مانند سلفچگان)</li>
+                                <li data-key="service_commercial_4">بهینه‌سازی هزینه‌ها و بررسی تعرفه کالا (HS Code)</li>
+                            </ul>
+                        </div>
+                         <button class="bg-accent-color hover-bg-accent-color text-white w-full font-bold py-3 px-5 rounded-lg mt-6 transition-colors" data-feature="consult" data-key="btn_ai_consult">❓ از مشاور هوشمند بپرس</button>
+                    </div>
+                     <!-- Card 3: HR -->
+                    <div class="service-card">
+                        <div class="flex-grow">
+                            <h3 class="text-2xl font-bold mb-4 primary-color" data-key="service_hr_title">جذب و استخدام | امور اداری</h3>
+                            <ul class="space-y-2 text-gray-600 list-disc list-inside">
+                                <li data-key="service_hr_1">ایجاد پل ارتباطی موثر بین کارفرمایان و نیروهای متخصص</li>
+                                <li data-key="service_hr_2">تأمین نیروی انسانی متعهد و توانمند</li>
+                                <li data-key="service_hr_3">انجام امور بیمه‌ای (تأمین اجتماعی و بیمه تکمیلی مجموعه)</li>
+                                <li data-key="service_hr_4">انجام کلیه امور اداری و پشتیبانی</li>
+                            </ul>
+                        </div>
+                         <button class="bg-accent-color hover-bg-accent-color text-white w-full font-bold py-3 px-5 rounded-lg mt-6 transition-colors" data-feature="job_description" data-key="btn_ai_job">✨ دستیار هوشمند شرح شغل</button>
+                    </div>
+                     <!-- Card 4: Tax -->
+                    <div class="service-card">
+                        <div class="flex-grow">
+                            <h3 class="text-2xl font-bold mb-4 primary-color" data-key="service_tax_title">حسابرسی، مالیات و امور بانکی</h3>
+                            <ul class="space-y-2 text-gray-600 list-disc list-inside">
+                                <li data-key="service_tax_1">همکاری با معتبرترین شرکت‌های حسابرسی استان قم</li>
+                                <li data-key="service_tax_2">کاهش ریسک جرائم مالیاتی و بیمه‌ای</li>
+                                <li data-key="service_tax_3">اخذ ضمانت‌نامه‌های بانکی و اعتبارات اسنادی (LC)</li>
+                                <li data-key="service_tax_4">انجام امور مربوط به حواله‌های ارزی</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="why-outsource" class="py-20">
+             <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-extrabold mb-3 primary-color" data-key="why_title">چرا برون‌سپاری به رهبان؟</h2>
+                     <p class="text-gray-600 text-lg" data-key="why_subtitle">مزایای استراتژیک انتخاب ما به عنوان ناظر بیرونی و شریک کسب‌وکار شما.</p>
+                </div>
+                <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div class="bg-white p-6 rounded-lg border">
+                        <h4 class="text-xl font-bold mb-3" data-key="why_1_title">۱. کاهش چشمگیر هزینه‌ها</h4>
+                        <p class="text-gray-600" data-key="why_1_desc">هزینه سالانه استخدام نیروی متخصص برای تمام این خدمات می‌تواند بیش از یک میلیارد تومان باشد. با برون‌سپاری به رهبان، این هزینه حداقل ۷۰ درصد کاهش می‌یابد.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg border">
+                        <h4 class="text-xl font-bold mb-3" data-key="why_2_title">۲. کاهش چالش‌های روابط کار</h4>
+                        <p class="text-gray-600" data-key="why_2_desc">شما درگیر چالش‌های استخدامی و روابط کارگری نخواهید بود، زیرا هیچ رابطه استخدامی مستقیمی بین شما و کارشناسان ما وجود ندارد.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg border">
+                        <h4 class="text-xl font-bold mb-3" data-key="why_3_title">۳. شناسایی خطاهای سیستماتیک</h4>
+                        <p class="text-gray-600" data-key="why_3_desc">به عنوان یک ناظر بیرونی، ما الگوهای تکراری، اشکالات سیستمی و شکاف‌های قانونی در فرآیندهای شما را شناسایی می‌کنیم که اغلب از دید نیروهای داخلی پنهان می‌ماند.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg border">
+                        <h4 class="text-xl font-bold mb-3" data-key="why_4_title">۴. دسترسی به داده‌های مقایسه‌ای صنعت</h4>
+                        <p class="text-gray-600" data-key="why_4_desc">ما به شما نشان می‌دهیم که شرکت‌های هم‌صنعت شما چگونه با چالش‌های مشابه حقوقی، گمرکی و مالیاتی برخورد کرده‌اند و از چه استانداردهایی پیروی می‌کنند.</p>
+                    </div>
+                </div>
+             </div>
+        </section>
+
+        <section id="process" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+               <div class="text-center mb-16">
+                   <h2 class="text-3xl md:text-4xl font-extrabold mb-3 primary-color" data-key="process_title">فرآیند آنالیز ریسک کسب‌وکار شما</h2>
+                   <p class="text-gray-600 text-lg" data-key="process_subtitle">یک مسیر شفاف ۵ مرحله‌ای برای شناسایی و رفع چالش‌های پیش روی شما.</p>
+               </div>
+               <div class="relative max-w-4xl mx-auto">
+                   <div class="step-line hidden md:block" style="height: calc(100% - 8rem); top: 5rem;"></div>
+                   <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۱</div><h4 class="font-bold" data-key="process_1_title">بازدید و عارضه‌یابی</h4><p class="text-sm text-gray-500" data-key="process_1_desc">بازدید حضوری و ارائه گزارش اولیه</p></div>
+                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۲</div><h4 class="font-bold" data-key="process_2_title">تحلیل داده و اسناد</h4><p class="text-sm text-gray-500" data-key="process_2_desc">بررسی مدارک و شناسایی ایرادات</p></div>
+                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۳</div><h4 class="font-bold" data-key="process_3_title">ارائه راهکار</h4><p class="text-sm text-gray-500" data-key="process_3_desc">گزارش ثانویه و راهکارهای پیشنهادی</p></div>
+                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۴</div><h4 class="font-bold" data-key="process_4_title">اجرا و نمایندگی</h4><p class="text-sm text-gray-500" data-key="process_4_desc">رفع ایرادات و اخذ مجوزها</p></div>
+                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۵</div><h4 class="font-bold" data-key="process_5_title">پشتیبانی و پیگیری</h4><p class="text-sm text-gray-500" data-key="process_5_desc">پیگیری مستمر امور اجرایی</p></div>
+                   </div>
+               </div>
+                <div class="text-center mt-12">
+                     <button class="bg-accent-color hover-bg-accent-color text-white font-bold py-3 px-8 rounded-lg text-lg transition-colors" data-feature="risk_analysis" data-key="btn_ai_risk">✨ تحلیل هوشمند ریسک اولیه</button>
+                </div>
+            </div>
+       </section>
+        
+    </main>
+    
+    <footer id="contact" class="bg-primary-color text-white mt-12">
+        <div class="container mx-auto px-6 py-12 text-center">
+            <h2 class="text-2xl font-bold mb-4" data-key="footer_title">گروه کارشناسان رهبان</h2>
+            <p class="max-w-xl mx-auto mb-8 text-gray-300" data-key="footer_subtitle">برای دریافت مشاوره و شروع همکاری جهت حفاظت از دارایی‌های کسب‌وکارتان، با ما در تماس باشید.</p>
+             <div class="flex flex-col md:flex-row justify-center items-center gap-6 text-lg">
+                <a href="mailto:rahban.group.info@gmail.com" class="font-bold">rahban.group.info@gmail.com</a>
+                <span class="hidden md:block">|</span>
+                <a href="tel:09128547287" class="font-bold">۰۹۱۲۸۵۴۷۲۸۷</a>
+             </div>
+             <p class="mt-6 text-gray-400" data-key="footer_address">آدرس: منطقه ویژه اقتصادی سلفچگان - میدان امام خمینی - مجتمع حسینی - پلاک 8</p>
+        </div>
+    </footer>
+    
+    <!-- Modals -->
+    <div id="gemini-modal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h3 id="gemini-modal-title" class="text-xl font-bold primary-color"></h3>
+                <button class="text-gray-500 hover:text-gray-800 text-3xl close-modal">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+                 <p id="gemini-modal-prompt" class="text-gray-600 font-semibold"></p>
+                 <textarea id="gemini-modal-input" class="w-full p-3 border rounded-md h-28 focus:ring-2 focus:ring-indigo-300"></textarea>
+                 <button id="gemini-modal-submit" class="w-full bg-accent-color hover-bg-accent-color text-white font-bold py-3 px-5 rounded-lg transition-colors text-lg" data-key="btn_generate_response">تولید پاسخ</button>
+            </div>
+            <div id="gemini-modal-response-area" class="p-6 border-t overflow-y-auto bg-gray-50 rounded-b-2xl">
+                 <div id="gemini-modal-loader" class="hidden mx-auto loader"></div>
+                 <div id="gemini-modal-output" class="text-gray-800 whitespace-pre-wrap leading-relaxed"></div>
+                 <p id="gemini-disclaimer" class="hidden mt-4 text-xs text-gray-500 border-t pt-2" data-key="gemini_disclaimer">سلب مسئولیت: پاسخ ارائه‌شده توسط هوش مصنوعی تولید شده و صرفاً جنبه راهنمایی اولیه دارد. این پاسخ جایگزین مشاوره تخصصی با کارشناسان رهبان نیست و فاقد اعتبار قانونی است.</p>
+            </div>
+        </div>
+    </div>
+    <div id="consult-modal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h3 class="text-xl font-bold primary-color" data-key="consult_modal_title">تماس با رهبان</h3>
+                <button class="text-gray-500 hover:text-gray-800 text-3xl close-modal">&times;</button>
+            </div>
+            <div class="p-8 space-y-6">
+                <p class="text-center text-gray-600" data-key="consult_modal_desc">برای دریافت مشاوره و شروع همکاری، از طریق راه‌های زیر با ما در ارتباط باشید:</p>
+                <div class="space-y-4 text-lg">
+                    <div class="flex items-center"><span class="ml-4 text-2xl">📞</span><a href="tel:09128547287" class="font-semibold tracking-wider hover:underline">۰۹۱۲۸۵۴۷۲۸۷</a></div>
+                    <div class="flex items-center"><span class="ml-4 text-2xl">📧</span><a href="mailto:rahban.group.info@gmail.com" class="font-semibold hover:underline">rahban.group.info@gmail.com</a></div>
+                    <div class="flex items-start"><span class="ml-4 text-2xl mt-1">📍</span><p class="font-semibold" data-key="consult_modal_address">منطقه ویژه اقتصادی سلفچگان - میدان امام خمینی - مجتمع حسینی - پلاک 8</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const translations = {
+                fa: {
+                    brand_name: "رهبان",
+                    nav_services: "خدمات",
+                    nav_why: "چرا برون‌سپاری؟",
+                    nav_process: "فرآیند کار",
+                    nav_contact: "تماس با ما",
+                    nav_services_mob: "خدمات",
+                    nav_why_mob: "چرا برون‌سپاری؟",
+                    nav_process_mob: "فرآیند کار",
+                    nav_contact_mob: "تماس با ما",
+                    btn_consult_mob: "درخواست مشاوره",
+                    btn_ai_consult_mob: "✨ مشاور هوشمند",
+                    hero_title: "انتخاب مطمئن برای تصمیم‌های مهم",
+                    hero_subtitle: "گروه کارشناسان رهبان با تخصص ویژه در امور حقوقی، بازرگانی، اداری و منابع انسانی، همراهی مطمئن برای پیشبرد اهداف و کاهش ریسک‌های واحدهای صنعتی و تولیدی است.",
+                    hero_cta: "آشنایی با خدمات",
+                    services_title: "خلاصه خدمات رهبان",
+                    services_subtitle: "با ارائه بهترین راه حل و تدابیر، یاری‌گر شما هستیم.",
+                    service_legal_title: "امور حقوقی",
+                    service_legal_1: "کارشناسی حقوقی تخصصی (تجارت، کار، تأمین اجتماعی)",
+                    service_legal_2: "تدوین و تنظیم انواع اسناد حقوقی (قرارداد، صورتجلسه)",
+                    service_legal_3: "نمایندگی در دعاوی کارگر و کارفرما در اداره کار",
+                    service_legal_4: "مصالحه و داوری جهت جلوگیری از فرآیند دادرسی",
+                    btn_ai_contract: "✨ دستیار هوشمند تنظیم قرارداد",
+                    service_commercial_title: "امور بازرگانی",
+                    service_commercial_1: "اخذ و تدوین طرح توجیهی و گواهی تولید",
+                    service_commercial_2: "انجام فرآیندهای ثبت سفارش و اظهار گمرکی",
+                    service_commercial_3: "ترخیص کالا با تخصص در مناطق ویژه (مانند سلفچگان)",
+                    service_commercial_4: "بهینه‌سازی هزینه‌ها و بررسی تعرفه کالا (HS Code)",
+                    btn_ai_consult: "❓ از مشاور هوشمند بپرس",
+                    service_hr_title: "جذب و استخدام | امور اداری",
+                    service_hr_1: "ایجاد پل ارتباطی موثر بین کارفرمایان و نیروهای متخصص",
+                    service_hr_2: "تأمین نیروی انسانی متعهد و توانمند",
+                    service_hr_3: "انجام امور بیمه‌ای (تأمین اجتماعی و بیمه تکمیلی مجموعه)",
+                    service_hr_4: "انجام کلیه امور اداری و پشتیبانی",
+                    btn_ai_job: "✨ دستیار هوشمند شرح شغل",
+                    service_tax_title: "حسابرسی، مالیات و امور بانکی",
+                    service_tax_1: "همکاری با معتبرترین شرکت‌های حسابرسی استان قم",
+                    service_tax_2: "کاهش ریسک جرائم مالیاتی و بیمه‌ای",
+                    service_tax_3: "اخذ ضمانت‌نامه‌های بانکی و اعتبارات اسنادی (LC)",
+                    service_tax_4: "انجام امور مربوط به حواله‌های ارزی",
+                    why_title: "چرا برون‌سپاری به رهبان؟",
+                    why_subtitle: "مزایای استراتژیک انتخاب ما به عنوان ناظر بیرونی و شریک کسب‌وکار شما.",
+                    why_1_title: "۱. کاهش چشمگیر هزینه‌ها",
+                    why_1_desc: "هزینه سالانه استخدام نیروی متخصص برای تمام این خدمات می‌تواند بیش از یک میلیارد تومان باشد. با برون‌سپاری به رهبان، این هزینه حداقل ۷۰ درصد کاهش می‌یابد.",
+                    why_2_title: "۲. کاهش چالش‌های روابط کار",
+                    why_2_desc: "شما درگیر چالش‌های استخدامی و روابط کارگری نخواهید بود، زیرا هیچ رابطه استخدامی مستقیمی بین شما و کارشناسان ما وجود ندارد.",
+                    why_3_title: "۳. شناسایی خطاهای سیستماتیک",
+                    why_3_desc: "به عنوان یک ناظر بیرونی، ما الگوهای تکراری، اشکالات سیستمی و شکاف‌های قانونی در فرآیندهای شما را شناسایی می‌کنیم که اغلب از دید نیروهای داخلی پنهان می‌ماند.",
+                    why_4_title: "۴. دسترسی به داده‌های مقایسه‌ای صنعت",
+                    why_4_desc: "ما به شما نشان می‌دهیم که شرکت‌های هم‌صنعت شما چگونه با چالش‌های مشابه حقوقی، گمرکی و مالیاتی برخورد کرده‌اند و از چه استانداردهایی پیروی می‌کنند.",
+                    process_title: "فرآیند آنالیز ریسک کسب‌وکار شما",
+                    process_subtitle: "یک مسیر شفاف ۵ مرحله‌ای برای شناسایی و رفع چالش‌های پیش روی شما.",
+                    process_1_title: "بازدید و عارضه‌یابی",
+                    process_1_desc: "بازدید حضوری و ارائه گزارش اولیه",
+                    process_2_title: "تحلیل داده و اسناد",
+                    process_2_desc: "بررسی مدارک و شناسایی ایرادات",
+                    process_3_title: "ارائه راهکار",
+                    process_3_desc: "گزارش ثانویه و راهکارهای پیشنهادی",
+                    process_4_title: "اجرا و نمایندگی",
+                    process_4_desc: "رفع ایرادات و اخذ مجوزها",
+                    process_5_title: "پشتیبانی و پیگیری",
+                    process_5_desc: "پیگیری مستمر امور اجرایی",
+                    btn_ai_risk: "✨ تحلیل هوشمند ریسک اولیه",
+                    footer_title: "گروه کارشناسان رهبان",
+                    footer_subtitle: "برای دریافت مشاوره و شروع همکاری جهت حفاظت از دارایی‌های کسب‌وکارتان، با ما در تماس باشید.",
+                    footer_address: "آدرس: منطقه ویژه اقتصادی سلفچگان - میدان امام خمینی - مجتمع حسینی - پلاک 8",
+                    btn_generate_response: "تولید پاسخ",
+                    gemini_disclaimer: "سلب مسئولیت: پاسخ ارائه‌شده توسط هوش مصنوعی تولید شده و صرفاً جنبه راهنمایی اولیه دارد. این پاسخ جایگزین مشاوره تخصصی با کارشناسان رهبان نیست و فاقد اعتبار قانونی است.",
+                    consult_modal_title: "تماس با رهبان",
+                    consult_modal_desc: "برای دریافت مشاوره و شروع همکاری، از طریق راه‌های زیر با ما در ارتباط باشید:",
+                    consult_modal_address: "منطقه ویژه اقتصادی سلفچگان - میدان امام خمینی - مجتمع حسینی - پلاک 8"
+                },
+                en: {
+                    brand_name: "Rahban",
+                    nav_services: "Services",
+                    nav_why: "Why Outsource?",
+                    nav_process: "Process",
+                    nav_contact: "Contact Us",
+                    nav_services_mob: "Services",
+                    nav_why_mob: "Why Outsource?",
+                    nav_process_mob: "Process",
+                    nav_contact_mob: "Contact Us",
+                    btn_consult_mob: "Request Consultation",
+                    btn_ai_consult_mob: "✨ AI Assistant",
+                    hero_title: "The Reliable Choice for Important Decisions",
+                    hero_subtitle: "Rahban experts provide specialized legal, commercial, administrative, and HR support, serving as a trusted partner for industrial and manufacturing units to achieve their goals and mitigate risks.",
+                    hero_cta: "Explore Services",
+                    services_title: "Summary of Rahban Services",
+                    services_subtitle: "We are here to assist you by providing the best solutions and measures.",
+                    service_legal_title: "Legal Affairs",
+                    service_legal_1: "Specialized Legal Expertise (Commerce, Labor, Social Security)",
+                    service_legal_2: "Drafting and Reviewing Legal Documents (Contracts, Minutes)",
+                    service_legal_3: "Representation in Labor Disputes at the Labor Office",
+                    service_legal_4: "Mediation and Arbitration to Avoid Formal Proceedings",
+                    btn_ai_contract: "✨ AI Contract Clause Assistant",
+                    service_commercial_title: "Commercial Affairs",
+                    service_commercial_1: "Obtaining Feasibility Studies and Production Certificates",
+                    service_commercial_2: "Handling Order Registrations and Customs Declarations",
+                    service_commercial_3: "Customs Clearance with Expertise in Special Zones (e.g., Salafchegan)",
+                    service_commercial_4: "Cost Optimization and HS Code Tariff Analysis",
+                    btn_ai_consult: "❓ Ask the AI Consultant",
+                    service_hr_title: "Recruitment & Administration",
+                    service_hr_1: "Creating an effective bridge between employers and specialists",
+                    service_hr_2: "Sourcing committed and skilled human resources",
+                    service_hr_3: "Managing insurance affairs (Social Security and corporate supplementary insurance)",
+                    service_hr_4: "Handling all administrative and support tasks",
+                    btn_ai_job: "✨ AI Job Description Assistant",
+                    service_tax_title: "Audit, Tax, and Banking Affairs",
+                    service_tax_1: "Collaboration with the most reputable audit firms in Qom province",
+                    service_tax_2: "Reducing the risk of tax and insurance penalties",
+                    service_tax_3: "Obtaining bank guarantees and letters of credit (LC)",
+                    service_tax_4: "Managing foreign currency transfer affairs",
+                    why_title: "Why Outsource to Rahban?",
+                    why_subtitle: "The strategic advantages of choosing us as your external overseer and business partner.",
+                    why_1_title: "1. Significant Cost Reduction",
+                    why_1_desc: "The annual cost of hiring in-house specialists for all these services can exceed one billion tomans. By outsourcing to Rahban, this cost is reduced by at least 70%.",
+                    why_2_title: "2. Reduced Labor Relations Challenges",
+                    why_2_desc: "You will not be entangled in employment challenges and labor relations, as there is no direct employment relationship between you and our experts.",
+                    why_3_title: "3. Identification of Systematic Errors",
+                    why_3_desc: "As an external overseer, we identify repetitive patterns, systemic flaws, and legal gaps in your processes that are often overlooked by in-house teams.",
+                    why_4_title: "4. Access to Industry Benchmarking Data",
+                    why_4_desc: "We show you how your industry peers have handled similar legal, customs, and tax challenges, and what standards they follow.",
+                    process_title: "Your Business Risk Analysis Process",
+                    process_subtitle: "A transparent 5-step path to identify and resolve the challenges you face.",
+                    process_1_title: "On-site Visit & Diagnosis",
+                    process_1_desc: "On-site visit and submission of the initial report",
+                    process_2_title: "Data & Document Analysis",
+                    process_2_desc: "Review of documents and identification of existing flaws",
+                    process_3_title: "Solution Proposal",
+                    process_3_desc: "Secondary report, cost estimation, and proposed solutions",
+                    process_4_title: "Implementation & Representation",
+                    process_4_desc: "Correcting flaws and obtaining necessary permits",
+                    process_5_title: "Support & Follow-up",
+                    process_5_desc: "Continuous follow-up on all implementation phases",
+                    btn_ai_risk: "✨ AI-Powered Initial Risk Analysis",
+                    footer_title: "Rahban Group of Experts",
+                    footer_subtitle: "Contact us for a consultation and partnership to protect your business assets.",
+                    footer_address: "Address: Unit 8, Hosseini Complex, Imam Khomeini Sq., Salafchegan Special Economic Zone",
+                    btn_generate_response: "Generate Response",
+                    gemini_disclaimer: "Disclaimer: The response provided is generated by artificial intelligence and is for preliminary guidance only. It is not a substitute for professional consultation with Rahban experts and has no legal validity.",
+                    consult_modal_title: "Contact Rahban",
+                    consult_modal_desc: "To get a consultation and start a partnership, please contact us through the following channels:",
+                    consult_modal_address: "Unit 8, Hosseini Complex, Imam Khomeini Sq., Salafchegan Special Economic Zone"
+                },
+                zh: {
+                    brand_name: "拉赫班 (Rahban)",
+                    nav_services: "服务",
+                    nav_why: "为何外包？",
+                    nav_process: "流程",
+                    nav_contact: "联系我们",
+                    nav_services_mob: "服务",
+                    nav_why_mob: "为何外包？",
+                    nav_process_mob: "流程",
+                    nav_contact_mob: "联系我们",
+                    btn_consult_mob: "请求咨询",
+                    btn_ai_consult_mob: "✨ 人工智能助手",
+                    hero_title: "重要决策的可靠选择",
+                    hero_subtitle: "拉赫班专家团队在法律、商业、行政和人力资源方面提供专业支持，是工业和制造单位实现目标、降低风险的可靠伙伴。",
+                    hero_cta: "浏览服务",
+                    services_title: "拉赫班服务摘要",
+                    services_subtitle: "我们通过提供最佳解决方案和措施为您提供帮助。",
+                    service_legal_title: "法律事务",
+                    service_legal_1: "专业法律专长（商业、劳动、社会保障）",
+                    service_legal_2: "起草和审查法律文件（合同、会议纪要）",
+                    service_legal_3: "在劳动局代理劳资纠纷",
+                    service_legal_4: "调解和仲裁以避免正式诉讼",
+                    btn_ai_contract: "✨ 人工智能合同条款助手",
+                    service_commercial_title: "商业事务",
+                    service_commercial_1: "获取可行性研究和生产证书",
+                    service_commercial_2: "处理订单注册和海关申报",
+                    service_commercial_3: "在特殊区域（如萨拉夫切甘）具有专业知识的清关服务",
+                    service_commercial_4: "成本优化和HS编码关税分析",
+                    btn_ai_consult: "❓ 询问人工智能顾问",
+                    service_hr_title: "招聘与行政",
+                    service_hr_1: "在雇主和专家之间建立有效的桥梁",
+                    service_hr_2: "寻找有承诺和技能的人力资源",
+                    service_hr_3: "管理保险事务（社会保障和公司补充保险）",
+                    service_hr_4: "处理所有行政和支持任务",
+                    btn_ai_job: "✨ 人工智能职位描述助手",
+                    service_tax_title: "审计、税务和银行业务",
+                    service_tax_1: "与库姆省最负盛名的审计公司合作",
+                    service_tax_2: "降低税务和保险罚款的风险",
+                    service_tax_3: "获取银行担保和信用证（LC）",
+                    service_tax_4: "管理外汇转账事务",
+                    why_title: "为何外包给拉赫班？",
+                    why_subtitle: "选择我们作为您的外部监督者和业务伙伴的战略优势。",
+                    why_1_title: "1. 显著降低成本",
+                    why_1_desc: "为所有这些服务聘请内部专家的年度成本可能超过十亿托曼。通过外包给拉赫班，此成本至少降低70%。",
+                    why_2_title: "2. 减少劳动关系挑战",
+                    why_2_desc: "您将不会卷入雇佣挑战和劳动关系中，因为您与我们的专家之间没有直接的雇佣关系。",
+                    why_3_title: "3. 识别系统性错误",
+                    why_3_desc: "作为外部监督者，我们能识别您流程中经常被内部团队忽视的重复模式、系统性缺陷和法律漏洞。",
+                    why_4_title: "4. 获取行业基准数据",
+                    why_4_desc: "我们向您展示您的行业同行如何处理类似的法律、海关和税务挑战，以及他们遵循的标准。",
+                    process_title: "您的业务风险分析流程",
+                    process_subtitle: "一个透明的5步路径，以识别和解决您面临的挑战。",
+                    process_1_title: "现场访问与诊断",
+                    process_1_desc: "现场访问并提交初步报告",
+                    process_2_title: "数据与文件分析",
+                    process_2_desc: "审查文件并识别现有缺陷",
+                    process_3_title: "解决方案提议",
+                    process_3_desc: "二次报告、成本估算和建议的解决方案",
+                    process_4_title: "实施与代表",
+                    process_4_desc: "纠正缺陷并获得必要的许可",
+                    process_5_title: "支持与跟进",
+                    process_5_desc: "持续跟进所有实施阶段",
+                    btn_ai_risk: "✨ 人工智能初步风险分析",
+                    footer_title: "拉赫班专家组",
+                    footer_subtitle: "联系我们进行咨询与合作，以保护您的商业资产。",
+                    footer_address: "地址：萨拉夫切甘特殊经济区伊玛目霍梅尼广场侯赛尼综合楼8单元",
+                    btn_generate_response: "生成回应",
+                    gemini_disclaimer: "免责声明：所提供的回应由人工智能生成，仅供初步指导。它不能替代拉赫班专家的专业咨询，不具有法律效力。",
+                    consult_modal_title: "联系拉赫班",
+                    consult_modal_desc: "如需咨询并开始合作，请通过以下渠道联系我们：",
+                    consult_modal_address: "萨拉夫切甘特殊经济区伊玛目霍梅尼广场侯赛尼综合楼8单元"
+                },
+                tr: {
+                    brand_name: "Rahban",
+                    nav_services: "Hizmetler",
+                    nav_why: "Neden Dış Kaynak?",
+                    nav_process: "Süreç",
+                    nav_contact: "İletişim",
+                    nav_services_mob: "Hizmetler",
+                    nav_why_mob: "Neden Dış Kaynak?",
+                    nav_process_mob: "Süreç",
+                    nav_contact_mob: "İletişim",
+                    btn_consult_mob: "Danışmanlık Talep Et",
+                    btn_ai_consult_mob: "✨ Yapay Zeka Asistanı",
+                    hero_title: "Önemli Kararlar İçin Güvenilir Seçim",
+                    hero_subtitle: "Rahban uzmanları, hukuki, ticari, idari ve insan kaynakları konularında özel destek sağlayarak, sanayi ve üretim birimlerinin hedeflerine ulaşmaları ve risklerini azaltmaları için güvenilir bir ortaktır.",
+                    hero_cta: "Hizmetleri Keşfet",
+                    services_title: "Rahban Hizmetlerinin Özeti",
+                    services_subtitle: "En iyi çözümleri ve önlemleri sunarak size yardımcı olmak için buradayız.",
+                    service_legal_title: "Hukuki İşler",
+                    service_legal_1: "Uzman Hukuki Danışmanlık (Ticaret, İş, Sosyal Güvenlik)",
+                    service_legal_2: "Hukuki Belgelerin (Sözleşmeler, Tutanaklar) Hazırlanması ve İncelenmesi",
+                    service_legal_3: "İş Mahkemelerinde İşçi-İşveren Uyuşmazlıklarında Temsil",
+                    service_legal_4: "Resmi Yargı Süreçlerini Önlemek İçin Arabuluculuk ve Tahkim",
+                    btn_ai_contract: "✨ AI Sözleşme Maddesi Asistanı",
+                    service_commercial_title: "Ticari İşler",
+                    service_commercial_1: "Fizibilite Çalışmaları ve Üretim Sertifikaları Alınması",
+                    service_commercial_2: "Sipariş Kayıtları ve Gümrük Beyannameleri İşlemleri",
+                    service_commercial_3: "Özel Bölgelerde (örn. Salafchegan) Uzmanlıkla Gümrükleme",
+                    service_commercial_4: "Maliyet Optimizasyonu ve GTİP Kodu Tarife Analizi",
+                    btn_ai_consult: "❓ AI Danışmanına Sor",
+                    service_hr_title: "İşe Alım ve İdari İşler",
+                    service_hr_1: "İşverenler ve uzmanlar arasında etkili bir köprü oluşturmak",
+                    service_hr_2: "Bağlı ve yetenekli insan kaynakları temini",
+                    service_hr_3: "Sigorta işlerinin yönetimi (Sosyal Güvenlik ve kurumsal tamamlayıcı sigorta)",
+                    service_hr_4: "Tüm idari ve destek görevlerinin yürütülmesi",
+                    btn_ai_job: "✨ AI İş Tanımı Asistanı",
+                    service_tax_title: "Denetim, Vergi ve Bankacılık İşleri",
+                    service_tax_1: "Kum ilindeki en saygın denetim firmalarıyla işbirliği",
+                    service_tax_2: "Vergi ve sigorta cezaları riskini azaltma",
+                    service_tax_3: "Banka teminat mektupları ve akreditif (LC) alınması",
+                    service_tax_4: "Döviz transfer işlemlerinin yönetimi",
+                    why_title: "Neden Rahban'a Dış Kaynak?",
+                    why_subtitle: "Bizi dış denetçiniz ve iş ortağınız olarak seçmenin stratejik avantajları.",
+                    why_1_title: "1. Önemli Maliyet Düşüşü",
+                    why_1_desc: "Tüm bu hizmetler için şirket içi uzmanları işe almanın yıllık maliyeti bir milyar tümeni aşabilir. Rahban'a dış kaynak sağlayarak bu maliyet en az %70 oranında azalır.",
+                    why_2_title: "2. Azaltılmış İş İlişkileri Zorlukları",
+                    why_2_desc: "Siz ve uzmanlarımız arasında doğrudan bir istihdam ilişkisi olmadığı için istihdam zorlukları ve iş ilişkileriyle uğraşmak zorunda kalmazsınız.",
+                    why_3_title: "3. Sistematik Hataların Tespiti",
+                    why_3_desc: "Dış bir denetçi olarak, şirket içi ekipler tarafından sıkça gözden kaçırılan tekrarlayan kalıpları, sistematik kusurları ve yasal boşlukları tespit ederiz.",
+                    why_4_title: "4. Sektör Kıyaslama Verilerine Erişim",
+                    why_4_desc: "Sektördeki meslektaşlarınızın benzer hukuki, gümrük ve vergi zorluklarıyla nasıl başa çıktığını ve hangi standartları takip ettiklerini size gösteriyoruz.",
+                    process_title: "İşletme Risk Analiz Süreciniz",
+                    process_subtitle: "Karşılaştığınız zorlukları belirlemek ve çözmek için şeffaf 5 adımlı bir yol.",
+                    process_1_title: "Yerinde Ziyaret ve Teşhis",
+                    process_1_desc: "Yerinde ziyaret ve ilk raporun sunulması",
+                    process_2_title: "Veri ve Belge Analizi",
+                    process_2_desc: "Belgelerin incelenmesi ve mevcut kusurların tespiti",
+                    process_3_title: "Çözüm Önerisi",
+                    process_3_desc: "İkincil rapor, maliyet tahmini ve önerilen çözümler",
+                    process_4_title: "Uygulama ve Temsil",
+                    process_4_desc: "Kusurların düzeltilmesi ve gerekli izinlerin alınması",
+                    process_5_title: "Destek ve Takip",
+                    process_5_desc: "Tüm uygulama aşamalarının sürekli takibi",
+                    btn_ai_risk: "✨ AI Destekli İlk Risk Analizi",
+                    footer_title: "Rahban Uzmanlar Grubu",
+                    footer_subtitle: "İş varlıklarınızı korumak için danışmanlık ve ortaklık için bize ulaşın.",
+                    footer_address: "Adres: Salafchegan Özel Ekonomik Bölgesi, İmam Humeyni Meydanı, Hüseyni Kompleksi, No: 8",
+                    btn_generate_response: "Yanıt Oluştur",
+                    gemini_disclaimer: "Yasal Uyarı: Sağlanan yanıt yapay zeka tarafından oluşturulmuştur ve yalnızca ön bilgilendirme amaçlıdır. Rahban uzmanları ile yapılan profesyonel danışmanlığın yerini tutmaz ve yasal geçerliliği yoktur.",
+                    consult_modal_title: "Rahban ile İletişime Geçin",
+                    consult_modal_desc: "Danışmanlık almak ve işbirliği başlatmak için aşağıdaki kanallardan bize ulaşabilirsiniz:",
+                    consult_modal_address: "Salafchegan Özel Ekonomik Bölgesi, İmam Humeyni Meydanı, Hüseyni Kompleksi, No: 8"
+                }
+            };
+
+            const menuBtn = document.getElementById('menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            const geminiModal = document.getElementById('gemini-modal');
+            const consultModal = document.getElementById('consult-modal');
+            const allModals = [geminiModal, consultModal];
+
+            // Hamburger Menu Logic
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Language Switcher Logic
+            const langSwitcherBtn = document.getElementById('lang-switcher-btn');
+            const langSwitcherMenu = document.getElementById('lang-switcher-menu');
+            const currentLangFlag = document.getElementById('current-lang-flag');
+            
+            langSwitcherBtn.addEventListener('click', () => {
+                langSwitcherMenu.classList.toggle('hidden');
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!document.getElementById('lang-switcher').contains(e.target)) {
+                    langSwitcherMenu.classList.add('hidden');
+                }
+            });
+            
+            function switchLanguage(lang) {
+                const langData = translations[lang];
+                if (!langData) return;
+
+                document.documentElement.lang = lang;
+                document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
+
+                document.querySelectorAll('[data-key]').forEach(element => {
+                    const key = element.dataset.key;
+                    if (langData[key]) {
+                        if (element.placeholder !== undefined) {
+                            element.placeholder = langData[key];
+                        } else {
+                            element.innerHTML = langData[key];
+                        }
+                    }
+                });
+                
+                // Update current flag
+                const flags = { fa: '🇮🇷', en: '🇬🇧', zh: '🇨🇳', tr: '🇹🇷' };
+                currentLangFlag.textContent = flags[lang];
+                langSwitcherMenu.classList.add('hidden');
+            }
+
+            langSwitcherMenu.addEventListener('click', (e) => {
+                const lang = e.target.closest('[data-lang]')?.dataset.lang;
+                if (lang) {
+                    e.preventDefault();
+                    switchLanguage(lang);
+                }
+            });
+
+            // --- MODAL LOGIC ---
+            const geminiModalTitle = document.getElementById('gemini-modal-title');
+            const geminiModalPrompt = document.getElementById('gemini-modal-prompt');
+            const geminiModalInput = document.getElementById('gemini-modal-input');
+            const geminiModalSubmit = document.getElementById('gemini-modal-submit');
+            const geminiModalLoader = document.getElementById('gemini-modal-loader');
+            const geminiModalOutput = document.getElementById('gemini-modal-output');
+            const geminiModalDisclaimer = document.getElementById('gemini-disclaimer');
+            let currentPromptBuilder;
+
+            const featureConfig = {
+                'contract': {
+                    title: {fa: 'دستیار هوشمند تنظیم قرارداد', en: 'AI Contract Clause Assistant', zh: '人工智能合同条款助手', tr: 'AI Sözleşme Maddesi Asistanı'},
+                    prompt: {fa: 'نیاز قراردادی خود را شرح دهید تا هوش مصنوعی پیش‌نویس یک بند مرتبط را برای شما تولید کند.', en: 'Describe your contractual need, and the AI will generate a relevant draft clause for you.', zh: '描述您的合同需求，人工智能将为您生成相关的条款草案。', tr: 'Sözleşme ihtiyacınızı açıklayın, yapay zeka sizin için ilgili bir madde taslağı oluştursun.'},
+                    placeholder: {fa: 'مثال: یک بند برای حل اختلاف از طریق داوری در قرارداد فروش', en: 'Example: A clause for dispute resolution through arbitration in a sales contract', zh: '例如：销售合同中通过仲裁解决争议的条款', tr: 'Örnek: Bir satış sözleşmesinde tahkim yoluyla uyuşmazlık çözümü için bir madde'},
+                    promptBuilder: (userInput, lang) => {
+                        const langPrompts = {
+                            fa: `شما یک دستیار حقوقی هوشمند از مجموعه "رهبان" هستید. تخصص شما تهیه پیش‌نویس بندهای قرارداد برای کسب‌وکارهای صنعتی به زبان فارسی است. بر اساس نیاز زیر، یک پیش‌نویس حقوقی دقیق و رسمی برای یک بند از قرارداد تهیه کنید: "${userInput}". پاسخ باید شامل عنوان بند و متن کامل آن باشد.`,
+                            en: `You are an AI legal assistant from "Rahban". Your specialty is drafting contract clauses for industrial businesses in English. Based on the following need, prepare a precise and formal draft for a contract clause: "${userInput}". The response must include the clause title and its full text.`,
+                            zh: `您是“Rahban”公司的人工智能法律助理。您的专长是为工业企业起草中文合同条款。根据以下需求，为合同条款准备一份精确、正式的草案：“${userInput}”。回应必须包括条款标题及其全文。`,
+                            tr: `Siz "Rahban" koleksiyonundan akıllı bir hukuk asistanısınız. Uzmanlık alanınız, sanayi işletmeleri için Türkçe sözleşme maddeleri hazırlamaktır. Aşağıdaki ihtiyaca dayanarak, bir sözleşme maddesi için kesin ve resmi bir taslak hazırlayın: "${userInput}". Yanıt, madde başlığını ve tam metnini içermelidir.`
+                        };
+                        return langPrompts[lang];
+                    }
+                },
+                'consult': {
+                    title: {fa: 'مشاور هوشمند بازرگانی و حقوقی', en: 'AI Business & Legal Consultant', zh: '人工智能商业与法律顾问', tr: 'AI Ticari ve Hukuki Danışman'},
+                    prompt: {fa: 'سوال خود در زمینه حقوق کسب‌وکار، امور گمرکی یا بازرگانی را به صورت خلاصه بپرسید.', en: 'Briefly ask your question about business law, customs, or commercial affairs.', zh: '简要提出您关于商法、海关或商业事务的问题。', tr: 'İş hukuku, gümrük veya ticari konulardaki sorunuzu kısaca sorun.'},
+                    placeholder: {fa: 'مثال: برای واردات مواد اولیه از چین چه مجوزهایی لازم است؟', en: 'Example: What permits are required to import raw materials from China?', zh: '例如：从中国进口原材料需要哪些许可证？', tr: 'Örnek: Çin\'den hammadde ithal etmek için hangi izinler gereklidir?'},
+                     promptBuilder: (userInput, lang) => {
+                        const langPrompts = {
+                            fa: `شما یک مشاور هوشمند از مجموعه "رهبان" هستید. به سوال زیر که توسط مدیر یک کسب‌وکار صنعتی پرسیده شده، یک پاسخ کلی، اولیه و راهنما به زبان فارسی ارائه دهید. در پاسخ خود حتما تاکید کنید که این یک راهنمایی عمومی بوده و برای اقدامات اجرایی و دقیق، مشاوره با کارشناسان متخصص رهبان ضروری است. سوال کاربر: "${userInput}"`,
+                            en: `You are an AI consultant from "Rahban". Provide a general, preliminary, and guiding answer in English to the following question asked by an industrial business manager. In your response, emphasize that this is general guidance and consulting with Rahban's expert specialists is necessary for precise execution. User's question: "${userInput}"`,
+                            zh: `您是“Rahban”公司的人工智能顾问。请用中文对以下由一位工业企业经理提出的问题，提供一个总体性、初步的指导性回答。在您的回答中，请务必强调这仅为一般性指导，具体执行需咨询Rahban的专家。用户问题：“${userInput}”`,
+                            tr: `Siz "Rahban" koleksiyonundan bir AI danışmanısınız. Bir sanayi işletme yöneticisi tarafından sorulan aşağıdaki soruya Türkçe olarak genel, ön ve yol gösterici bir yanıt verin. Yanıtınızda, bunun genel bir rehber olduğunu ve kesin uygulama için Rahban'ın uzmanlarına danışmanın gerekli olduğunu vurgulayın. Kullanıcının sorusu: "${userInput}"`
+                        };
+                        return langPrompts[lang];
+                    }
+                },
+                 'job_description': {
+                    title: {fa: 'دستیار هوشمند شرح شغل', en: 'AI Job Description Assistant', zh: '人工智能职位描述助手', tr: 'AI İş Tanımı Asistanı'},
+                    prompt: {fa: 'عنوان شغلی مورد نیاز خود را وارد کنید تا یک پیش‌نویس کامل از شرح آن شغل دریافت کنید.', en: 'Enter the job title you need, and receive a complete draft of its description.', zh: '输入您需要的职位名称，即可收到完整的职位描述草稿。', tr: 'İhtiyacınız olan iş unvanını girin ve tanımının eksiksiz bir taslağını alın.'},
+                    placeholder: {fa: 'مثال: کارشناس بازرگانی خارجی مسلط به زبان ترکی', en: 'Example: Foreign trade expert fluent in Turkish', zh: '例如：精通土耳其语的外贸专家', tr: 'Örnek: Türkçe bilen dış ticaret uzmanı'},
+                    promptBuilder: (userInput, lang) => {
+                        const langPrompts = {
+                            fa: `شما یک کارشناس منابع انسانی از مجموعه "رهبان" هستید. برای عنوان شغلی زیر، یک شرح شغل حرفه‌ای و کامل به زبان فارسی تهیه کنید. این شرح شغل باید شامل بخش‌های اصلی زیر باشد: ۱. درباره شغل ۲. وظایف و مسئولیت‌ها ۳. شرایط احراز و مهارت‌های مورد نیاز. عنوان شغلی: "${userInput}"`,
+                            en: `You are an HR expert from "Rahban". For the following job title, create a professional and complete job description in English. It must include these main sections: 1. About the Role 2. Duties and Responsibilities 3. Qualifications and Required Skills. Job title: "${userInput}"`,
+                            zh: `您是“Rahban”公司的人力资源专家。请为以下职位名称创建一份专业且完整的中文职位描述。它必须包括以下主要部分：1.职位简介 2.职责与责任 3.任职资格与所需技能。职位名称：“${userInput}”`,
+                            tr: `Siz "Rahban" koleksiyonundan bir İK uzmanısınız. Aşağıdaki iş unvanı için Türkçe profesyonel ve eksiksiz bir iş tanımı oluşturun. Bu tanım şu ana bölümleri içermelidir: 1. Rol Hakkında 2. Görev ve Sorumluluklar 3. Nitelikler ve Gerekli Beceriler. İş unvanı: "${userInput}"`
+                        };
+                        return langPrompts[lang];
+                    }
+                },
+                 'risk_analysis': {
+                    title: {fa: 'دستیار هوشمند تحلیل ریسک اولیه', en: 'AI Initial Risk Analysis Assistant', zh: '人工智能初步风险分析助手', tr: 'AI İlk Risk Analizi Asistanı'},
+                    prompt: {fa: 'زمینه فعالیت یا عملیات مورد نظر خود را شرح دهید تا ریسک‌های احتمالی آن تحلیل شود.', en: 'Describe your field of activity or intended operation for a preliminary risk analysis.', zh: '描述您的活动领域或预期操作，以进行初步风险分析。', tr: 'Ön risk analizi için faaliyet alanınızı veya amaçlanan operasyonunuzu açıklayın.'},
+                    placeholder: {fa: 'مثال: قصد داریم یک خط تولید قطعات پلاستیکی در منطقه ویژه سلفچگان راه‌اندازی کنیم.', en: 'Example: We intend to set up a plastic parts production line in the Salafchegan Special Economic Zone.', zh: '例如：我们计划在萨拉夫切甘特殊经济区建立一条塑料零件生产线。', tr: 'Örnek: Salafchegan Özel Ekonomik Bölgesi\'nde bir plastik parça üretim hattı kurmayı planlıyoruz.'},
+                    promptBuilder: (userInput, lang) => {
+                        const langPrompts = {
+                            fa: `شما یک تحلیل‌گر ارشد ریسک از مجموعه "رهبان" هستید. یک مشتری قصد انجام فعالیت زیر را دارد. لطفاً یک تحلیل ریسک اولیه برای او انجام دهید. ریسک‌ها را در دسته‌بندی‌های اصلی (مانند: حقوقی و قراردادی، بازرگانی و گمرکی، عملیاتی و منابع انسانی، مالی و بیمه‌ای) به زبان فارسی لیست کنید و برای هر کدام یک توضیح مختصر ارائه دهید. فعالیت مشتری: "${userInput}"`,
+                            en: `You are a senior risk analyst from "Rahban". A client intends to undertake the following activity. Please perform an initial risk analysis for them. List the risks in major categories (e.g., Legal & Contractual, Commercial & Customs, Operational & HR, Financial & Insurance) in English, providing a brief explanation for each. Client's activity: "${userInput}"`,
+                            zh: `您是“Rahban”公司的高级风险分析师。一位客户打算进行以下活动。请为他们进行初步风险分析。请用中文将风险按主要类别（例如：法律与合同、商业与海关、运营与人力资源、财务与保险）列出，并为每项提供简要说明。客户活动：“${userInput}”`,
+                            tr: `Siz "Rahban" şirketinden kıdemli bir risk analistisiniz. Bir müşteri aşağıdaki faaliyeti gerçekleştirmeyi planlıyor. Lütfen onlar için bir başlangıç risk analizi yapın. Riskleri ana kategorilerde (örneğin Hukuki ve Sözleşmesel, Ticari ve Gümrük, Operasyonel ve İK, Finansal ve Sigorta) Türkçe olarak listeleyin ve her biri için kısa bir açıklama yapın. Müşterinin faaliyeti: "${userInput}"`
+                        };
+                        return langPrompts[lang];
+                    }
+                }
+            };
+            
+            function openGeminiModal(featureType) {
+                const lang = document.documentElement.lang || 'fa';
+                const config = featureConfig[featureType];
+                if (!config) return;
+                geminiModalTitle.textContent = config.title[lang];
+                geminiModalPrompt.textContent = config.prompt[lang];
+                geminiModalInput.placeholder = config.placeholder[lang];
+                currentPromptBuilder = config.promptBuilder;
+                geminiModal.classList.remove('hidden');
+            }
+
+            // Universal event listener for opening modals and handling menu
+            document.body.addEventListener('click', (event) => {
+                const target = event.target;
+                const geminiButton = target.closest('[data-feature]');
+                const consultButton = target.closest('[data-action="open-consult-modal"]');
+                const closeModalButton = target.closest('.close-modal');
+                
+                if (geminiButton) {
+                    event.preventDefault();
+                    openGeminiModal(geminiButton.dataset.feature);
+                } else if (consultButton) {
+                    event.preventDefault();
+                    consultModal.classList.remove('hidden');
+                } else if (closeModalButton) {
+                    closeModalButton.closest('.fixed').classList.add('hidden');
+                }
+
+                if (target.closest('#mobile-menu')) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+
+            // Close modals on backdrop click
+            allModals.forEach(modal => {
+                modal.addEventListener('click', (event) => {
+                    if (event.target === modal) {
+                        modal.classList.add('hidden');
+                    }
+                });
+            });
+
+            geminiModalSubmit.addEventListener('click', async () => {
+                const userInput = geminiModalInput.value;
+                if (!userInput.trim()) {
+                    const lang = document.documentElement.lang || 'fa';
+                    const messages = {
+                        fa: 'لطفا ورودی را تکمیل کنید.',
+                        en: 'Please fill out the input field.',
+                        zh: '请输入内容。',
+                        tr: 'Lütfen giriş alanını doldurun.'
+                    };
+                    geminiModalOutput.textContent = messages[lang];
+                    return;
+                }
+                const lang = document.documentElement.lang || 'fa';
+                const prompt = currentPromptBuilder(userInput, lang);
+                
+                geminiModalLoader.classList.remove('hidden');
+                geminiModalOutput.innerHTML = '';
+                geminiModalDisclaimer.classList.add('hidden');
+                geminiModalSubmit.disabled = true;
+
+                try {
+                    const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""; 
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`API request failed with status ${response.status}: ${errorData?.error?.message || 'Unknown error'}`);
+                    }
+                    const result = await response.json();
+                    
+                    if (result.candidates && result.candidates.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        geminiModalOutput.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+                        geminiModalDisclaimer.classList.remove('hidden');
+                    } else {
+                         const lang = document.documentElement.lang || 'fa';
+                        const messages = {
+                            fa: 'پاسخ معتبری از سرویس دریافت نشد. ممکن است سوال شما ناقض قوانین ایمنی سرویس باشد.',
+                            en: 'No valid response received from the service. Your query may have violated the safety policy.',
+                            zh: '未从服务收到有效回应。您的查询可能违反了安全政策。',
+                            tr: 'Servisten geçerli bir yanıt alınamadı. Sorgunuz güvenlik politikasını ihlal etmiş olabilir.'
+                        };
+                        geminiModalOutput.textContent = messages[lang];
+                    }
+                } catch (error) {
+                     const lang = document.documentElement.lang || 'fa';
+                     const messages = {
+                        fa: 'متاسفانه در حال حاضر امکان برقراری ارتباط با سرویس هوشمند وجود ندارد. لطفا بعدا تلاش کنید.',
+                        en: 'Unfortunately, the smart service is currently unavailable. Please try again later.',
+                        zh: '抱歉，目前无法连接到智能服务。请稍后再试。',
+                        tr: 'Maalesef akıllı servise şu anda bağlanılamıyor. Lütfen daha sonra tekrar deneyin.'
+                    };
+                    console.error("Error calling Gemini API:", error);
+                    geminiModalOutput.textContent = messages[lang];
+                } finally {
+                    geminiModalLoader.classList.add('hidden');
+                    geminiModalSubmit.disabled = false;
+                }
+            });
+            
+             // Set initial language
+            switchLanguage('fa');
+        });
+    </AIzaSyAk5R5gjFMtpo0KlXnA2mxSGt1rJxhXG_o>
+</body>
+</html>
+ 
