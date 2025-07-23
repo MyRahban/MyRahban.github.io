@@ -192,9 +192,27 @@
             align-items: center;
             justify-content: center;
         }
+        .typing-indicator {
+            align-self: flex-start;
+            padding: 0.75rem 1rem;
+        }
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background-color: #9ca3af;
+            border-radius: 50%;
+            display: inline-block;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body>
 
     <header class="backdrop-blur-sm sticky top-0 z-50 shadow-sm" style="background-color: var(--header-bg); transition: background-color 0.3s;">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -515,6 +533,7 @@
             const chatForm = chatModal.querySelector('.chat-input-form');
             const chatInput = chatModal.querySelector('input');
             const messagesContainer = chatModal.querySelector('.chat-messages');
+            const sendButton = chatForm.querySelector('button');
 
             function toggleChat(show) {
                 const elements = [chatModal, chatBackdrop];
@@ -532,20 +551,69 @@
             if (chatBackdrop) chatBackdrop.addEventListener('click', () => toggleChat(false));
 
             if (chatForm) {
-                chatForm.addEventListener('submit', (e) => {
+                chatForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const userMessage = chatInput.value.trim();
                     if (!userMessage) return;
 
                     addMessage(userMessage, 'user');
                     chatInput.value = '';
+                    sendButton.disabled = true;
+                    showTypingIndicator(true);
 
-                    // This is a placeholder response.
-                    setTimeout(() => {
-                        const aiResponse = "متشکرم. در حال بررسی درخواست شما هستم. لطفاً توجه داشته باشید که این پاسخ توسط هوش مصنوعی تولید شده و جایگزین مشاوره تخصصی نیست.";
+                    const context = `
+                        شما یک دستیار هوشمند و متخصص از "گروه کارشناسان رهبان" هستید. هویت شما حرفه‌ای، راهنما و قابل اعتماد است.
+                        تخصص‌های اصلی شما عبارتند از:
+                        1.  امور حقوقی: تجارت, قانون کار, تامین اجتماعی, قراردادها.
+                        2.  امور بازرگانی: طرح توجیهی, ثبت سفارش, ترخیص کالا (به‌ویژه در منطقه ویژه سلفچگان).
+                        3.  امور اداری و منابع انسانی: جذب و استخدام, امور بیمه.
+                        4.  امور مالی: حسابرسی, مالیات, امور بانکی و LC.
+                        مخاطب شما مدیران کسب‌وکارهای صنعتی و تولیدی در ایران هستند.
+                        وظیفه شما ارائه پاسخ‌های اولیه و راهنما بر اساس سوالات کاربر است.
+                        **مهم:** در انتهای هر پاسخ، حتماً این جمله را اضافه کنید: "این پاسخ یک راهنمایی اولیه است و جایگزین مشاوره تخصصی با کارشناسان رهبان نمی‌باشد."
+                    `;
+                    const fullPrompt = `${context}\n\nسوال کاربر: "${userMessage}"`;
+
+                    try {
+                        const aiResponse = await callGeminiAPI(fullPrompt);
                         addMessage(aiResponse, 'ai');
-                    }, 1000);
+                    } catch (error) {
+                        console.error("API Call failed:", error);
+                        addMessage("متاسفانه در حال حاضر امکان برقراری ارتباط با سرویس هوشمند وجود ندارد. لطفاً بعداً تلاش کنید.", 'ai');
+                    } finally {
+                        showTypingIndicator(false);
+                        sendButton.disabled = false;
+                    }
                 });
+            }
+            
+            async function callGeminiAPI(prompt) {
+                const apiKey = "AIzaSyAk5R5gjFMtpo0KlXnA2mxSGt1rJxhXG_o"; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                
+                const payload = {
+                    contents: [{
+                        parts: [{ text: prompt }]
+                    }]
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
+                    return result.candidates[0].content.parts[0].text;
+                } else {
+                    return "پاسخ معتبری از سرویس دریافت نشد. ممکن است سوال شما ناقض قوانین ایمنی سرویس باشد.";
+                }
             }
 
             function addMessage(text, sender) {
@@ -554,6 +622,23 @@
                 messageDiv.textContent = text;
                 messagesContainer.appendChild(messageDiv);
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            function showTypingIndicator(show) {
+                let indicator = messagesContainer.querySelector('.typing-indicator');
+                if (show) {
+                    if (!indicator) {
+                        indicator = document.createElement('div');
+                        indicator.className = 'typing-indicator';
+                        indicator.innerHTML = '<span></span><span></span><span></span>';
+                        messagesContainer.appendChild(indicator);
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                } else {
+                    if (indicator) {
+                        indicator.remove();
+                    }
+                }
             }
         });
     </script>
