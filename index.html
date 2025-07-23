@@ -11,14 +11,8 @@
     <style>
         body {
             font-family: 'Vazirmatn', sans-serif;
-            background-color: #f7fafc;
-        }
-        /* --- Smooth Scrolling Fix --- */
-        html {
             scroll-behavior: smooth;
-        }
-        section[id] {
-            scroll-margin-top: 80px; /* Adjust this value to match your header's height */
+            background-color: #f7fafc;
         }
         .hero-bg {
             background-image: url('https://omidajamloo.github.io/telegram/images/header-bg.jpg');
@@ -57,308 +51,110 @@
             transform: translateY(-8px);
             box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
         }
-        .font-en {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+        .modal-backdrop {
+            background-color: rgba(17, 24, 39, 0.6);
+            backdrop-filter: blur(4px);
         }
-
-        /* --- AI Chat Modal Styles --- */
-        .chat-backdrop {
-            position: fixed;
-            inset: 0;
-            background-color: rgba(21, 20, 80, 0.6);
-            backdrop-filter: blur(5px);
-            z-index: 999;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-        .chat-backdrop.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        #ai-chat-modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            width: 90vw;
-            max-width: 700px;
-            height: 85vh;
-            max-height: 800px;
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transform: translate(-50%, -50%) scale(0.95);
-            opacity: 0;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            z-index: 1000;
-            pointer-events: none;
-        }
-        #ai-chat-modal.active {
-            transform: translate(-50%, -50%) scale(1);
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .chat-header {
-            background-color: #151450;
-            color: white;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .chat-header h3 {
-            font-weight: 700;
-        }
-        .chat-close-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-        .chat-messages {
-            flex-grow: 1;
-            padding: 1rem;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        .chat-message {
-            padding: 0.75rem 1rem;
-            border-radius: 18px;
-            max-width: 80%;
-            line-height: 1.6;
-        }
-        .user-message {
-            background-color: #F06F11;
-            color: white;
-            border-bottom-right-radius: 4px;
-            align-self: flex-end;
-        }
-        .ai-message {
-            background-color: #e5e7eb;
-            color: #1f2937;
-            border-bottom-left-radius: 4px;
-            align-self: flex-start;
-        }
-        .chat-input-form {
-            display: flex;
-            padding: 0.75rem;
-            border-top: 1px solid #e2e8f0;
-            direction: rtl;
-        }
-        .chat-input-form input {
-            flex-grow: 1;
-            border: 1px solid #d1d5db;
-            border-radius: 20px;
-            padding: 0.5rem 1rem;
-        }
-        .chat-input-form button {
-            background-color: #151450;
-            color: white;
-            border: none;
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #151450;
             border-radius: 50%;
             width: 40px;
             height: 40px;
-            margin-right: 0.5rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s;
+            animation: spin 1s linear infinite;
         }
-        .chat-input-form button:disabled {
-            background-color: #9ca3af;
-            cursor: not-allowed;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        .typing-indicator {
-            align-self: flex-start;
-            padding: 0.75rem 1rem;
+        section[id] {
+            scroll-margin-top: 80px;
         }
-        .typing-indicator span {
-            height: 8px;
-            width: 8px;
-            background-color: #9ca3af;
-            border-radius: 50%;
-            display: inline-block;
-            animation: bounce 1.4s infinite ease-in-out both;
-        }
-        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1.0); }
+        .font-en {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
         }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
 
     <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
-        <!-- Header content remains the same -->
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="font-extrabold text-2xl primary-color">رهبان</a>
+            <div class="hidden md:flex items-center space-x-6 space-x-reverse">
+                <a href="#services" class="text-gray-600 hover:text-[#151450] font-semibold">خدمات</a>
+                <a href="#process" class="text-gray-600 hover:text-[#151450] font-semibold">فرآیند کار</a>
+                <a href="#ai-assistant" class="text-gray-600 hover:text-[#151450] font-semibold">دستیار هوشمند</a>
+                <a href="#calculator" class="text-gray-600 hover:text-[#151450] font-semibold">ماشین حساب</a>
+                <a href="#contact" class="text-gray-600 hover:text-[#151450] font-semibold">تماس با ما</a>
+            </div>
+            <button id="menu-btn" class="md:hidden primary-color">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 border-t">
+              <a href="#services" class="block py-2 text-gray-600 font-semibold">خدمات</a>
+              <a href="#process" class="block py-2 text-gray-600 font-semibold">فرآیند کار</a>
+              <a href="#ai-assistant" class="block py-2 text-gray-600 font-semibold">دستیار هوشمند</a>
+              <a href="#calculator" class="block py-2 text-gray-600 font-semibold">ماشین حساب</a>
+              <a href="#contact" class="block py-2 text-gray-600 font-semibold">تماس با ما</a>
+        </div>
     </header>
 
     <main>
-        <!-- Main content sections (hero, services, etc.) remain the same -->
-    </main>
-    
-    <footer id="contact" class="bg-primary-color text-white">
-        <!-- Footer content remains the same -->
-    </footer>
+        <section id="hero" class="hero-bg min-h-screen flex items-center justify-center">
+            <div class="container mx-auto px-6 py-24 text-center content-z">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4">انتخاب مطمئن برای تصمیم‌های مهم</h1>
+                <p class="text-lg md:text-xl text-gray-300 max-w-4xl mx-auto mb-8">گروه کارشناسان رهبان با تخصص ویژه در امور حقوقی، بازرگانی، اداری و منابع انسانی، همراهی مطمئن برای پیشبرد اهداف و کاهش ریسک‌های واحدهای صنعتی و تولیدی است.</p>
+                <a href="#services" class="bg-accent-color text-white font-bold py-3 px-8 rounded-lg text-lg hover-bg-accent-color transition-colors shadow-lg">آشنایی با خدمات</a>
+            </div>
+        </section>
 
-    <!-- AI Chat Modal -->
-    <div id="chat-backdrop" class="chat-backdrop hidden"></div>
-    <div id="ai-chat-modal" class="hidden">
-        <div class="chat-header">
-            <h3>دستیار هوشمند رهبان</h3>
-            <button class="chat-close-btn">&times;</button>
-        </div>
-        <div class="chat-messages">
-            <div class="chat-message ai-message">سلام! چطور می‌توانم به شما کمک کنم؟ سوال خود را در زمینه حقوق کسب‌وکار یا امور بازرگانی بپرسید.</div>
-        </div>
-        <form class="chat-input-form">
-            <input type="text" placeholder="پیام خود را بنویسید..." autocomplete="off">
-            <button type="submit">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" /></svg>
-            </button>
-        </form>
-    </div>
-
-    <!-- Floating Action Button -->
-    <a href="https://forms.gle/cJdyKmKY4Y4HRQHKA" target="_blank" id="fab-google-form" class="hidden fixed bottom-8 right-8 bg-accent-color text-white w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-lg transform hover:scale-110 transition-transform z-40 opacity-80 hover:opacity-100" title="فرم نظرسنجی/درخواست">
-        📝
-    </a>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // --- Mobile Menu Logic (remains the same) ---
-
-            // --- Calculator Logic (remains the same) ---
-
-            // --- Floating Action Button Logic (remains the same) ---
-
-            // --- AI Chat Modal Logic (Updated with Contextual Prompting) ---
-            const chatModal = document.getElementById('ai-chat-modal');
-            const chatBackdrop = document.getElementById('chat-backdrop');
-            const toggleButton = document.getElementById('ai-modal-toggle');
-            const closeButton = chatModal.querySelector('.chat-close-btn');
-            const chatForm = chatModal.querySelector('.chat-input-form');
-            const chatInput = chatModal.querySelector('input');
-            const messagesContainer = chatModal.querySelector('.chat-messages');
-            const sendButton = chatForm.querySelector('button');
-
-            function toggleChat(show) {
-                const elements = [chatModal, chatBackdrop];
-                if (show) {
-                    elements.forEach(el => el.classList.remove('hidden'));
-                    setTimeout(() => elements.forEach(el => el.classList.add('active')), 10);
-                } else {
-                    elements.forEach(el => el.classList.remove('active'));
-                    setTimeout(() => elements.forEach(el => el.classList.add('hidden')), 300);
-                }
-            }
-
-            if (toggleButton) toggleButton.addEventListener('click', () => toggleChat(true));
-            if (closeButton) closeButton.addEventListener('click', () => toggleChat(false));
-            if (chatBackdrop) chatBackdrop.addEventListener('click', () => toggleChat(false));
-
-            if (chatForm) {
-                chatForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const userMessage = chatInput.value.trim();
-                    if (!userMessage) return;
-
-                    addMessage(userMessage, 'user');
-                    chatInput.value = '';
-                    sendButton.disabled = true;
-                    showTypingIndicator(true);
-
-                    // --- CONTEXTUAL PROMPT ---
-                    const context = `
-                        شما یک دستیار هوشمند و متخصص از "گروه کارشناسان رهبان" هستید. هویت شما حرفه‌ای، راهنما و قابل اعتماد است.
-                        تخصص‌های اصلی شما عبارتند از:
-                        1.  امور حقوقی: تجارت، قانون کار، تامین اجتماعی، قراردادها.
-                        2.  امور بازرگانی: طرح توجیهی، ثبت سفارش، ترخیص کالا (به‌ویژه در منطقه ویژه سلفچگان).
-                        3.  امور اداری و منابع انسانی: جذب و استخدام، امور بیمه.
-                        4.  امور مالی: حسابرسی، مالیات، امور بانکی و LC.
-                        مخاطب شما مدیران کسب‌وکارهای صنعتی و تولیدی در ایران هستند.
-                        وظیفه شما ارائه پاسخ‌های اولیه و راهنما بر اساس سوالات کاربر است.
-                        **مهم:** در انتهای هر پاسخ، حتماً این جمله را اضافه کنید: "این پاسخ یک راهنمایی اولیه است و جایگزین مشاوره تخصصی با کارشناسان رهبان نمی‌باشد."
-                    `;
-                    const fullPrompt = `${context}\n\nسوال کاربر: "${userMessage}"`;
-
-                    try {
-                        const aiResponse = await callGeminiAPI(fullPrompt);
-                        addMessage(aiResponse, 'ai');
-                    } catch (error) {
-                        console.error("API Call failed:", error);
-                        addMessage("متاسفانه در حال حاضر امکان برقراری ارتباط با سرویس هوشمند وجود ندارد. لطفاً بعداً تلاش کنید.", 'ai');
-                    } finally {
-                        showTypingIndicator(false);
-                        sendButton.disabled = false;
-                    }
-                });
-            }
-
-            async function callGeminiAPI(prompt) {
-                // The API key you provided has been restored here.
-                const apiKey = "AIzaSyAk5R5gjFMtpo0KlXnA2mxSGt1rJxhXG_o"; 
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                
-                const payload = {
-                    contents: [{
-                        parts: [{ text: prompt }]
-                    }]
-                };
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`API request failed with status ${response.status}`);
-                }
-
-                const result = await response.json();
-                
-                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
-                    return result.candidates[0].content.parts[0].text;
-                } else {
-                    return "پاسخ معتبری از سرویس دریافت نشد. ممکن است سوال شما ناقض قوانین ایمنی سرویس باشد.";
-                }
-            }
-
-            function addMessage(text, sender) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `chat-message ${sender}-message`;
-                messageDiv.textContent = text;
-                messagesContainer.appendChild(messageDiv);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
-            
-            function showTypingIndicator(show) {
-                let indicator = messagesContainer.querySelector('.typing-indicator');
-                if (show) {
-                    if (!indicator) {
-                        indicator = document.createElement('div');
-                        indicator.className = 'typing-indicator';
-                        indicator.innerHTML = '<span></span><span></span><span></span>';
-                        messagesContainer.appendChild(indicator);
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                    }
-                } else {
-                    if (indicator) {
-                        indicator.remove();
-                    }
-                }
-            }
-        });
-    </script>
-</body>
-</html>
+        <section id="services" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-extrabold mb-3 primary-color">خلاصه خدمات رهبان</h2>
+                    <p class="text-gray-600 text-lg">با ارائه بهترین راه حل و تدابیر، یاری‌گر شما هستیم.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                    <div class="service-card">
+                        <h3 class="text-2xl font-bold mb-4 primary-color">امور حقوقی</h3>
+                        <ul class="space-y-2 text-gray-600 list-disc list-inside">
+                            <li>کارشناسی حقوقی تخصصی (تجارت، کار، تأمین اجتماعی)</li>
+                            <li>تدوین و تنظیم انواع اسناد حقوقی (قرارداد، صورتجلسه)</li>
+                            <li>نمایندگی در دعاوی کارگر و کارفرما در اداره کار</li>
+                            <li>مصالحه و داوری جهت جلوگیری از فرآیند دادرسی</li>
+                        </ul>
+                    </div>
+                    <div class="service-card">
+                        <h3 class="text-2xl font-bold mb-4 primary-color">امور بازرگانی</h3>
+                         <ul class="space-y-2 text-gray-600 list-disc list-inside">
+                            <li>اخذ و تدوین طرح توجیهی و گواهی تولید</li>
+                            <li>انجام فرآیندهای ثبت سفارش و اظهار گمرکی</li>
+                            <li>ترخیص کالا با تخصص در مناطق ویژه (مانند سلفچگان)</li>
+                            <li>بهینه‌سازی هزینه‌ها و بررسی تعرفه کالا (HS Code)</li>
+                        </ul>
+                    </div>
+                    <div class="service-card">
+                        <h3 class="text-2xl font-bold mb-4 primary-color">جذب و استخدام | امور اداری</h3>
+                        <ul class="space-y-2 text-gray-600 list-disc list-inside">
+                            <li>ایجاد پل ارتباطی موثر بین کارفرمایان و نیروهای متخصص</li>
+                            <li>تأمین نیروی انسانی متعهد و توانمند</li>
+                            <li>انجام امور بیمه‌ای (تأمین اجتماعی و بیمه تکمیلی)</li>
+                        </ul>
+                    </div>
+                    <div class="service-card">
+                        <h3 class="text-2xl font-bold mb-4 primary-color">حسابرسی، مالیات و امور بانکی</h3>
+                        <ul class="space-y-2 text-gray-600 list-disc list-inside">
+                            <li>همکاری با معتبرترین شرکت‌های حسابرسی</li>
+                            <li>کاهش ریسک جرائم مالیاتی و بیمه‌ای</li>
+                            <li>اخذ ضمانت‌نامه‌های بانکی و اعتبارات اسنادی (LC)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="process" class="py-20">
+            <div class="container mx-auto px-6">
+               <div class="text-center mb-16">
+                   <h2 class="text-3xl md:text-4xl font-extrabold mb-3 prima
