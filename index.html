@@ -9,9 +9,30 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
+        /* --- THEME VARIABLES --- */
+        :root {
+            --bg-color: #f7fafc;
+            --text-color-primary: #151450;
+            --text-color-secondary: #4a5568;
+            --card-bg-color: #ffffff;
+            --border-color: #e2e8f0;
+            --header-bg: rgba(255, 255, 255, 0.8);
+        }
+
+        html.dark {
+            --bg-color: #1a202c;
+            --text-color-primary: #e2e8f0;
+            --text-color-secondary: #a0aec0;
+            --card-bg-color: #2d3748;
+            --border-color: #4a5568;
+            --header-bg: rgba(26, 32, 44, 0.8);
+        }
+
         body {
             font-family: 'Vazirmatn', sans-serif;
-            background-color: #f7fafc;
+            background-color: var(--bg-color);
+            color: var(--text-color-secondary);
+            transition: background-color 0.3s, color 0.3s;
         }
         html {
             scroll-behavior: smooth;
@@ -36,7 +57,7 @@
             position: relative;
             z-index: 2;
         }
-        .primary-color { color: #151450; }
+        .primary-color { color: var(--text-color-primary); }
         .bg-primary-color { background-color: #151450; }
         .hover-bg-primary-color:hover { background-color: #0d0c3a; }
         .accent-color { color: #F06F11; }
@@ -44,11 +65,11 @@
         .hover-bg-accent-color:hover { background-color: #d8630c; }
         
         .service-card {
-            background-color: #ffffff;
+            background-color: var(--card-bg-color);
             border-radius: 1.25rem;
             padding: 2rem;
-            border: 1px solid #e2e8f0;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
             display: flex;
             flex-direction: column;
         }
@@ -83,7 +104,7 @@
             max-width: 700px;
             height: 85vh;
             max-height: 800px;
-            background-color: white;
+            background-color: var(--card-bg-color);
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             display: flex;
@@ -91,7 +112,7 @@
             overflow: hidden;
             transform: translate(-50%, -50%) scale(0.95);
             opacity: 0;
-            transition: transform 0.3s ease, opacity 0.3s ease;
+            transition: transform 0.3s ease, opacity 0.3s ease, background-color 0.3s;
             z-index: 1000;
             pointer-events: none;
         }
@@ -139,22 +160,24 @@
             align-self: flex-end;
         }
         .ai-message {
-            background-color: #e5e7eb;
-            color: #1f2937;
+            background-color: var(--border-color);
+            color: var(--text-color-primary);
             border-bottom-left-radius: 4px;
             align-self: flex-start;
         }
         .chat-input-form {
             display: flex;
             padding: 0.75rem;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid var(--border-color);
             direction: rtl;
         }
         .chat-input-form input {
             flex-grow: 1;
-            border: 1px solid #d1d5db;
+            border: 1px solid var(--border-color);
             border-radius: 20px;
             padding: 0.5rem 1rem;
+            background-color: var(--bg-color);
+            color: var(--text-color-primary);
         }
         .chat-input-form button {
             background-color: #151450;
@@ -169,48 +192,36 @@
             align-items: center;
             justify-content: center;
         }
-        .typing-indicator {
-            align-self: flex-start;
-            padding: 0.75rem 1rem;
-        }
-        .typing-indicator span {
-            height: 8px;
-            width: 8px;
-            background-color: #9ca3af;
-            border-radius: 50%;
-            display: inline-block;
-            animation: bounce 1.4s infinite ease-in-out both;
-        }
-        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1.0); }
-        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
 
-    <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+    <header class="backdrop-blur-sm sticky top-0 z-50 shadow-sm" style="background-color: var(--header-bg); transition: background-color 0.3s;">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="#" class="font-extrabold text-2xl primary-color">رهبان</a>
             <div class="hidden md:flex items-center space-x-6 space-x-reverse">
-                <a href="#services" class="text-gray-600 hover:text-[#151450] font-semibold">خدمات</a>
-                <a href="#process" class="text-gray-600 hover:text-[#151450] font-semibold">فرآیند کار</a>
-                <a href="#ai-assistant" class="text-gray-600 hover:text-[#151450] font-semibold">دستیار هوشمند</a>
-                <a href="#calculator" class="text-gray-600 hover:text-[#151450] font-semibold">ماشین حساب</a>
-                <a href="#contact" class="text-gray-600 hover:text-[#151450] font-semibold">تماس با ما</a>
+                <a href="#services" class="font-semibold" style="color: var(--text-color-secondary); transition: color 0.3s;">خدمات</a>
+                <a href="#process" class="font-semibold" style="color: var(--text-color-secondary); transition: color 0.3s;">فرآیند کار</a>
+                <a href="#ai-assistant" class="font-semibold" style="color: var(--text-color-secondary); transition: color 0.3s;">دستیار هوشمند</a>
+                <a href="#calculator" class="font-semibold" style="color: var(--text-color-secondary); transition: color 0.3s;">ماشین حساب</a>
+                <a href="#contact" class="font-semibold" style="color: var(--text-color-secondary); transition: color 0.3s;">تماس با ما</a>
+                
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle" class="p-2 rounded-full" style="color: var(--text-color-secondary);">
+                    <svg id="theme-toggle-sun-icon" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 003.636 6.464l.707.707a1 1 0 001.414-1.414l-.707-.707zM3 11a1 1 0 100-2H2a1 1 0 100 2h1zM6.464 16.364l-.707.707a1 1 0 001.414 1.414l.707-.707a1 1 0 00-1.414-1.414z"></path></svg>
+                    <svg id="theme-toggle-moon-icon" class="hidden w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                </button>
             </div>
             <button id="menu-btn" class="md:hidden primary-color">
                 <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
             </button>
         </nav>
-        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 border-t">
-              <a href="#services" class="block py-2 text-gray-600 font-semibold">خدمات</a>
-              <a href="#process" class="block py-2 text-gray-600 font-semibold">فرآیند کار</a>
-              <a href="#ai-assistant" class="block py-2 text-gray-600 font-semibold">دستیار هوشمند</a>
-              <a href="#calculator" class="block py-2 text-gray-600 font-semibold">ماشین حساب</a>
-              <a href="#contact" class="block py-2 text-gray-600 font-semibold">تماس با ما</a>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 border-t" style="background-color: var(--header-bg); border-color: var(--border-color); transition: background-color 0.3s;">
+              <a href="#services" class="block py-2 font-semibold" style="color: var(--text-color-secondary);">خدمات</a>
+              <a href="#process" class="block py-2 font-semibold" style="color: var(--text-color-secondary);">فرآیند کار</a>
+              <a href="#ai-assistant" class="block py-2 font-semibold" style="color: var(--text-color-secondary);">دستیار هوشمند</a>
+              <a href="#calculator" class="block py-2 font-semibold" style="color: var(--text-color-secondary);">ماشین حساب</a>
+              <a href="#contact" class="block py-2 font-semibold" style="color: var(--text-color-secondary);">تماس با ما</a>
         </div>
     </header>
 
@@ -223,16 +234,16 @@
             </div>
         </section>
 
-        <section id="services" class="py-20 bg-white">
+        <section id="services" class="py-20" style="background-color: var(--card-bg-color); transition: background-color 0.3s;">
             <div class="container mx-auto px-6">
                 <div class="text-center mb-16">
                     <h2 class="text-3xl md:text-4xl font-extrabold mb-3 primary-color">خلاصه خدمات رهبان</h2>
-                    <p class="text-gray-600 text-lg">با ارائه بهترین راه حل و تدابیر، یاری‌گر شما هستیم.</p>
+                    <p class="text-lg" style="color: var(--text-color-secondary);">با ارائه بهترین راه حل و تدابیر، یاری‌گر شما هستیم.</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                     <div class="service-card">
                         <h3 class="text-2xl font-bold mb-4 primary-color">امور حقوقی</h3>
-                        <ul class="space-y-2 text-gray-600 list-disc list-inside">
+                        <ul class="space-y-2 list-disc list-inside" style="color: var(--text-color-secondary);">
                             <li>کارشناسی حقوقی تخصصی (تجارت، کار، تأمین اجتماعی)</li>
                             <li>تدوین و تنظیم انواع اسناد حقوقی (قرارداد، صورتجلسه)</li>
                             <li>نمایندگی در دعاوی کارگر و کارفرما در اداره کار</li>
@@ -241,7 +252,7 @@
                     </div>
                     <div class="service-card">
                         <h3 class="text-2xl font-bold mb-4 primary-color">امور بازرگانی</h3>
-                         <ul class="space-y-2 text-gray-600 list-disc list-inside">
+                         <ul class="space-y-2 list-disc list-inside" style="color: var(--text-color-secondary);">
                             <li>اخذ و تدوین طرح توجیهی و گواهی تولید</li>
                             <li>انجام فرآیندهای ثبت سفارش و اظهار گمرکی</li>
                             <li>ترخیص کالا با تخصص در مناطق ویژه (مانند سلفچگان)</li>
@@ -250,7 +261,7 @@
                     </div>
                     <div class="service-card">
                         <h3 class="text-2xl font-bold mb-4 primary-color">جذب و استخدام | امور اداری</h3>
-                        <ul class="space-y-2 text-gray-600 list-disc list-inside">
+                        <ul class="space-y-2 list-disc list-inside" style="color: var(--text-color-secondary);">
                             <li>ایجاد پل ارتباطی موثر بین کارفرمایان و نیروهای متخصص</li>
                             <li>تأمین نیروی انسانی متعهد و توانمند</li>
                             <li>انجام امور بیمه‌ای (تأمین اجتماعی و بیمه تکمیلی)</li>
@@ -258,7 +269,7 @@
                     </div>
                     <div class="service-card">
                         <h3 class="text-2xl font-bold mb-4 primary-color">حسابرسی، مالیات و امور بانکی</h3>
-                        <ul class="space-y-2 text-gray-600 list-disc list-inside">
+                        <ul class="space-y-2 list-disc list-inside" style="color: var(--text-color-secondary);">
                             <li>همکاری با معتبرترین شرکت‌های حسابرسی</li>
                             <li>کاهش ریسک جرائم مالیاتی و بیمه‌ای</li>
                             <li>اخذ ضمانت‌نامه‌های بانکی و اعتبارات اسنادی (LC)</li>
@@ -272,24 +283,24 @@
             <div class="container mx-auto px-6">
                <div class="text-center mb-16">
                    <h2 class="text-3xl md:text-4xl font-extrabold mb-3 primary-color">فرآیند آنالیز ریسک کسب‌وکار شما</h2>
-                   <p class="text-gray-600 text-lg">یک مسیر شفاف ۵ مرحله‌ای برای شناسایی و رفع چالش‌های پیش روی شما.</p>
+                   <p class="text-lg" style="color: var(--text-color-secondary);">یک مسیر شفاف ۵ مرحله‌ای برای شناسایی و رفع چالش‌های پیش روی شما.</p>
                </div>
                <div class="relative max-w-4xl mx-auto">
                    <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
-                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۱</div><h4 class="font-bold">بازدید و عارضه‌یابی</h4><p class="text-sm text-gray-500">بازدید حضوری و ارائه گزارش اولیه</p></div>
-                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۲</div><h4 class="font-bold">تحلیل داده و اسناد</h4><p class="text-sm text-gray-500">بررسی مدارک و شناسایی ایرادات</p></div>
-                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۳</div><h4 class="font-bold">ارائه راهکار</h4><p class="text-sm text-gray-500">گزارش ثانویه و راهکارهای پیشنهادی</p></div>
-                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۴</div><h4 class="font-bold">اجرا و نمایندگی</h4><p class="text-sm text-gray-500">رفع ایرادات و اخذ مجوزها</p></div>
-                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۵</div><h4 class="font-bold">پشتیبانی و پیگیری</h4><p class="text-sm text-gray-500">پیگیری مستمر امور اجرایی</p></div>
+                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۱</div><h4 class="font-bold primary-color">بازدید و عارضه‌یابی</h4><p class="text-sm">بازدید حضوری و ارائه گزارش اولیه</p></div>
+                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۲</div><h4 class="font-bold primary-color">تحلیل داده و اسناد</h4><p class="text-sm">بررسی مدارک و شناسایی ایرادات</p></div>
+                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۳</div><h4 class="font-bold primary-color">ارائه راهکار</h4><p class="text-sm">گزارش ثانویه و راهکارهای پیشنهادی</p></div>
+                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۴</div><h4 class="font-bold primary-color">اجرا و نمایندگی</h4><p class="text-sm">رفع ایرادات و اخذ مجوزها</p></div>
+                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۵</div><h4 class="font-bold primary-color">پشتیبانی و پیگیری</h4><p class="text-sm">پیگیری مستمر امور اجرایی</p></div>
                    </div>
                </div>
             </div>
        </section>
         
-        <section id="ai-assistant" class="py-20 bg-white">
+        <section id="ai-assistant" class="py-20" style="background-color: var(--card-bg-color); transition: background-color 0.3s;">
             <div class="container mx-auto px-6 text-center">
                 <h2 class="text-3xl md:text-4xl font-extrabold mb-3 primary-color">دستیار هوشمند رهبان</h2>
-                <p class="text-gray-600 text-lg max-w-2xl mx-auto mb-8">برای دریافت پیش‌نویس‌های حقوقی، تحلیل‌های اولیه یا پاسخ به سوالات متداول خود، از دستیار هوشمند ما استفاده کنید.</p>
+                <p class="text-lg max-w-2xl mx-auto mb-8" style="color: var(--text-color-secondary);">برای دریافت پیش‌نویس‌های حقوقی، تحلیل‌های اولیه یا پاسخ به سوالات متداول خود، از دستیار هوشمند ما استفاده کنید.</p>
                 <button id="ai-modal-toggle" class="bg-accent-color text-white font-bold py-3 px-8 rounded-lg text-lg hover-bg-accent-color transition-colors shadow-lg">
                     ✨ شروع گفتگو با دستیار هوشمند
                 </button>
@@ -300,36 +311,36 @@
             <div class="container mx-auto px-6">
                 <div class="text-center mb-12">
                     <h2 class="text-3xl md:text-4xl font-extrabold mb-3 primary-color">ماشین حساب گمرکی</h2>
-                    <p class="text-gray-600 text-lg">هزینه های ترخیص کالای خود را به صورت جامع محاسبه کنید.</p>
+                    <p class="text-lg" style="color: var(--text-color-secondary);">هزینه های ترخیص کالای خود را به صورت جامع محاسبه کنید.</p>
                 </div>
-                <div class="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-lg border">
+                <div class="max-w-3xl mx-auto p-8 rounded-2xl shadow-lg" style="background-color: var(--card-bg-color); border: 1px solid var(--border-color); transition: background-color 0.3s;">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="goods-value" class="block font-semibold mb-2">ارزش کالا (به دلار)</label>
-                            <input type="text" id="goods-value" inputmode="numeric" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-indigo-300 text-left" dir="ltr" placeholder="e.g., 15000">
+                            <label for="goods-value" class="block font-semibold mb-2 primary-color">ارزش کالا (به دلار)</label>
+                            <input type="text" id="goods-value" inputmode="numeric" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-indigo-300 text-left" dir="ltr" placeholder="e.g., 15000" style="background-color: var(--bg-color); border-color: var(--border-color); color: var(--text-color-primary);">
                         </div>
                         <div>
-                             <label for="exchange-rate" class="block font-semibold mb-2">نرخ ارز (به ریال)</label>
-                            <input type="text" id="exchange-rate" inputmode="numeric" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-indigo-300 text-left" dir="ltr" placeholder="e.g., 420000">
+                             <label for="exchange-rate" class="block font-semibold mb-2 primary-color">نرخ ارز (به ریال)</label>
+                            <input type="text" id="exchange-rate" inputmode="numeric" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-indigo-300 text-left" dir="ltr" placeholder="e.g., 420000" style="background-color: var(--bg-color); border-color: var(--border-color); color: var(--text-color-primary);">
                         </div>
                     </div>
                     <button id="calculate-btn" class="w-full bg-accent-color hover-bg-accent-color text-white font-bold py-3 px-5 rounded-lg mt-6 transition-colors text-lg">محاسبه</button>
                     <div id="result-area" class="mt-8 hidden">
-                        <div class="border-t pt-6">
+                        <div class="border-t pt-6" style="border-color: var(--border-color);">
                             <h3 class="text-xl font-bold text-center mb-4 primary-color">جزئیات هزینه‌ها (به ریال)</h3>
                             <div class="space-y-3 text-lg">
-                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-md"><span class="font-semibold">ارزش ریالی کالا:</span><span id="result-goods-value-rial" class="font-bold font-en"></span></div>
+                                <div class="flex justify-between items-center p-3 rounded-md" style="background-color: var(--bg-color);"><span class="font-semibold primary-color">ارزش ریالی کالا:</span><span id="result-goods-value-rial" class="font-bold font-en primary-color"></span></div>
                                 <div class="flex justify-between items-center p-3"><span>کرایه:</span><span id="result-freight" class="font-bold font-en"></span></div>
-                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-md"><span>بیمه:</span><span id="result-insurance" class="font-bold font-en"></span></div>
-                                <div class="flex justify-between items-center p-3 font-bold primary-color border-t border-b"><span>ارزش CIF:</span><span id="result-cif" class="font-en"></span></div>
+                                <div class="flex justify-between items-center p-3 rounded-md" style="background-color: var(--bg-color);"><span>بیمه:</span><span id="result-insurance" class="font-bold font-en"></span></div>
+                                <div class="flex justify-between items-center p-3 font-bold primary-color border-t border-b" style="border-color: var(--border-color);"><span>ارزش CIF:</span><span id="result-cif" class="font-en"></span></div>
                                 <div class="flex justify-between items-center p-3"><span>پسماند:</span><span id="result-waste" class="font-bold font-en"></span></div>
-                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-md"><span>حقوق ورودی:</span><span id="result-duty" class="font-bold font-en"></span></div>
+                                <div class="flex justify-between items-center p-3 rounded-md" style="background-color: var(--bg-color);"><span>حقوق ورودی:</span><span id="result-duty" class="font-bold font-en"></span></div>
                                 <div class="flex justify-between items-center p-3"><span>هلال احمر (۱٪ حقوق ورودی):</span><span id="result-red-crescent" class="font-bold font-en"></span></div>
-                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-md"><span>مالیات بر ارزش افزوده:</span><span id="result-vat" class="font-bold font-en"></span></div>
+                                <div class="flex justify-between items-center p-3 rounded-md" style="background-color: var(--bg-color);"><span>مالیات بر ارزش افزوده:</span><span id="result-vat" class="font-bold font-en"></span></div>
                                 <div class="flex justify-between items-center p-4 bg-primary-color text-white rounded-lg mt-4 text-xl"><span class="font-bold">جمع کل پرداختی گمرک:</span><span id="result-total" class="font-extrabold font-en"></span></div>
                             </div>
-                            <div class="mt-6 border-t pt-4 text-sm text-gray-500">
-                                <h4 class="font-bold mb-2">توضیحات:</h4>
+                            <div class="mt-6 border-t pt-4 text-sm" style="border-color: var(--border-color);">
+                                <h4 class="font-bold mb-2 primary-color">توضیحات:</h4>
                                 <ul class="list-disc list-inside space-y-1">
                                     <li>مبلغ کرایه در این محاسبه پرداخت نمی‌شود و صرفاً جهت محاسبه هزینه‌های گمرکی (مانند بیمه) استفاده می‌گردد.</li>
                                     <li>هزینه بیمه شامل مابه‌التفاوت هزینه بیمه باربری می‌باشد.</li>
@@ -391,7 +402,7 @@
             }
             document.querySelectorAll('#mobile-menu a, .nav a').forEach(link => {
                 link.addEventListener('click', () => {
-                    if(window.innerWidth < 768) { // Only for mobile
+                    if(window.innerWidth < 768) { 
                         mobileMenu.classList.add('hidden');
                     }
                 });
@@ -405,12 +416,7 @@
 
             function toEnglishDigits(str) {
                 if (typeof str !== 'string') return str;
-                const persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-                const arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-                for (let i = 0; i < 10; i++) {
-                    str = str.replace(new RegExp(persian[i], 'g'), i).replace(new RegExp(arabic[i], 'g'), i);
-                }
-                return str;
+                return str.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
             }
 
             if (calculateBtn) {
@@ -474,7 +480,6 @@
             const chatForm = chatModal.querySelector('.chat-input-form');
             const chatInput = chatModal.querySelector('input');
             const messagesContainer = chatModal.querySelector('.chat-messages');
-            const sendButton = chatForm.querySelector('button');
 
             function toggleChat(show) {
                 const elements = [chatModal, chatBackdrop];
@@ -492,69 +497,20 @@
             if (chatBackdrop) chatBackdrop.addEventListener('click', () => toggleChat(false));
 
             if (chatForm) {
-                chatForm.addEventListener('submit', async (e) => {
+                chatForm.addEventListener('submit', (e) => {
                     e.preventDefault();
                     const userMessage = chatInput.value.trim();
                     if (!userMessage) return;
 
                     addMessage(userMessage, 'user');
                     chatInput.value = '';
-                    sendButton.disabled = true;
-                    showTypingIndicator(true);
 
-                    const context = `
-                        شما یک دستیار هوشمند و متخصص از "گروه کارشناسان رهبان" هستید. هویت شما حرفه‌ای، راهنما و قابل اعتماد است.
-                        تخصص‌های اصلی شما عبارتند از:
-                        1.  امور حقوقی: تجارت, قانون کار, تامین اجتماعی, قراردادها.
-                        2.  امور بازرگانی: طرح توجیهی, ثبت سفارش, ترخیص کالا (به‌ویژه در منطقه ویژه سلفچگان).
-                        3.  امور اداری و منابع انسانی: جذب و استخدام, امور بیمه.
-                        4.  امور مالی: حسابرسی, مالیات, امور بانکی و LC.
-                        مخاطب شما مدیران کسب‌وکارهای صنعتی و تولیدی در ایران هستند.
-                        وظیفه شما ارائه پاسخ‌های اولیه و راهنما بر اساس سوالات کاربر است.
-                        **مهم:** در انتهای هر پاسخ، حتماً این جمله را اضافه کنید: "این پاسخ یک راهنمایی اولیه است و جایگزین مشاوره تخصصی با کارشناسان رهبان نمی‌باشد."
-                    `;
-                    const fullPrompt = `${context}\n\nسوال کاربر: "${userMessage}"`;
-
-                    try {
-                        const aiResponse = await callGeminiAPI(fullPrompt);
+                    // This is a placeholder response.
+                    setTimeout(() => {
+                        const aiResponse = "متشکرم. در حال بررسی درخواست شما هستم. لطفاً توجه داشته باشید که این پاسخ توسط هوش مصنوعی تولید شده و جایگزین مشاوره تخصصی نیست.";
                         addMessage(aiResponse, 'ai');
-                    } catch (error) {
-                        console.error("API Call failed:", error);
-                        addMessage("متاسفانه در حال حاضر امکان برقراری ارتباط با سرویس هوشمند وجود ندارد. لطفاً بعداً تلاش کنید.", 'ai');
-                    } finally {
-                        showTypingIndicator(false);
-                        sendButton.disabled = false;
-                    }
+                    }, 1000);
                 });
-            }
-
-            async function callGeminiAPI(prompt) {
-                const apiKey = "AIzaSyAk5R5gjFMtpo0KlXnA2mxSGt1rJxhXG_o"; 
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                
-                const payload = {
-                    contents: [{
-                        parts: [{ text: prompt }]
-                    }]
-                };
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`API request failed with status ${response.status}`);
-                }
-
-                const result = await response.json();
-                
-                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
-                    return result.candidates[0].content.parts[0].text;
-                } else {
-                    return "پاسخ معتبری از سرویس دریافت نشد. ممکن است سوال شما ناقض قوانین ایمنی سرویس باشد.";
-                }
             }
 
             function addMessage(text, sender) {
@@ -563,23 +519,6 @@
                 messageDiv.textContent = text;
                 messagesContainer.appendChild(messageDiv);
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
-
-            function showTypingIndicator(show) {
-                let indicator = messagesContainer.querySelector('.typing-indicator');
-                if (show) {
-                    if (!indicator) {
-                        indicator = document.createElement('div');
-                        indicator.className = 'typing-indicator';
-                        indicator.innerHTML = '<span></span><span></span><span></span>';
-                        messagesContainer.appendChild(indicator);
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                    }
-                } else {
-                    if (indicator) {
-                        indicator.remove();
-                    }
-                }
             }
         });
     </script>
