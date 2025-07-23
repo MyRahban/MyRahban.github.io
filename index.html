@@ -365,7 +365,134 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // All JavaScript logic is here
+            // --- Mobile Menu ---
+            const menuBtn = document.getElementById('menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (menuBtn && mobileMenu) {
+                menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+            }
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            // --- Calculator Logic ---
+            const calculateBtn = document.getElementById('calculate-btn');
+            const goodsValueInput = document.getElementById('goods-value');
+            const exchangeRateInput = document.getElementById('exchange-rate');
+            const resultArea = document.getElementById('result-area');
+
+            function toEnglishDigits(str) {
+                if (typeof str !== 'string') return str;
+                const persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+                const arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+                for (let i = 0; i < 10; i++) {
+                    str = str.replace(new RegExp(persian[i], 'g'), i).replace(new RegExp(arabic[i], 'g'), i);
+                }
+                return str;
+            }
+
+            if (calculateBtn) {
+                calculateBtn.addEventListener('click', () => {
+                    try {
+                        const valueStr = toEnglishDigits(goodsValueInput.value || '0').replace(/,/g, '');
+                        const rateStr = toEnglishDigits(exchangeRateInput.value || '0').replace(/,/g, '');
+                        const value = parseFloat(valueStr);
+                        const rate = parseFloat(rateStr);
+
+                        if (isNaN(value) || isNaN(rate) || value <= 0 || rate <= 0) {
+                            alert('لطفا مقادیر معتبر وارد کنید.');
+                            return;
+                        }
+
+                        const goodsValueRial = Math.floor(value * rate);
+                        const freight = Math.floor(goodsValueRial * 0.10);
+                        const insurance = Math.floor((goodsValueRial + freight) * 0.005);
+                        const cif = goodsValueRial + freight + insurance;
+                        const waste = Math.floor(cif * 0.005);
+                        const duty = Math.floor(cif * 0.04);
+                        const redCrescent = Math.floor(duty * 0.01);
+                        const vat = Math.floor((cif + duty) * 0.10);
+                        const total = Math.floor(waste + duty + redCrescent + vat);
+
+                        document.getElementById('result-goods-value-rial').textContent = goodsValueRial.toLocaleString('en-US');
+                        document.getElementById('result-freight').textContent = freight.toLocaleString('en-US');
+                        document.getElementById('result-insurance').textContent = insurance.toLocaleString('en-US');
+                        document.getElementById('result-cif').textContent = cif.toLocaleString('en-US');
+                        document.getElementById('result-waste').textContent = waste.toLocaleString('en-US');
+                        document.getElementById('result-duty').textContent = duty.toLocaleString('en-US');
+                        document.getElementById('result-red-crescent').textContent = redCrescent.toLocaleString('en-US');
+                        document.getElementById('result-vat').textContent = vat.toLocaleString('en-US');
+                        document.getElementById('result-total').textContent = total.toLocaleString('en-US');
+
+                        resultArea.classList.remove('hidden');
+                    } catch (error) {
+                        console.error("Calculator error:", error);
+                        alert('خطایی در محاسبه رخ داد. لطفا ورودی خود را بررسی کنید.');
+                    }
+                });
+            }
+
+            // --- Floating Action Button ---
+            const fab = document.getElementById('fab-google-form');
+            if(fab) {
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 300) {
+                        fab.classList.remove('hidden');
+                    } else {
+                        fab.classList.add('hidden');
+                    }
+                });
+            }
+
+            // --- AI Chat Modal Logic ---
+            const chatModal = document.getElementById('ai-chat-modal');
+            const chatBackdrop = document.getElementById('chat-backdrop');
+            const toggleButton = document.getElementById('ai-modal-toggle');
+            const closeButton = chatModal.querySelector('.chat-close-btn');
+            const chatForm = chatModal.querySelector('.chat-input-form');
+            const chatInput = chatModal.querySelector('input');
+            const messagesContainer = chatModal.querySelector('.chat-messages');
+
+            function toggleChat(show) {
+                const elements = [chatModal, chatBackdrop];
+                if (show) {
+                    elements.forEach(el => el.classList.remove('hidden'));
+                    setTimeout(() => elements.forEach(el => el.classList.add('active')), 10);
+                } else {
+                    elements.forEach(el => el.classList.remove('active'));
+                    setTimeout(() => elements.forEach(el => el.classList.add('hidden')), 300);
+                }
+            }
+
+            if (toggleButton) toggleButton.addEventListener('click', () => toggleChat(true));
+            if (closeButton) closeButton.addEventListener('click', () => toggleChat(false));
+            if (chatBackdrop) chatBackdrop.addEventListener('click', () => toggleChat(false));
+
+            if (chatForm) {
+                chatForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const userMessage = chatInput.value.trim();
+                    if (!userMessage) return;
+
+                    addMessage(userMessage, 'user');
+                    chatInput.value = '';
+
+                    setTimeout(() => {
+                        const aiResponse = "متشکرم. در حال بررسی درخواست شما هستم. لطفاً توجه داشته باشید که این پاسخ توسط هوش مصنوعی تولید شده و جایگزین مشاوره تخصصی نیست.";
+                        addMessage(aiResponse, 'ai');
+                    }, 1000);
+                });
+            }
+
+            function addMessage(text, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `chat-message ${sender}-message`;
+                messageDiv.textContent = text;
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
         });
     </script>
 </body>
