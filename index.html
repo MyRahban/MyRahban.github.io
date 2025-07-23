@@ -169,6 +169,24 @@
             align-items: center;
             justify-content: center;
         }
+        .typing-indicator {
+            align-self: flex-start;
+            padding: 0.75rem 1rem;
+        }
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background-color: #9ca3af;
+            border-radius: 50%;
+            display: inline-block;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -371,9 +389,11 @@
             if (menuBtn && mobileMenu) {
                 menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
             }
-            document.querySelectorAll('#mobile-menu a').forEach(link => {
+            document.querySelectorAll('#mobile-menu a, .nav a').forEach(link => {
                 link.addEventListener('click', () => {
-                    mobileMenu.classList.add('hidden');
+                    if(window.innerWidth < 768) { // Only for mobile
+                        mobileMenu.classList.add('hidden');
+                    }
                 });
             });
 
@@ -479,6 +499,7 @@
                     addMessage(userMessage, 'user');
                     chatInput.value = '';
 
+                    // This is a placeholder response.
                     setTimeout(() => {
                         const aiResponse = "متشکرم. در حال بررسی درخواست شما هستم. لطفاً توجه داشته باشید که این پاسخ توسط هوش مصنوعی تولید شده و جایگزین مشاوره تخصصی نیست.";
                         addMessage(aiResponse, 'ai');
