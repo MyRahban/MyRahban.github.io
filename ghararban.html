@@ -89,7 +89,6 @@
                             <label for="image-upload" class="flex items-center text-sm primary-color hover:text-blue-800 font-semibold transition-colors cursor-pointer">
                                 <ion-icon name="camera-outline" class="ml-1"></ion-icon>اسکن با دوربین
                             </label>
-                            <!-- **FIX:** Added 'capture="environment"' to prioritize the rear camera on mobile -->
                             <input type="file" id="image-upload" class="hidden" accept="image/*" capture="environment">
                         </div>
                         <textarea id="contract-clause" rows="10" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow duration-300 resize-y" placeholder="متن مورد نظر برای تحلیل را اینجا کپی کنید یا با دوربین اسکن کنید..."></textarea>
@@ -214,39 +213,78 @@
             }
         }
 
-        // --- Analyzer Logic (OCR with Gemini via Worker) ---
-        imageUploadInput.addEventListener('change', (event) => {
+        // --- **NEW** Helper Function for Image Resizing ---
+        async function resizeImage(file, maxWidth = 1024, maxHeight = 1024) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let { width, height } = img;
+
+                        if (width > height) {
+                            if (width > maxWidth) {
+                                height = Math.round(height * (maxWidth / width));
+                                width = maxWidth;
+                            }
+                        } else {
+                            if (height > maxHeight) {
+                                width = Math.round(width * (maxHeight / height));
+                                height = maxHeight;
+                            }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        const dataUrl = canvas.toDataURL(file.type, 0.9); // 0.9 is quality for JPEG
+                        const base64String = dataUrl.replace(/^data:image\/(png|jpeg|jpg);base64,/, "");
+                        resolve(base64String);
+                    };
+                    img.onerror = reject;
+                };
+                reader.onerror = reject;
+            });
+        }
+
+        // --- **UPDATED** Analyzer Logic (OCR with Gemini via Worker) ---
+        imageUploadInput.addEventListener('change', async (event) => {
             const file = event.target.files[0];
             if (!file) return;
 
-            clauseInput.placeholder = "در حال پردازش تصویر...";
+            clauseInput.placeholder = "در حال تغییر اندازه و پردازش تصویر...";
             clauseInput.value = "";
-            const reader = new FileReader();
-            reader.onloadend = async () => {
-                const base64String = reader.result.replace('data:', '').replace(/^.+,/, '');
-                const prompt = "این تصویر یک سند حقوقی است. لطفاً متن آن را به دقت و به صورت کامل استخراج کن.";
+            
+            analysisPlaceholder.classList.add('hidden');
+            analysisLoader.classList.remove('hidden');
+            analysisResultContainer.classList.add('hidden');
+
+            try {
+                // Resize the image first to prevent payload size errors
+                const base64String = await resizeImage(file);
                 
-                analysisPlaceholder.classList.add('hidden');
-                analysisLoader.classList.remove('hidden');
-                analysisResultContainer.classList.add('hidden');
+                const prompt = "این تصویر یک سند حقوقی است. لطفاً متن آن را به دقت و به صورت کامل استخراج کن.";
 
                 const payload = {
                     contents: [{ role: "user", parts: [{ text: prompt }, { inlineData: { mimeType: file.type, data: base64String } }] }]
                 };
+                
+                const extractedText = await callApiProxy(payload);
+                clauseInput.value = extractedText;
+                clauseInput.placeholder = "متن استخراج شد. حالا می‌توانید تحلیل کنید.";
 
-                try {
-                    const extractedText = await callApiProxy(payload);
-                    clauseInput.value = extractedText;
-                    clauseInput.placeholder = "متن استخراج شد. حالا می‌توانید تحلیل کنید.";
-                } catch (error) {
-                    clauseInput.placeholder = "خطا در استخراج متن. لطفاً دوباره تلاش کنید.";
-                    alert(`خطا: ${error.message}`);
-                } finally {
-                    analysisLoader.classList.add('hidden');
-                    analysisPlaceholder.classList.remove('hidden');
-                }
-            };
-            reader.readAsDataURL(file);
+            } catch (error) {
+                clauseInput.placeholder = "خطا در استخراج متن. لطفاً دوباره تلاش کنید.";
+                alert(`خطا: ${error.message}`);
+            } finally {
+                analysisLoader.classList.add('hidden');
+                analysisPlaceholder.classList.remove('hidden');
+            }
         });
 
         // --- Analyzer Logic (Text Analysis via Worker) ---
