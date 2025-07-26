@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>قراربان - دستیار هوشمند قرارداد شما</title>
-    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Google Fonts - Vazirmatn -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Ionicons for Icons -->
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     
@@ -151,19 +153,18 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        const API_KEY = "AIzaSyAk5R5gjFMtpo0KlXnA2mxSGt1rJxhXG_o";
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+
         // --- DOM Elements ---
         const tabButtons = document.querySelectorAll('.tab-button');
         const tabPanes = document.querySelectorAll('.tab-pane');
-        
-        // Analyzer Elements
         const analyzeButton = document.getElementById('analyze-button');
         const clauseInput = document.getElementById('contract-clause');
         const analysisResultContainer = document.getElementById('analysis-result');
         const analysisPlaceholder = document.getElementById('analysis-placeholder');
         const analysisLoader = document.getElementById('analysis-loader');
         const imageUploadInput = document.getElementById('image-upload');
-
-        // Generator Elements
         const generateButton = document.getElementById('generate-button');
         const conversationInput = document.getElementById('conversation-input');
         const generatorResultContainer = document.getElementById('generator-result');
@@ -176,50 +177,28 @@
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const targetTab = button.dataset.tab;
-                tabButtons.forEach(btn => {
-                    btn.classList.toggle('tab-active', btn.dataset.tab === targetTab);
-                    btn.classList.toggle('text-gray-600', btn.dataset.tab !== targetTab);
-                });
-                tabPanes.forEach(pane => {
-                    pane.classList.toggle('active', pane.id === `${targetTab}-tab-content`);
-                });
+                tabButtons.forEach(btn => btn.classList.toggle('tab-active', btn.dataset.tab === targetTab));
+                tabPanes.forEach(pane => pane.classList.toggle('active', pane.id === `${targetTab}-tab-content`));
             });
         });
         
         // --- Gemini API Call Function ---
-        async function callGemini(prompt, base64ImageData = null) {
-            const apiKey = "AIzaSyAk5R5gjFMtpo0KlXnA2mxSGt1rJxhXG_o";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-            
-            let parts = [{ text: prompt }];
-            if (base64ImageData) {
-                parts.push({
-                    inlineData: {
-                        mimeType: "image/jpeg",
-                        data: base64ImageData
-                    }
-                });
-            }
-
-            const payload = {
-                contents: [{ role: "user", parts: parts }]
-            };
-
+        async function callGemini(payload) {
             try {
-                const response = await fetch(apiUrl, {
+                const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(`API request failed: ${errorData?.error?.message || response.statusText}`);
+                    throw new Error(`خطای API: ${errorData?.error?.message || response.statusText}`);
                 }
                 const result = await response.json();
-                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts) {
+                if (result.candidates && result.candidates[0]?.content?.parts[0]) {
                     return result.candidates[0].content.parts[0].text;
                 } else {
-                    throw new Error("پاسخ معتبری از سرویس دریافت نشد. ممکن است محتوا توسط فیلترهای ایمنی مسدود شده باشد.");
+                    throw new Error("پاسخ معتبری از سرویس دریافت نشد.");
                 }
             } catch (error) {
                 console.error("Error calling Gemini API:", error);
@@ -227,7 +206,7 @@
             }
         }
 
-        // --- Analyzer Logic ---
+        // --- Analyzer Logic (OCR with Gemini) ---
         imageUploadInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (!file) return;
@@ -237,19 +216,32 @@
             const reader = new FileReader();
             reader.onloadend = async () => {
                 const base64String = reader.result.replace('data:', '').replace(/^.+,/, '');
-                const prompt = "این تصویر یک سند حقوقی است. لطفاً متن آن را به دقت استخراج کن.";
+                const prompt = "این تصویر یک سند حقوقی است. لطفاً متن آن را به دقت و به صورت کامل استخراج کن.";
+                
+                analysisPlaceholder.classList.add('hidden');
+                analysisLoader.classList.remove('hidden');
+                analysisResultContainer.classList.add('hidden');
+
+                const payload = {
+                    contents: [{ role: "user", parts: [{ text: prompt }, { inlineData: { mimeType: "image/jpeg", data: base64String } }] }]
+                };
+
                 try {
-                    const extractedText = await callGemini(prompt, base64String);
+                    const extractedText = await callGemini(payload);
                     clauseInput.value = extractedText;
                     clauseInput.placeholder = "متن استخراج شد. حالا می‌توانید تحلیل کنید.";
                 } catch (error) {
                     clauseInput.placeholder = "خطا در استخراج متن. لطفاً دوباره تلاش کنید.";
                     alert(`خطا: ${error.message}`);
+                } finally {
+                    analysisLoader.classList.add('hidden');
+                    analysisPlaceholder.classList.remove('hidden');
                 }
             };
             reader.readAsDataURL(file);
         });
 
+        // --- Analyzer Logic (Text Analysis with Structured Response) ---
         analyzeButton.addEventListener('click', async () => {
             const clauseText = clauseInput.value.trim();
             if (!clauseText) {
@@ -261,12 +253,30 @@
             analysisResultContainer.classList.add('hidden');
             analysisLoader.classList.remove('hidden');
 
-            const prompt = `شما یک وکیل متخصص تحلیل قرارداد در ایران هستید. متن زیر یک بند از یک قرارداد است. لطفاً آن را به صورت جامع تحلیل کن. تحلیل شما باید شامل این بخش‌ها باشد: 1. **سطح ریسک** (کم، متوسط، بالا) با توضیح کوتاه. 2. **نکات کلیدی** (تعهدات اصلی، حقوق و تکالیف طرفین). 3. **ابهامات و نقاط ضعف** (عبارات کلی، موارد نامشخص). 4. **پیشنهاد اصلاحی** (ارائه یک متن جایگزین و بهبودیافته برای کاهش ریسک و افزایش شفافیت). متن بند: "${clauseText}"`;
+            const prompt = `شما یک وکیل متخصص تحلیل قرارداد در ایران هستید. متن زیر یک بند از یک قرارداد است. لطفاً آن را تحلیل کرده و نتیجه را در قالب یک ساختار JSON ارائه بده. متن بند: "${clauseText}"`;
+            
+            const analysisSchema = {
+                type: "OBJECT",
+                properties: {
+                    "riskLevel": { "type": "STRING", "enum": ["کم", "متوسط", "بالا"], "description": "سطح کلی ریسک بند" },
+                    "riskColor": { "type": "STRING", "enum": ["سبز", "زرد", "قرمز"], "description": "رنگ متناظر با سطح ریسک" },
+                    "analysisText": { "type": "STRING", "description": "تحلیل کامل متنی شامل توضیح ساده، نکات کلیدی، ابهامات و پیشنهاد اصلاحی با فرمت Markdown" }
+                },
+                required: ["riskLevel", "riskColor", "analysisText"]
+            };
+
+            const payload = {
+                contents: [{ role: "user", parts: [{ text: prompt }] }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: analysisSchema
+                }
+            };
 
             try {
-                const resultText = await callGemini(prompt);
-                analysisResultContainer.innerHTML = resultText.replace(/\*\*(.*?)\*\*/g, '<h3>$1</h3>').replace(/\n/g, '<br>');
-                analysisResultContainer.classList.remove('hidden');
+                const resultJsonString = await callGemini(payload);
+                const resultObj = JSON.parse(resultJsonString);
+                displayAnalysis(resultObj);
             } catch (error) {
                 analysisResultContainer.innerHTML = `<p class="text-red-500">خطا در تحلیل: ${error.message}</p>`;
                 analysisResultContainer.classList.remove('hidden');
@@ -274,6 +284,24 @@
                 analysisLoader.classList.add('hidden');
             }
         });
+
+        function displayAnalysis(analysis) {
+            const riskColorMap = { "سبز": "green", "زرد": "yellow", "قرمز": "red" };
+            const riskColor = riskColorMap[analysis.riskColor] || "gray";
+
+            analysisResultContainer.innerHTML = `
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="font-bold mb-2">سطح ریسک:</h3>
+                        <div class="inline-flex items-center px-4 py-1 rounded-full text-base font-bold bg-${riskColor}-100 text-${riskColor}-800">ریسک ${analysis.riskLevel}</div>
+                    </div>
+                    <div>
+                        ${analysis.analysisText.replace(/\*\*(.*?)\*\*/g, '<h3 class="font-bold mt-4 mb-2">$1</h3>').replace(/\*/g, '').replace(/\n/g, '<br>')}
+                    </div>
+                </div>
+            `;
+            analysisResultContainer.classList.remove('hidden');
+        }
 
         // --- Generator Logic ---
         generateButton.addEventListener('click', async () => {
@@ -287,15 +315,17 @@
             generatorResultContainer.classList.add('hidden');
             generatorLoader.classList.remove('hidden');
             
-            const prompt = `شما یک دستیار حقوقی هستید که متن گفتگوهای غیررسمی را به پیش‌نویس قرارداد تبدیل می‌کنید. متن زیر توافقات اولیه بین دو نفر است. لطفاً بر اساس آن، یک پیش‌نویس اولیه قرارداد شامل طرفین، موضوع، مبلغ، مدت و تعهدات اصلی به زبان فارسی تهیه کن. متن گفتگو: "${conversationText}"`;
+            const prompt = `شما یک دستیار حقوقی هستید که متن گفتگوهای غیررسمی را به پیش‌نویس قرارداد تبدیل می‌کنید. متن زیر توافقات اولیه بین دو نفر است. لطفاً بر اساس آن، یک پیش‌نویس اولیه قرارداد شامل طرفین، موضوع، مبلغ، مدت و تعهدات اصلی به زبان فارسی و با ساختار استاندارد حقوقی تهیه کن. متن گفتگو: "${conversationText}"`;
+            const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
 
             try {
-                const resultText = await callGemini(prompt);
+                const resultText = await callGemini(payload);
                 generatedContractTextarea.value = resultText;
                 generatorResultContainer.classList.remove('hidden');
             } catch (error) {
-                 generatorResultContainer.innerHTML = `<p class="text-red-500">خطا در تولید قرارداد: ${error.message}</p>`;
-                 generatorResultContainer.classList.remove('hidden');
+                 const errorDiv = document.createElement('div');
+                 errorDiv.innerHTML = `<p class="text-red-500">خطا در تولید قرارداد: ${error.message}</p>`;
+                 generatorResultContainer.parentElement.insertBefore(errorDiv, generatorResultContainer);
             } finally {
                 generatorLoader.classList.add('hidden');
             }
