@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>قراربان - دستیار هوشمند قرارداد شما</title>
+    <title>قراربان - نسخه دمو</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -153,8 +153,12 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // *** This URL points to your secure Cloudflare Worker proxy ***
-        const WORKER_URL = "https://ghararban-api-proxy.ojamloo.workers.dev";
+        // --- IMPORTANT: This is the DEMO version. ---
+        // The API key is exposed on the client-side. This is NOT secure for a production
+        // application but is acceptable for a controlled demo.
+        // A VPN is required for this to work in regions where Google APIs are blocked.
+        const API_KEY = "AIzaSyDBtjBUQyiujP6CUEXzdwp9h5aHy3L3iKk"; // Your active Google AI API Key
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
 
         // --- DOM Elements ---
         const tabButtons = document.querySelectorAll('.tab-button');
@@ -188,26 +192,26 @@
             container.classList.remove('hidden');
         }
 
-        // --- API Call Function (Now points to our Worker) ---
-        async function callApiProxy(payload) {
+        // --- Direct API Call Function ---
+        async function callGeminiApi(payload) {
             try {
-                const response = await fetch(WORKER_URL, {
+                const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`خطای سرور: ${errorText}`);
+                    const errorData = await response.json();
+                    throw new Error(`خطای API: ${errorData?.error?.message || response.statusText}`);
                 }
                 const result = await response.json();
                 if (result.candidates && result.candidates[0]?.content?.parts[0]) {
                     return result.candidates[0].content.parts[0].text;
                 } else {
-                    throw new Error("پاسخ معتبری از سرویس دریافت نشد.");
+                     throw new Error("پاسخ معتبری از سرویس دریافت نشد. ممکن است محتوا توسط فیلترهای ایمنی مسدود شده باشد.");
                 }
             } catch (error) {
-                console.error("Error calling API proxy:", error);
+                console.error("Error calling Gemini API:", error);
                 throw error;
             }
         }
@@ -241,7 +245,7 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
                         
-                        const dataUrl = canvas.toDataURL(file.type, 0.9); // 0.9 is quality for JPEG
+                        const dataUrl = canvas.toDataURL(file.type, 0.9);
                         const base64String = dataUrl.replace(/^data:image\/(png|jpeg|jpg);base64,/, "");
                         resolve(base64String);
                     };
@@ -251,7 +255,7 @@
             });
         }
 
-        // --- Analyzer Logic (OCR with Gemini via Worker) ---
+        // --- Analyzer Logic (OCR with Gemini) ---
         imageUploadInput.addEventListener('change', async (event) => {
             const file = event.target.files[0];
             if (!file) return;
@@ -270,7 +274,7 @@
                     contents: [{ role: "user", parts: [{ text: prompt }, { inlineData: { mimeType: file.type, data: base64String } }] }]
                 };
                 
-                const extractedText = await callApiProxy(payload);
+                const extractedText = await callGeminiApi(payload);
                 clauseInput.value = extractedText;
                 clauseInput.placeholder = "متن استخراج شد. حالا می‌توانید تحلیل کنید.";
 
@@ -283,7 +287,7 @@
             }
         });
 
-        // --- Analyzer Logic (Text Analysis via Worker) ---
+        // --- Analyzer Logic (Text Analysis) ---
         analyzeButton.addEventListener('click', async () => {
             const clauseText = clauseInput.value.trim();
             if (!clauseText) { alert('لطفاً متنی را برای تحلیل وارد کنید.'); return; }
@@ -297,7 +301,7 @@
             const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", responseSchema: analysisSchema } };
 
             try {
-                const resultJsonString = await callApiProxy(payload);
+                const resultJsonString = await callGeminiApi(payload);
                 const resultObj = JSON.parse(resultJsonString);
                 displayAnalysis(resultObj);
             } catch (apiError) {
@@ -314,7 +318,7 @@
             analysisResultContainer.classList.remove('hidden');
         }
 
-        // --- Generator Logic via Worker ---
+        // --- Generator Logic ---
         generateButton.addEventListener('click', async () => {
             const conversationText = conversationInput.value.trim();
             if (!conversationText) { alert('لطفاً متن توافقات را وارد کنید.'); return; }
@@ -327,7 +331,7 @@
             const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
 
             try {
-                const resultText = await callApiProxy(payload);
+                const resultText = await callGeminiApi(payload);
                 generatedContractTextarea.value = resultText;
                 generatorResultContainer.classList.remove('hidden');
             } catch (error) {
