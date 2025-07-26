@@ -153,12 +153,8 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- IMPORTANT SECURITY WARNING ---
-        // The API key is exposed on the client-side. This is NOT secure for a production
-        // application. For real-world use, this key should be stored on a backend server
-        // and all API calls should be proxied through that server.
-        const API_KEY = "AIzaSyDBtjBUQyiujP6CUEXzdwp9h5aHy3L3iKk";
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+        // *** This URL points to your secure Cloudflare Worker proxy ***
+        const WORKER_URL = "https://ghararban-api-proxy.ojamloo.workers.dev";
 
         // --- DOM Elements ---
         const tabButtons = document.querySelectorAll('.tab-button');
@@ -187,42 +183,36 @@
         });
         
         // --- Helper Function to Display Errors ---
-        function displayError(container, message, rawResponse = null) {
-            let errorHTML = `<p class="text-red-500 font-semibold">${message}</p>`;
-            if (rawResponse) {
-                // Display raw response for debugging purposes
-                errorHTML += `<pre class="mt-2 p-2 bg-gray-100 rounded text-xs text-gray-600 whitespace-pre-wrap">پاسخ دریافتی از سرور:\n${rawResponse}</pre>`;
-            }
-            container.innerHTML = errorHTML;
+        function displayError(container, message) {
+            container.innerHTML = `<p class="text-red-500 font-semibold">${message}</p>`;
             container.classList.remove('hidden');
         }
 
-        // --- Gemini API Call Function ---
-        async function callGemini(payload) {
+        // --- API Call Function (Now points to our Worker) ---
+        async function callApiProxy(payload) {
             try {
-                const response = await fetch(API_URL, {
+                const response = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`خطای API: ${errorData?.error?.message || response.statusText}`);
+                    const errorText = await response.text();
+                    throw new Error(`خطای سرور: ${errorText}`);
                 }
                 const result = await response.json();
                 if (result.candidates && result.candidates[0]?.content?.parts[0]) {
                     return result.candidates[0].content.parts[0].text;
                 } else {
-                    // This case handles safety blocks or empty responses
-                    throw new Error("پاسخ معتبری از سرویس دریافت نشد. ممکن است محتوا توسط فیلترهای ایمنی مسدود شده باشد.");
+                    throw new Error("پاسخ معتبری از سرویس دریافت نشد.");
                 }
             } catch (error) {
-                console.error("Error calling Gemini API:", error);
+                console.error("Error calling API proxy:", error);
                 throw error;
             }
         }
 
-        // --- Analyzer Logic (OCR with Gemini) ---
+        // --- Analyzer Logic (OCR with Gemini via Worker) ---
         imageUploadInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (!file) return;
@@ -243,7 +233,7 @@
                 };
 
                 try {
-                    const extractedText = await callGemini(payload);
+                    const extractedText = await callApiProxy(payload);
                     clauseInput.value = extractedText;
                     clauseInput.placeholder = "متن استخراج شد. حالا می‌توانید تحلیل کنید.";
                 } catch (error) {
@@ -257,48 +247,23 @@
             reader.readAsDataURL(file);
         });
 
-        // --- Analyzer Logic (Text Analysis with Structured Response) ---
+        // --- Analyzer Logic (Text Analysis via Worker) ---
         analyzeButton.addEventListener('click', async () => {
             const clauseText = clauseInput.value.trim();
-            if (!clauseText) {
-                alert('لطفاً متنی را برای تحلیل وارد کنید.');
-                return;
-            }
+            if (!clauseText) { alert('لطفاً متنی را برای تحلیل وارد کنید.'); return; }
             
             analysisPlaceholder.classList.add('hidden');
             analysisResultContainer.classList.add('hidden');
             analysisLoader.classList.remove('hidden');
 
             const prompt = `شما یک وکیل متخصص تحلیل قرارداد در ایران هستید. متن زیر یک بند از یک قرارداد است. لطفاً آن را تحلیل کرده و نتیجه را در قالب یک ساختار JSON ارائه بده. متن بند: "${clauseText}"`;
-            
-            const analysisSchema = {
-                type: "OBJECT",
-                properties: {
-                    "riskLevel": { "type": "STRING", "enum": ["کم", "متوسط", "بالا"], "description": "سطح کلی ریسک بند" },
-                    "riskColor": { "type": "STRING", "enum": ["سبز", "زرد", "قرمز"], "description": "رنگ متناظر با سطح ریسک" },
-                    "analysisText": { "type": "STRING", "description": "تحلیل کامل متنی شامل توضیح ساده، نکات کلیدی، ابهامات و پیشنهاد اصلاحی با فرمت Markdown" }
-                },
-                required: ["riskLevel", "riskColor", "analysisText"]
-            };
-
-            const payload = {
-                contents: [{ role: "user", parts: [{ text: prompt }] }],
-                generationConfig: {
-                    responseMimeType: "application/json",
-                    responseSchema: analysisSchema
-                }
-            };
+            const analysisSchema = { type: "OBJECT", properties: { "riskLevel": { "type": "STRING", "enum": ["کم", "متوسط", "بالا"] }, "riskColor": { "type": "STRING", "enum": ["سبز", "زرد", "قرمز"] }, "analysisText": { "type": "STRING" } }, required: ["riskLevel", "riskColor", "analysisText"] };
+            const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", responseSchema: analysisSchema } };
 
             try {
-                const resultJsonString = await callGemini(payload);
-                // Safer JSON parsing
-                try {
-                    const resultObj = JSON.parse(resultJsonString);
-                    displayAnalysis(resultObj);
-                } catch (parseError) {
-                    console.error("JSON Parsing Error:", parseError);
-                    displayError(analysisResultContainer, "پاسخ هوش مصنوعی در قالب مورد انتظار (JSON) نبود.", resultJsonString);
-                }
+                const resultJsonString = await callApiProxy(payload);
+                const resultObj = JSON.parse(resultJsonString);
+                displayAnalysis(resultObj);
             } catch (apiError) {
                 displayError(analysisResultContainer, `خطا در تحلیل: ${apiError.message}`);
             } finally {
@@ -309,28 +274,14 @@
         function displayAnalysis(analysis) {
             const riskColorMap = { "سبز": "green", "زرد": "yellow", "قرمز": "red" };
             const riskColor = riskColorMap[analysis.riskColor] || "gray";
-
-            analysisResultContainer.innerHTML = `
-                <div class="space-y-6">
-                    <div>
-                        <h3 class="font-bold mb-2">سطح ریسک:</h3>
-                        <div class="inline-flex items-center px-4 py-1 rounded-full text-base font-bold bg-${riskColor}-100 text-${riskColor}-800">ریسک ${analysis.riskLevel}</div>
-                    </div>
-                    <div>
-                        ${analysis.analysisText.replace(/\*\*(.*?)\*\*/g, '<h3 class="font-bold mt-4 mb-2">$1</h3>').replace(/\*/g, '').replace(/\n/g, '<br>')}
-                    </div>
-                </div>
-            `;
+            analysisResultContainer.innerHTML = `<div class="space-y-6"><div><h3 class="font-bold mb-2">سطح ریسک:</h3><div class="inline-flex items-center px-4 py-1 rounded-full text-base font-bold bg-${riskColor}-100 text-${riskColor}-800">ریسک ${analysis.riskLevel}</div></div><div>${analysis.analysisText.replace(/\*\*(.*?)\*\*/g, '<h3 class="font-bold mt-4 mb-2">$1</h3>').replace(/\*/g, '').replace(/\n/g, '<br>')}</div></div>`;
             analysisResultContainer.classList.remove('hidden');
         }
 
-        // --- Generator Logic ---
+        // --- Generator Logic via Worker ---
         generateButton.addEventListener('click', async () => {
             const conversationText = conversationInput.value.trim();
-            if (!conversationText) {
-                alert('لطفاً متن توافقات را وارد کنید.');
-                return;
-            }
+            if (!conversationText) { alert('لطفاً متن توافقات را وارد کنید.'); return; }
 
             generatorPlaceholder.classList.add('hidden');
             generatorResultContainer.classList.add('hidden');
@@ -340,7 +291,7 @@
             const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
 
             try {
-                const resultText = await callGemini(payload);
+                const resultText = await callApiProxy(payload);
                 generatedContractTextarea.value = resultText;
                 generatorResultContainer.classList.remove('hidden');
             } catch (error) {
