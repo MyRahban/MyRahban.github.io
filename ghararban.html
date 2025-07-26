@@ -186,6 +186,17 @@
             });
         });
         
+        // --- Helper Function to Display Errors ---
+        function displayError(container, message, rawResponse = null) {
+            let errorHTML = `<p class="text-red-500 font-semibold">${message}</p>`;
+            if (rawResponse) {
+                // Display raw response for debugging purposes
+                errorHTML += `<pre class="mt-2 p-2 bg-gray-100 rounded text-xs text-gray-600 whitespace-pre-wrap">پاسخ دریافتی از سرور:\n${rawResponse}</pre>`;
+            }
+            container.innerHTML = errorHTML;
+            container.classList.remove('hidden');
+        }
+
         // --- Gemini API Call Function ---
         async function callGemini(payload) {
             try {
@@ -202,7 +213,8 @@
                 if (result.candidates && result.candidates[0]?.content?.parts[0]) {
                     return result.candidates[0].content.parts[0].text;
                 } else {
-                    throw new Error("پاسخ معتبری از سرویس دریافت نشد.");
+                    // This case handles safety blocks or empty responses
+                    throw new Error("پاسخ معتبری از سرویس دریافت نشد. ممکن است محتوا توسط فیلترهای ایمنی مسدود شده باشد.");
                 }
             } catch (error) {
                 console.error("Error calling Gemini API:", error);
@@ -227,7 +239,7 @@
                 analysisResultContainer.classList.add('hidden');
 
                 const payload = {
-                    contents: [{ role: "user", parts: [{ text: prompt }, { inlineData: { mimeType: "image/jpeg", data: base64String } }] }]
+                    contents: [{ role: "user", parts: [{ text: prompt }, { inlineData: { mimeType: file.type, data: base64String } }] }]
                 };
 
                 try {
@@ -279,11 +291,16 @@
 
             try {
                 const resultJsonString = await callGemini(payload);
-                const resultObj = JSON.parse(resultJsonString);
-                displayAnalysis(resultObj);
-            } catch (error) {
-                analysisResultContainer.innerHTML = `<p class="text-red-500">خطا در تحلیل: ${error.message}</p>`;
-                analysisResultContainer.classList.remove('hidden');
+                // Safer JSON parsing
+                try {
+                    const resultObj = JSON.parse(resultJsonString);
+                    displayAnalysis(resultObj);
+                } catch (parseError) {
+                    console.error("JSON Parsing Error:", parseError);
+                    displayError(analysisResultContainer, "پاسخ هوش مصنوعی در قالب مورد انتظار (JSON) نبود.", resultJsonString);
+                }
+            } catch (apiError) {
+                displayError(analysisResultContainer, `خطا در تحلیل: ${apiError.message}`);
             } finally {
                 analysisLoader.classList.add('hidden');
             }
@@ -327,9 +344,7 @@
                 generatedContractTextarea.value = resultText;
                 generatorResultContainer.classList.remove('hidden');
             } catch (error) {
-                 const errorDiv = document.createElement('div');
-                 errorDiv.innerHTML = `<p class="text-red-500">خطا در تولید قرارداد: ${error.message}</p>`;
-                 generatorResultContainer.parentElement.insertBefore(errorDiv, generatorResultContainer);
+                displayError(generatorResultContainer, `خطا در تولید قرارداد: ${error.message}`);
             } finally {
                 generatorLoader.classList.add('hidden');
             }
