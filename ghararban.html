@@ -153,7 +153,11 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const API_KEY = "AIzaSyAk5R5gjFMtpo0KlXnA2mxSGt1rJxhXG_o";
+        // --- IMPORTANT SECURITY WARNING ---
+        // The API key is exposed on the client-side. This is NOT secure for a production
+        // application. For real-world use, this key should be stored on a backend server
+        // and all API calls should be proxied through that server.
+        const API_KEY = "AIzaSyDBtjBUQyiujP6CUEXzdwp9h5aHy3L3iKk";
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
 
         // --- DOM Elements ---
