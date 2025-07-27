@@ -168,9 +168,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         // --- START: CONFIGURATION ---
-        const API_KEY = 'AIzaSyBaeT97pd_SmYuCi_Lxj5JBu-aptpbkMwo'; 
-        const MODEL_NAME = 'gemini-1.5-flash-latest';
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${API_KEY}`;
+        const PROXY_ENDPOINT = 'https://complete-faustine-myrahban-ada7be97.koyeb.app/api/generate'; 
         // --- END: CONFIGURATION ---
 
         // --- DOM Elements ---
@@ -229,34 +227,30 @@
             container.classList.remove('hidden');
         }
 
-        // --- API Call Function (Direct to Google AI) ---
-        async function callGoogleAI(payload) {
-            if (API_KEY === 'YOUR_GOOGLE_AI_API_KEY') {
-                throw new Error("کلید API گوگل در کد تنظیم نشده است. لطفاً فایل را ویرایش کرده و کلید خود را وارد کنید.");
+        // --- API Call Function (via Koyeb Proxy) ---
+        async function callProxy(payload) {
+             if (PROXY_ENDPOINT.includes('YOUR_KOYEB_APP_URL')) {
+                throw new Error("آدرس پراکسی Koyeb در کد تنظیم نشده است.");
             }
             try {
-                const response = await fetch(API_URL, {
+                const response = await fetch(PROXY_ENDPOINT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    console.error('API Error Response:', errorData);
-                    throw new Error(`خطای API: ${errorData.error.message}`);
-                }
                 const result = await response.json();
+                if (!response.ok) {
+                    throw new Error(result.error || 'An unknown error occurred on the proxy server.');
+                }
                 if (result.candidates && result.candidates[0]?.content?.parts[0]) {
                     return result.candidates[0].content.parts[0].text;
                 } else {
-                    console.log("Invalid response structure:", result);
-                    throw new Error("پاسخ معتبری از سرویس دریافت نشد. ممکن است محتوا توسط فیلترهای ایمنی مسدود شده باشد.");
+                    console.log("Invalid response structure from proxy:", result);
+                    const errorMessage = result.error ? result.error.message : "پاسخ معتبری از سرویس دریافت نشد.";
+                    throw new Error(errorMessage);
                 }
             } catch (error) {
-                console.error("Error calling Google AI API:", error);
-                if (error.message.includes('Failed to fetch')) {
-                    throw new Error("خطا در برقراری ارتباط با سرور گوگل. از اتصال اینترنت و صحیح بودن کلید API مطمئن شوید.");
-                }
+                console.error("Error calling proxy:", error);
                 throw error;
             }
         }
@@ -278,7 +272,7 @@
             const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", responseSchema: analysisSchema } };
 
             try {
-                const resultJsonString = await callGoogleAI(payload);
+                const resultJsonString = await callProxy(payload);
                 const resultObj = JSON.parse(resultJsonString);
                 displayAnalysis(resultObj);
             } catch (apiError) {
@@ -317,7 +311,7 @@
             const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
 
             try {
-                const resultText = await callGoogleAI(payload);
+                const resultText = await callProxy(payload);
                 generatedContractTextarea.value = resultText;
                 generatorResultContainer.classList.remove('hidden');
             } catch (error) {
