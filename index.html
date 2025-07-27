@@ -98,6 +98,8 @@
                 <a href="#services" class="text-gray-600 hover:text-[#151450] font-semibold" data-key="nav_services">خدمات</a>
                 <a href="ghararban.html" class="text-gray-600 hover:text-[#151450] font-semibold" data-key="nav_qararban">قراربان</a>
                 <a href="#calculator" class="text-gray-600 hover:text-[#151450] font-semibold" data-key="nav_calculator">ماشین حساب گمرکی</a>
+                <a href="#why-outsource" class="text-gray-600 hover:text-[#151450] font-semibold" data-key="nav_why">چرا برون‌سپاری؟</a>
+                <a href="#process" class="text-gray-600 hover:text-[#151450] font-semibold" data-key="nav_process">فرآیند کار</a>
                 <a href="#contact" class="text-gray-600 hover:text-[#151450] font-semibold" data-key="nav_contact">تماس با ما</a>
                 <button data-action="open-ai-chat" class="bg-primary-color hover-bg-primary-color text-white font-bold py-2 px-5 rounded-lg transition-colors">✨ دستیار هوشمند</button>
             </div>
@@ -109,8 +111,11 @@
              <a href="#services" class="block py-2 text-gray-600 font-semibold" data-key="nav_services_mob">خدمات</a>
              <a href="ghararban.html" class="block py-2 text-gray-600 font-semibold" data-key="nav_qararban_mob">قراربان</a>
              <a href="#calculator" class="block py-2 text-gray-600 font-semibold" data-key="nav_calculator_mob">ماشین حساب گمرکی</a>
+             <a href="#why-outsource" class="block py-2 text-gray-600 font-semibold" data-key="nav_why_mob">چرا برون‌سپاری؟</a>
+             <a href="#process" class="block py-2 text-gray-600 font-semibold" data-key="nav_process_mob">فرآیند کار</a>
              <a href="#contact" class="block py-2 text-gray-600 font-semibold" data-key="nav_contact_mob">تماس با ما</a>
-             <button data-action="open-ai-chat" class="w-full block py-2 font-semibold bg-primary-color text-white text-center mt-2 rounded-lg hover-bg-primary-color transition-colors" data-key="btn_ai_consult_mob">✨ دستیار هوشمند رهبان</button>
+             <button data-action="open-consult-modal" class="w-full block py-2 font-semibold bg-accent-color text-white text-center mt-2 rounded-lg hover-bg-accent-color transition-colors" data-key="btn_consult_mob">درخواست مشاوره</button>
+             <button data-action="open-ai-chat" class="w-full block py-2 font-semibold bg-gray-600 text-white text-center mt-2 rounded-lg" data-key="btn_ai_consult_mob">✨ مشاور هوشمند</button>
         </div>
     </header>
 
@@ -517,7 +522,6 @@
             const langSwitcherMenu = document.getElementById('lang-switcher-menu');
             const currentLangFlag = document.getElementById('current-lang-flag');
             
-            // This part is simplified from your original code to avoid errors if elements don't exist
             if (langSwitcherBtn && langSwitcherMenu && currentLangFlag) {
                 langSwitcherBtn.addEventListener('click', () => {
                     langSwitcherMenu.classList.toggle('hidden');
