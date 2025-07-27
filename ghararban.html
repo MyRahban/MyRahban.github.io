@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>قراربان - نسخه دمو</title>
+    <title>قراربان - دستیار هوشمند قرارداد شما</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -153,12 +153,8 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- IMPORTANT: This is the DEMO version. ---
-        // The API key is exposed on the client-side. This is NOT secure for a production
-        // application but is acceptable for a controlled demo.
-        // A VPN is required for this to work in regions where Google APIs are blocked.
-        const API_KEY = "AIzaSyDBtjBUQyiujP6CUEXzdwp9h5aHy3L3iKk"; // Your active Google AI API Key
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+        // *** This URL points to your secure Cloudflare Worker proxy ***
+        const WORKER_URL = "https://ghararban-proxy.o-ajamloo.workers.dev";
 
         // --- DOM Elements ---
         const tabButtons = document.querySelectorAll('.tab-button');
@@ -192,26 +188,29 @@
             container.classList.remove('hidden');
         }
 
-        // --- Direct API Call Function ---
-        async function callGeminiApi(payload) {
+        // --- API Call Function (Now points to our Worker) ---
+        async function callApiProxy(payload) {
             try {
-                const response = await fetch(API_URL, {
+                const response = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`خطای API: ${errorData?.error?.message || response.statusText}`);
+                    const errorText = await response.text();
+                    throw new Error(`خطای سرور: ${errorText}`);
                 }
                 const result = await response.json();
                 if (result.candidates && result.candidates[0]?.content?.parts[0]) {
                     return result.candidates[0].content.parts[0].text;
                 } else {
-                     throw new Error("پاسخ معتبری از سرویس دریافت نشد. ممکن است محتوا توسط فیلترهای ایمنی مسدود شده باشد.");
+                    throw new Error("پاسخ معتبری از سرویس دریافت نشد. ممکن است محتوا توسط فیلترهای ایمنی مسدود شده باشد.");
                 }
             } catch (error) {
-                console.error("Error calling Gemini API:", error);
+                console.error("Error calling API proxy:", error);
+                if (error.message.includes('Failed to fetch')) {
+                    throw new Error("خطا در برقراری ارتباط با سرور. لطفاً از اتصال اینترنت خود مطمئن شوید و دوباره تلاش کنید. این مشکل ممکن است به دلیل محدودیت‌های شبکه (CORS) باشد.");
+                }
                 throw error;
             }
         }
@@ -245,7 +244,7 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
                         
-                        const dataUrl = canvas.toDataURL(file.type, 0.9);
+                        const dataUrl = canvas.toDataURL(file.type, 0.9); // 0.9 is quality for JPEG
                         const base64String = dataUrl.replace(/^data:image\/(png|jpeg|jpg);base64,/, "");
                         resolve(base64String);
                     };
@@ -255,7 +254,7 @@
             });
         }
 
-        // --- Analyzer Logic (OCR with Gemini) ---
+        // --- Analyzer Logic (OCR with Gemini via Worker) ---
         imageUploadInput.addEventListener('change', async (event) => {
             const file = event.target.files[0];
             if (!file) return;
@@ -274,7 +273,7 @@
                     contents: [{ role: "user", parts: [{ text: prompt }, { inlineData: { mimeType: file.type, data: base64String } }] }]
                 };
                 
-                const extractedText = await callGeminiApi(payload);
+                const extractedText = await callApiProxy(payload);
                 clauseInput.value = extractedText;
                 clauseInput.placeholder = "متن استخراج شد. حالا می‌توانید تحلیل کنید.";
 
@@ -287,7 +286,7 @@
             }
         });
 
-        // --- Analyzer Logic (Text Analysis) ---
+        // --- Analyzer Logic (Text Analysis via Worker) ---
         analyzeButton.addEventListener('click', async () => {
             const clauseText = clauseInput.value.trim();
             if (!clauseText) { alert('لطفاً متنی را برای تحلیل وارد کنید.'); return; }
@@ -301,7 +300,7 @@
             const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", responseSchema: analysisSchema } };
 
             try {
-                const resultJsonString = await callGeminiApi(payload);
+                const resultJsonString = await callApiProxy(payload);
                 const resultObj = JSON.parse(resultJsonString);
                 displayAnalysis(resultObj);
             } catch (apiError) {
@@ -318,7 +317,7 @@
             analysisResultContainer.classList.remove('hidden');
         }
 
-        // --- Generator Logic ---
+        // --- Generator Logic via Worker ---
         generateButton.addEventListener('click', async () => {
             const conversationText = conversationInput.value.trim();
             if (!conversationText) { alert('لطفاً متن توافقات را وارد کنید.'); return; }
@@ -331,7 +330,7 @@
             const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
 
             try {
-                const resultText = await callGeminiApi(payload);
+                const resultText = await callApiProxy(payload);
                 generatedContractTextarea.value = resultText;
                 generatorResultContainer.classList.remove('hidden');
             } catch (error) {
