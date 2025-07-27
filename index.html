@@ -4,15 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>رهبان - انتخاب مطمئن برای تصمیم های مهم</title>
-    <!-- Chosen Palette: Rahban Professional (Primary: #151450, Accent: #F06F11) -->
-    <!-- Application Structure Plan: A complete overhaul based on the user's formal proposal. The structure now follows the proposal's logic: Introduction ('Why Rahban?'), detailed service breakdown, benefits of outsourcing, and the risk analysis process. The Vindad-inspired layout is kept for its professionalism, but the content is now 100% sourced from the proposal. -->
-    <!-- Visualization & Content Choices: 
-        - Services: Goal: Inform/Engage. Viz: Re-structured interactive cards to match the proposal's categories (Legal, Commercial, HR, Tax).
-        - AI Assistants: Goal: Demonstrate Expertise. Viz: Modals are retained. Interaction: Prompts are now hyper-specific, using keywords from the proposal like "Salafchegan Special Economic Zone," "labor law," and "customs clearance" to provide more relevant AI-generated responses.
-        - Outsourcing Benefits: Goal: Persuade/Build Trust. Viz: A new section with icon-based lists detailing cost reduction and risk mitigation, directly mirroring the persuasive arguments in the proposal.
-        - Risk Analysis Process: Goal: Organize/Clarify. Viz: A new 5-step visual flowchart (HTML/CSS) that digitizes the process diagram from the proposal, now enhanced with an AI Risk Analysis feature.
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -399,19 +390,34 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- START: CONFIGURATION ---
+            // This is the secure proxy server we built together.
+            const PROXY_ENDPOINT = 'https://complete-faustine-myrahban-ada7be97.koyeb.app/api/generate';
+            // --- END: CONFIGURATION ---
+            
             const translations = {
                 fa: {
                     brand_name: "رهبان",
                     nav_services: "خدمات",
+                    nav_qararban: "قراربان",
                     nav_calculator: "ماشین حساب گمرکی",
                     nav_why: "چرا برون‌سپاری؟",
                     nav_process: "فرآیند کار",
                     nav_contact: "تماس با ما",
+                    nav_services_mob: "خدمات",
+                    nav_qararban_mob: "قراربان",
+                    nav_calculator_mob: "ماشین حساب گمرکی",
+                    nav_why_mob: "چرا برون‌سپاری؟",
+                    nav_process_mob: "فرآیند کار",
+                    nav_contact_mob: "تماس با ما",
                     btn_consult_mob: "درخواست مشاوره",
                     btn_ai_consult_mob: "✨ مشاور هوشمند",
                     hero_title: "انتخاب مطمئن برای تصمیم‌های مهم",
                     hero_subtitle: "گروه کارشناسان رهبان با تخصص ویژه در امور حقوقی، بازرگانی، اداری و منابع انسانی، همراهی مطمئن برای پیشبرد اهداف و کاهش ریسک‌های واحدهای صنعتی و تولیدی است.",
                     hero_cta: "آشنایی با خدمات",
+                    qararban_title: "معرفی قراربان: دستیار هوشمند قرارداد شما",
+                    qararban_subtitle: "با استفاده از جدیدترین محصول ما، قراردادهای خود را با قدرت هوش مصنوعی تحلیل، تولید و مدیریت کنید. قراربان، محصولی نوآورانه از گروه کارشناسان رهبان.",
+                    qararban_cta: "ورود به پلتفرم قراربان",
                     services_title: "خلاصه خدمات رهبان",
                     services_subtitle: "با ارائه بهترین راه حل و تدابیر، یاری‌گر شما هستیم.",
                     service_legal_title: "امور حقوقی",
@@ -463,6 +469,8 @@
                     why_2_desc: "شما درگیر چالش‌های استخدامی و روابط کارگری نخواهید بود، زیرا هیچ رابطه استخدامی مستقیمی بین شما و کارشناسان ما وجود ندارد.",
                     why_3_title: "۳. شناسایی خطاهای سیستماتیک",
                     why_3_desc: "به عنوان یک ناظر بیرونی، ما الگوهای تکراری، اشکالات سیستمی و شکاف‌های قانونی در فرآیندهای شما را شناسایی می‌کنیم که اغلب از دید نیروهای داخلی پنهان می‌ماند.",
+                    why_4_title: "۴. دسترسی به داده‌های مقایسه‌ای صنعت",
+                    why_4_desc: "ما به شما نشان می‌دهیم که شرکت‌های هم‌صنعت شما چگونه با چالش‌های مشابه حقوقی، گمرکی و مالیاتی برخورد کرده‌اند و از چه استانداردهایی پیروی می‌کنند.",
                     process_title: "فرآیند آنالیز ریسک کسب‌وکار شما",
                     process_subtitle: "یک مسیر شفاف ۵ مرحله‌ای برای شناسایی و رفع چالش‌های پیش روی شما.",
                     process_step_1: "۱", process_step_2: "۲", process_step_3: "۳", process_step_4: "۴", process_step_5: "۵",
@@ -490,15 +498,25 @@
                 en: {
                     brand_name: "Rahban",
                     nav_services: "Services",
+                    nav_qararban: "Qararban",
                     nav_calculator: "Customs Calculator",
                     nav_why: "Why Outsource?",
                     nav_process: "Process",
                     nav_contact: "Contact Us",
+                    nav_services_mob: "Services",
+                    nav_qararban_mob: "Qararban",
+                    nav_calculator_mob: "Customs Calculator",
+                    nav_why_mob: "Why Outsource?",
+                    nav_process_mob: "Process",
+                    nav_contact_mob: "Contact Us",
                     btn_consult_mob: "Request Consultation",
                     btn_ai_consult_mob: "✨ AI Assistant",
                     hero_title: "The Reliable Choice for Important Decisions",
                     hero_subtitle: "Rahban experts provide specialized legal, commercial, administrative, and HR support, serving as a trusted partner for industrial and manufacturing units to achieve their goals and mitigate risks.",
                     hero_cta: "Explore Services",
+                    qararban_title: "Introducing Qararban: Your Smart Contract Assistant",
+                    qararban_subtitle: "Analyze, generate, and manage your contracts with the power of AI using our latest product. Qararban, an innovative product from the Rahban Group of Experts.",
+                    qararban_cta: "Enter Qararban Platform",
                     services_title: "Summary of Rahban Services",
                     services_subtitle: "We are here to assist you by providing the best solutions and measures.",
                     service_legal_title: "Legal Affairs",
@@ -579,15 +597,25 @@
                 zh: {
                     brand_name: "拉赫班 (Rahban)",
                     nav_services: "服务",
+                    nav_qararban: "合同助手",
                     nav_calculator: "海关计算器",
                     nav_why: "为何外包？",
                     nav_process: "流程",
                     nav_contact: "联系我们",
+                    nav_services_mob: "服务",
+                    nav_qararban_mob: "合同助手",
+                    nav_calculator_mob: "海关计算器",
+                    nav_why_mob: "为何外包？",
+                    nav_process_mob: "流程",
+                    nav_contact_mob: "联系我们",
                     btn_consult_mob: "请求咨询",
                     btn_ai_consult_mob: "✨ 人工智能助手",
                     hero_title: "重要决策的可靠选择",
                     hero_subtitle: "拉赫班专家团队在法律、商业、行政和人力资源方面提供专业支持，是工业和制造单位实现目标、降低风险的可靠伙伴。",
                     hero_cta: "浏览服务",
+                    qararban_title: "介绍合同助手：您的智能合同助手",
+                    qararban_subtitle: "使用我们最新的产品，借助人工智能的力量分析、生成和管理您的合同。合同助手，拉赫班专家组的创新产品。",
+                    qararban_cta: "进入合同助手平台",
                     services_title: "拉赫班服务摘要",
                     services_subtitle: "我们通过提供最佳解决方案和措施为您提供帮助。",
                     service_legal_title: "法律事务",
@@ -668,15 +696,25 @@
                 tr: {
                     brand_name: "Rahban",
                     nav_services: "Hizmetler",
+                    nav_qararban: "Qararban",
                     nav_calculator: "Gümrük Hesaplayıcı",
                     nav_why: "Neden Dış Kaynak?",
                     nav_process: "Süreç",
                     nav_contact: "İletişim",
+                    nav_services_mob: "Hizmetler",
+                    nav_qararban_mob: "Qararban",
+                    nav_calculator_mob: "Gümrük Hesaplayıcı",
+                    nav_why_mob: "Neden Dış Kaynak?",
+                    nav_process_mob: "Süreç",
+                    nav_contact_mob: "İletişim",
                     btn_consult_mob: "Danışmanlık Talep Et",
                     btn_ai_consult_mob: "✨ Yapay Zeka Asistanı",
                     hero_title: "Önemli Kararlar İçin Güvenilir Seçim",
                     hero_subtitle: "Rahban uzmanları, hukuki, ticari, idari ve insan kaynakları konularında özel destek sağlayarak, sanayi ve üretim birimlerinin hedeflerine ulaşmaları ve risklerini azaltmaları için güvenilir bir ortaktır.",
                     hero_cta: "Hizmetleri Keşfet",
+                    qararban_title: "Qararban'ı Tanıtıyoruz: Akıllı Sözleşme Asistanınız",
+                    qararban_subtitle: "En son ürünümüzü kullanarak yapay zeka gücüyle sözleşmelerinizi analiz edin, oluşturun ve yönetin. Qararban, Rahban Uzmanlar Grubu'ndan yenilikçi bir ürün.",
+                    qararban_cta: "Qararban Platformuna Girin",
                     services_title: "Rahban Hizmetlerinin Özeti",
                     services_subtitle: "En iyi çözümleri ve önlemleri sunarak size yardımcı olmak için buradayız.",
                     service_legal_title: "Hukuki İşler",
@@ -953,7 +991,7 @@
                     const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
                     const payload = { contents: chatHistory };
                     const apiKey = "AIzaSyAk5R5gjFMtpo0KlXnA2mxSGt1rJxhXG_o"; 
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
                     const response = await fetch(apiUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -1088,4 +1126,4 @@
         });
     </script>
 </body>
-</html>
+</ht
