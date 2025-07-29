@@ -230,9 +230,15 @@
                                     <input type="file" id="image-upload" accept="image/*" class="block w-full text-sm text-slate-500"/>
                                     <div id="ocr-status" class="mt-3 text-sm text-gray-500 h-5"></div>
                                 </div>
-                                <div class="text-center my-4 text-gray-400 font-semibold">-- یا --</div>
-                                <label for="contract-clause" class="block text-lg font-semibold text-gray-700 mb-2">متن بند قرارداد را اینجا وارد کنید:</label>
+                                
+                                <label for="contract-clause" class="block text-lg font-semibold text-gray-700 mb-2">متن بند قرارداد:</label>
                                 <textarea id="contract-clause" rows="8" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="متن مورد نظر برای تحلیل را اینجا وارد یا از تصویر بارگذاری کنید..."></textarea>
+                                
+                                <div class="mt-4">
+                                    <label for="extra-notes" class="block text-lg font-semibold text-gray-700 mb-2">توضیحات تکمیلی (اختیاری):</label>
+                                    <textarea id="extra-notes" rows="3" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="مثال: این قرارداد از طرف کارفرما بررسی شود. به بند مربوط به فسخ توجه ویژه شود..."></textarea>
+                                </div>
+
                                 <div class="text-center mt-4"><button type="button" id="analyze-button" class="w-full bg-accent-color text-white font-bold py-3 px-10 rounded-lg hover-bg-accent-color">تحلیل کن</button></div>
                             </div>
                             <div class="border-r pr-8" aria-live="polite">
@@ -325,7 +331,6 @@
                 const ocrStatusDiv = qararbanContainer.querySelector('#ocr-status');
                 const clauseInput = qararbanContainer.querySelector('#contract-clause');
                 
-                // --- OCR STATUS TRANSLATIONS ---
                 const ocrStatusTranslations = {
                     'loading tesseract core': 'در حال بارگذاری هسته تسراکت...',
                     'initializing tesseract': 'در حال آماده‌سازی تسراکت...',
@@ -376,19 +381,37 @@
                 const analysisResult = qararbanContainer.querySelector('#analysis-result');
                 const analysisPlaceholder = qararbanContainer.querySelector('#analysis-placeholder');
                 const analysisLoader = qararbanContainer.querySelector('#analysis-loader');
+                const extraNotesInput = qararbanContainer.querySelector('#extra-notes');
+
                 analyzeButton.addEventListener('click', async () => {
                     if (!clauseInput.value.trim()) { showNotification('لطفاً متنی را برای تحلیل وارد کنید.'); return; }
                     analysisPlaceholder.classList.add('hidden');
                     analysisResult.classList.add('hidden');
                     analysisLoader.classList.remove('hidden');
-                    const prompt = `شما یک وکیل متخصص تحلیل قرارداد در ایران هستید. متن زیر یک بند از یک قرارداد است. لطفاً آن را تحلیل کرده و نتیجه را در قالب یک ساختار JSON ارائه بده. متن بند: "${clauseInput.value}"`;
-                    const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", responseSchema: { type: "OBJECT", properties: { "riskLevel": { "type": "STRING" }, "riskColor": { "type": "STRING" }, "analysisText": { "type": "STRING" } } } } };
+                    
+                    const extraNotes = extraNotesInput.value.trim();
+                    const disclaimer = "\n\n---\n**سلب مسئولیت:** این یک تحلیل اولیه است که توسط هوش مصنوعی تولید شده و برای تصمیم‌گیری نهایی باید با وکیل یا کارشناس حقوقی مشورت شود.";
+                    let prompt = `شما یک وکیل متخصص تحلیل قرارداد در ایران هستید. متن زیر یک بند از یک قرارداد است. لطفاً آن را تحلیل کن. متن بند: "${clauseInput.value}"`;
+                    if (extraNotes) {
+                        prompt += `\n\n**نکات تکمیلی از طرف کاربر (به این موارد توجه ویژه کن):** ${extraNotes}`;
+                    }
+                    prompt += `\n\nدر انتهای پاسخ خود، حتما و حتما این متن سلب مسئولیت را اضافه کن: "${disclaimer}"`;
+
+                    const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+                    
                     try {
-                        const resultJsonString = await callProxy(payload);
-                        const resultObj = JSON.parse(resultJsonString);
-                        const riskColorMap = { "سبز": "green", "زرد": "yellow", "قرمز": "red" };
-                        const riskColor = riskColorMap[resultObj.riskColor] || "gray";
-                        analysisResult.innerHTML = `<div class="space-y-4"><div><h3 class="font-bold">سطح ریسک:</h3><div class="inline-flex items-center px-4 py-1 rounded-full font-bold bg-${riskColor}-100 text-${riskColor}-800 border border-${riskColor}-200">${resultObj.riskLevel}</div></div><div>${resultObj.analysisText.replace(/\*\*(.*?)\*\*/g, '<h3>$1</h3>').replace(/\n/g, '<br>')}</div></div>`;
+                        let resultText = await callProxy(payload);
+                        // Ensure disclaimer is there, sometimes the model might forget
+                        if (!resultText.includes('سلب مسئولیت')) {
+                            resultText += disclaimer;
+                        }
+                        const formattedText = resultText
+                            .replace(/\*\*(.*?)\*\*/g, '<h3 class="font-bold text-lg primary-color mt-4 mb-2">$1</h3>')
+                            .replace(/\* (.*?)(?=\n|\* |$)/g, '<li class="mr-4">$1</li>')
+                            .replace(/---/g, '<hr class="my-4">')
+                            .replace(/\n/g, '<br>');
+
+                        analysisResult.innerHTML = `<div class="space-y-4">${formattedText}</div>`;
                         analysisResult.classList.remove('hidden');
                     } catch (error) {
                         showNotification(error.message, 'error');
@@ -408,9 +431,15 @@
                     generatorPlaceholder.classList.add('hidden');
                     generatorResult.classList.add('hidden');
                     generatorLoader.classList.remove('hidden');
-                    const prompt = `شما یک دستیار حقوقی هستید که متن گفتگوهای غیررسمی را به پیش‌نویس قرارداد تبدیل می‌کنید. متن زیر را به پیش‌نویس قرارداد تبدیل کن: "${conversationInput.value}"`;
+                    
+                    const disclaimer = "\n\n---\n**سلب مسئولیت:** این یک پیش‌نویس اولیه است که توسط هوش مصنوعی بر اساس اطلاعات شما تولید شده و فاقد اعتبار یک سند حقوقی نهایی است. برای اطمینان کامل، حتماً آن را توسط یک وکیل یا کارشناس حقوقی بازبینی کنید.";
+                    const prompt = `شما یک دستیار حقوقی هستید که متن گفتگوهای غیررسمی را به پیش‌نویس قرارداد تبدیل می‌کنید. متن زیر را به پیش‌نویس قرارداد تبدیل کن: "${conversationInput.value}". در انتهای پاسخ خود، حتما و حتما این متن سلب مسئولیت را اضافه کن: "${disclaimer}"`;
+                    
                     try {
-                        const resultText = await callProxy({ contents: [{ role: "user", parts: [{ text: prompt }] }] });
+                        let resultText = await callProxy({ contents: [{ role: "user", parts: [{ text: prompt }] }] });
+                         if (!resultText.includes('سلب مسئولیت')) {
+                            resultText += disclaimer;
+                        }
                         generatedContractTextarea.value = resultText;
                         generatorResult.classList.remove('hidden');
                     } catch (error) {
