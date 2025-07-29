@@ -9,9 +9,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display.swap" rel="stylesheet">
     
-    <!-- Ionicons for Icons (from ghararban.html) -->
+    <!-- Ionicons for Icons -->
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    
+    <!-- Tesseract.js for OCR -->
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
     
     <style>
         body {
@@ -83,6 +86,22 @@
         #fab-google-form {
             transition: opacity 0.3s, transform 0.3s;
         }
+        /* Custom file input style */
+        input[type="file"]::file-selector-button {
+            margin-left: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            border-width: 0;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            font-weight: 600;
+            background-color: #eef2ff; /* indigo-50 */
+            color: #4338ca; /* indigo-700 */
+            cursor: pointer;
+        }
+        input[type="file"]::file-selector-button:hover {
+            background-color: #e0e7ff; /* indigo-100 */
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -94,7 +113,7 @@
 
     <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="font-extrabold text-2xl primary-color" data-key="brand_name">رهبان</div>
+            <div class="font-extrabold text-2xl primary-color">رهبان</div>
             <div class="hidden md:flex items-center space-x-8 space-x-reverse">
                 <a href="#services" class="text-gray-600 hover:text-[#151450] font-semibold">خدمات</a>
                 <a href="#calculator" class="text-gray-600 hover:text-[#151450] font-semibold">ماشین حساب گمرکی</a>
@@ -208,8 +227,20 @@
                     <div id="analyzer-tab-content" class="tab-pane active">
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             <div>
-                                <label for="contract-clause" class="block text-lg font-semibold text-gray-700 mb-2">متن بند قرارداد:</label>
-                                <textarea id="contract-clause" rows="10" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow duration-300 resize-y" placeholder="متن مورد نظر برای تحلیل را اینجا وارد کنید..."></textarea>
+                                <!-- OCR Section -->
+                                <div class="mb-4 p-4 border border-dashed rounded-lg bg-slate-50">
+                                    <label for="image-upload" class="block text-lg font-semibold text-gray-700 mb-3">
+                                        <ion-icon name="image-outline" class="ml-2"></ion-icon>
+                                        بارگذاری تصویر قرارداد
+                                    </label>
+                                    <input type="file" id="image-upload" accept="image/*" class="block w-full text-sm text-slate-500"/>
+                                    <div id="ocr-status" class="mt-3 text-sm text-gray-500 h-5"></div>
+                                </div>
+                                <div class="text-center my-4 text-gray-400 font-semibold">-- یا --</div>
+                                
+                                <!-- Textarea Section -->
+                                <label for="contract-clause" class="block text-lg font-semibold text-gray-700 mb-2">متن بند قرارداد را اینجا وارد کنید:</label>
+                                <textarea id="contract-clause" rows="8" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow duration-300 resize-y" placeholder="متن مورد نظر برای تحلیل را اینجا وارد یا از تصویر بارگذاری کنید..."></textarea>
                                 <div class="text-center mt-4">
                                     <button type="button" id="analyze-button" class="w-full bg-accent-color text-white font-bold py-3 px-10 rounded-lg hover-bg-accent-color focus:outline-none focus:ring-4 focus:ring-orange-300 transition-all duration-300">تحلیل کن</button>
                                 </div>
@@ -255,43 +286,7 @@
             const PROXY_ENDPOINT = 'https://complete-faustine-myrahban-ada7be97.koyeb.app/api/generate';
             // --- END: CONFIGURATION ---
 
-            // --- DOM Elements (General) ---
-            const menuBtn = document.getElementById('menu-btn');
-            const mobileMenu = document.getElementById('mobile-menu');
-            const fab = document.getElementById('fab-google-form');
-
-            // --- Hamburger Menu Logic ---
-            menuBtn.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-
-            // --- Qararban Modal Logic ---
-            const qararbanContainer = document.getElementById('qararban-container');
-            const closeQararbanBtn = document.getElementById('close-qararban-btn');
-            const qararbanBackdrop = document.getElementById('qararban-backdrop');
-            
-            function openQararban() { qararbanContainer.classList.remove('hidden'); }
-            function closeQararban() { qararbanContainer.classList.add('hidden'); }
-
-            document.querySelectorAll('[data-action="open-qararban"]').forEach(btn => btn.addEventListener('click', openQararban));
-            closeQarbanBtn.addEventListener('click', closeQararban);
-            qararbanBackdrop.addEventListener('click', closeQararban);
-
-            // --- Qararban Functionality (from ghararban.html) ---
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const tabPanes = document.querySelectorAll('.tab-pane');
-            const analyzeButton = document.getElementById('analyze-button');
-            const clauseInput = document.getElementById('contract-clause');
-            const analysisResultContainer = document.getElementById('analysis-result');
-            const analysisPlaceholder = document.getElementById('analysis-placeholder');
-            const analysisLoader = document.getElementById('analysis-loader');
-            const generateButton = document.getElementById('generate-button');
-            const conversationInput = document.getElementById('conversation-input');
-            const generatorResultContainer = document.getElementById('generator-result');
-            const generatorPlaceholder = document.getElementById('generator-placeholder');
-            const generatorLoader = document.getElementById('generator-loader');
-            const generatedContractTextarea = document.getElementById('generated-contract');
-            const copyBtn = document.getElementById('copy-btn');
+            // --- Notification Function (Defined Globally for all parts to use) ---
             const notification = document.getElementById('notification');
             const notificationMessage = document.getElementById('notification-message');
             let notificationTimeout;
@@ -307,110 +302,189 @@
                 notificationTimeout = setTimeout(() => notification.classList.remove('show'), duration);
             }
 
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const targetTab = button.dataset.tab;
-                    tabButtons.forEach(btn => btn.classList.toggle('tab-active', btn.dataset.tab === targetTab));
-                    tabPanes.forEach(pane => pane.classList.toggle('active', pane.id === `${targetTab}-tab-content`));
+            // --- General Page Logic (Menu, FAB) ---
+            const menuBtn = document.getElementById('menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const fab = document.getElementById('fab-google-form');
+
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 200) fab.classList.remove('hidden');
+                else fab.classList.add('hidden');
+            });
+
+            // --- Qararban Modal Setup ---
+            // This function sets up all listeners for the Qararban modal.
+            function setupQararban() {
+                const qararbanContainer = document.getElementById('qararban-container');
+                if (!qararbanContainer) return; // Exit if modal not on page
+
+                // Modal Open/Close Controls
+                const closeQararbanBtn = qararbanContainer.querySelector('#close-qararban-btn');
+                const qararbanBackdrop = qararbanContainer.querySelector('#qararban-backdrop');
+                document.querySelectorAll('[data-action="open-qararban"]').forEach(btn => {
+                    btn.addEventListener('click', () => qararbanContainer.classList.remove('hidden'));
                 });
-            });
+                closeQarbanBtn.addEventListener('click', () => qararbanContainer.classList.add('hidden'));
+                qararbanBackdrop.addEventListener('click', () => qararbanContainer.classList.add('hidden'));
 
-            function displayError(container, message) {
-                container.innerHTML = `<div class="p-4 bg-red-50 border-r-4 border-red-500"><p class="font-bold text-red-800">خطا</p><p class="text-red-700">${message}</p></div>`;
-                container.classList.remove('hidden');
-            }
+                // --- Scoped Qararban Functionality ---
+                // By selecting elements from within 'qararbanContainer', we avoid conflicts.
+                const tabButtons = qararbanContainer.querySelectorAll('.tab-button');
+                const tabPanes = qararbanContainer.querySelectorAll('.tab-pane');
+                const analyzeButton = qararbanContainer.querySelector('#analyze-button');
+                const clauseInput = qararbanContainer.querySelector('#contract-clause');
+                const analysisResultContainer = qararbanContainer.querySelector('#analysis-result');
+                const analysisPlaceholder = qararbanContainer.querySelector('#analysis-placeholder');
+                const analysisLoader = qararbanContainer.querySelector('#analysis-loader');
+                const generateButton = qararbanContainer.querySelector('#generate-button');
+                const conversationInput = qararbanContainer.querySelector('#conversation-input');
+                const generatorResultContainer = qararbanContainer.querySelector('#generator-result');
+                const generatorPlaceholder = qararbanContainer.querySelector('#generator-placeholder');
+                const generatorLoader = qararbanContainer.querySelector('#generator-loader');
+                const generatedContractTextarea = qararbanContainer.querySelector('#generated-contract');
+                const copyBtn = qararbanContainer.querySelector('#copy-btn');
+                const imageUploadInput = qararbanContainer.querySelector('#image-upload');
+                const ocrStatusDiv = qararbanContainer.querySelector('#ocr-status');
 
-            async function callProxy(payload) {
-                try {
-                    const response = await fetch(PROXY_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                    const result = await response.json();
-                    if (!response.ok) throw new Error(result.error || 'An unknown error occurred on the proxy server.');
-                    if (result.candidates && result.candidates[0]?.content?.parts[0]) return result.candidates[0].content.parts[0].text;
-                    else throw new Error("پاسخ معتبری از سرویس دریافت نشد.");
-                } catch (error) {
-                    console.error("Error calling proxy:", error);
-                    throw error;
-                }
-            }
-
-            analyzeButton.addEventListener('click', async () => {
-                const clauseText = clauseInput.value.trim();
-                if (!clauseText) { showNotification('لطفاً متنی را برای تحلیل وارد کنید.'); return; }
+                // Tab switching
+                tabButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const targetTab = button.dataset.tab;
+                        tabButtons.forEach(btn => btn.classList.toggle('tab-active', btn.dataset.tab === targetTab));
+                        tabPanes.forEach(pane => pane.classList.toggle('active', pane.id === `${targetTab}-tab-content`));
+                    });
+                });
                 
-                analysisPlaceholder.classList.add('hidden');
-                analysisResultContainer.classList.add('hidden');
-                analysisLoader.classList.remove('hidden');
+                // OCR Logic
+                imageUploadInput.addEventListener('change', async (event) => {
+                    const file = event.target.files[0];
+                    if (!file) return;
+                    ocrStatusDiv.textContent = 'در حال آماده‌سازی موتور OCR...';
+                    try {
+                        const worker = await Tesseract.createWorker('fas', 1, {
+                            logger: m => {
+                                if (m.status === 'recognizing text') {
+                                    ocrStatusDiv.textContent = `در حال تشخیص متن... ${(m.progress * 100).toFixed(0)}%`;
+                                } else { ocrStatusDiv.textContent = `وضعیت: ${m.status}`; }
+                            },
+                        });
+                        ocrStatusDiv.textContent = 'موتور OCR آماده است. در حال پردازش تصویر...';
+                        const { data: { text } } = await worker.recognize(file);
+                        await worker.terminate();
+                        clauseInput.value = text;
+                        ocrStatusDiv.textContent = 'متن با موفقیت استخراج شد!';
+                        showNotification('متن از تصویر استخراج و در کادر قرار گرفت.', 'success');
+                    } catch (error) {
+                        console.error('OCR Error:', error);
+                        ocrStatusDiv.textContent = 'خطا در تشخیص متن.';
+                        showNotification('متاسفانه در استخراج متن از تصویر خطایی رخ داد.', 'error');
+                    }
+                });
 
-                const prompt = `شما یک وکیل متخصص تحلیل قرارداد در ایران هستید. متن زیر یک بند از یک قرارداد است. لطفاً آن را تحلیل کرده و نتیجه را در قالب یک ساختار JSON ارائه بده. متن بند: "${clauseText}"`;
-                const analysisSchema = { type: "OBJECT", properties: { "riskLevel": { "type": "STRING", "enum": ["کم", "متوسط", "بالا"] }, "riskColor": { "type": "STRING", "enum": ["سبز", "زرد", "قرمز"] }, "analysisText": { "type": "STRING" } }, required: ["riskLevel", "riskColor", "analysisText"] };
-                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", responseSchema: analysisSchema } };
-
-                try {
-                    const resultJsonString = await callProxy(payload);
-                    const resultObj = JSON.parse(resultJsonString);
-                    displayAnalysis(resultObj);
-                } catch (apiError) {
-                    showNotification(apiError.message, 'error');
-                    displayError(analysisResultContainer, `${apiError.message}`);
-                } finally {
-                    analysisLoader.classList.add('hidden');
+                // API Call Logic
+                async function callProxy(payload) {
+                    try {
+                        const response = await fetch(PROXY_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                        const result = await response.json();
+                        if (!response.ok) throw new Error(result.error || 'خطای ناشناخته در سرور پراکسی.');
+                        if (result.candidates && result.candidates[0]?.content?.parts[0]) return result.candidates[0].content.parts[0].text;
+                        else throw new Error("پاسخ معتبری از سرویس دریافت نشد. ممکن است محتوای شما ناقض قوانین ایمنی باشد.");
+                    } catch (error) {
+                        console.error("Error calling proxy:", error);
+                        throw error;
+                    }
                 }
-            });
-
-            function displayAnalysis(analysis) {
-                const riskColorMap = { "سبز": "green", "زرد": "yellow", "قرمز": "red" };
-                const riskColor = riskColorMap[analysis.riskColor] || "gray";
-                const formattedText = analysis.analysisText.replace(/\*\*(.*?)\*\*/g, '<h3 class="font-bold text-lg primary-color mt-4 mb-2">$1</h3>').replace(/\* (.*?)(?=\n|\* |$)/g, '<li class="mr-4">$1</li>').replace(/\n/g, '<br>');
-                analysisResultContainer.innerHTML = `<div class="space-y-4"><div><h3 class="font-bold text-lg primary-color mb-2">سطح ریسک:</h3><div class="inline-flex items-center px-4 py-1 rounded-full text-base font-bold bg-${riskColor}-100 text-${riskColor}-800 border border-${riskColor}-200">ریسک ${analysis.riskLevel}</div></div><div><ul>${formattedText}</ul></div></div>`;
-                analysisResultContainer.classList.remove('hidden');
-            }
-
-            generateButton.addEventListener('click', async () => {
-                const conversationText = conversationInput.value.trim();
-                if (!conversationText) { showNotification('لطفاً متن توافقات را وارد کنید.'); return; }
-
-                generatorPlaceholder.classList.add('hidden');
-                generatorResultContainer.classList.add('hidden');
-                generatorLoader.classList.remove('hidden');
                 
-                const prompt = `شما یک دستیار حقوقی هستید که متن گفتگوهای غیررسمی را به پیش‌نویس قرارداد تبدیل می‌کنید. متن زیر توافقات اولیه بین دو نفر است. لطفاً بر اساس آن، یک پیش‌نویس اولیه قرارداد شامل طرفین، موضوع، مبلغ، مدت و تعهدات اصلی به زبان فارسی و با ساختار استاندارد حقوقی تهیه کن. متن گفتگو: "${conversationText}"`;
-                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-
-                try {
-                    const resultText = await callProxy(payload);
-                    generatedContractTextarea.value = resultText;
-                    generatorResultContainer.classList.remove('hidden');
-                } catch (error) {
-                    showNotification(error.message, 'error');
-                    displayError(generatorResultContainer, `خطا در تولید قرارداد: ${error.message}`);
-                } finally {
-                    generatorLoader.classList.add('hidden');
+                function displayError(container, message) {
+                    container.innerHTML = `<div class="p-4 bg-red-50 border-r-4 border-red-500"><p class="font-bold text-red-800">خطا</p><p class="text-red-700">${message}</p></div>`;
+                    container.classList.remove('hidden');
                 }
-            });
 
-            copyBtn.addEventListener('click', () => {
-                generatedContractTextarea.select();
-                document.execCommand('copy');
-                showNotification('متن قرارداد کپی شد!', 'success');
-            });
+                // Analyzer Logic
+                analyzeButton.addEventListener('click', async () => {
+                    const clauseText = clauseInput.value.trim();
+                    if (!clauseText) { showNotification('لطفاً متنی را برای تحلیل وارد کنید.'); return; }
+                    
+                    analysisPlaceholder.classList.add('hidden');
+                    analysisResultContainer.classList.add('hidden');
+                    analysisLoader.classList.remove('hidden');
 
-            // --- Customs Calculator Logic (Original) ---
-            const calculateBtn = document.getElementById('calculate-btn');
-            const goodsValueInput = document.getElementById('goods-value');
-            const exchangeRateInput = document.getElementById('exchange-rate');
-            const resultArea = document.getElementById('result-area');
+                    const prompt = `شما یک وکیل متخصص تحلیل قرارداد در ایران هستید. متن زیر یک بند از یک قرارداد است. لطفاً آن را تحلیل کرده و نتیجه را در قالب یک ساختار JSON ارائه بده. متن بند: "${clauseText}"`;
+                    const analysisSchema = { type: "OBJECT", properties: { "riskLevel": { "type": "STRING", "enum": ["کم", "متوسط", "بالا"] }, "riskColor": { "type": "STRING", "enum": ["سبز", "زرد", "قرمز"] }, "analysisText": { "type": "STRING" } }, required: ["riskLevel", "riskColor", "analysisText"] };
+                    const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", responseSchema: analysisSchema } };
 
-            function toEnglishDigits(str) {
-                if (typeof str !== 'string') return str;
-                return str.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+                    try {
+                        const resultJsonString = await callProxy(payload);
+                        const resultObj = JSON.parse(resultJsonString);
+                        const riskColorMap = { "سبز": "green", "زرد": "yellow", "قرمز": "red" };
+                        const riskColor = riskColorMap[resultObj.riskColor] || "gray";
+                        const formattedText = resultObj.analysisText.replace(/\*\*(.*?)\*\*/g, '<h3 class="font-bold text-lg primary-color mt-4 mb-2">$1</h3>').replace(/\* (.*?)(?=\n|\* |$)/g, '<li class="mr-4">$1</li>').replace(/\n/g, '<br>');
+                        analysisResultContainer.innerHTML = `<div class="space-y-4"><div><h3 class="font-bold text-lg primary-color mb-2">سطح ریسک:</h3><div class="inline-flex items-center px-4 py-1 rounded-full text-base font-bold bg-${riskColor}-100 text-${riskColor}-800 border border-${riskColor}-200">ریسک ${resultObj.riskLevel}</div></div><div><ul>${formattedText}</ul></div></div>`;
+                        analysisResultContainer.classList.remove('hidden');
+                    } catch (apiError) {
+                        showNotification(apiError.message, 'error');
+                        displayError(analysisResultContainer, `${apiError.message}`);
+                    } finally {
+                        analysisLoader.classList.add('hidden');
+                    }
+                });
+
+                // Generator Logic
+                generateButton.addEventListener('click', async () => {
+                    const conversationText = conversationInput.value.trim();
+                    if (!conversationText) { showNotification('لطفاً متن توافقات را وارد کنید.'); return; }
+
+                    generatorPlaceholder.classList.add('hidden');
+                    generatorResultContainer.classList.add('hidden');
+                    generatorLoader.classList.remove('hidden');
+                    
+                    const prompt = `شما یک دستیار حقوقی هستید که متن گفتگوهای غیررسمی را به پیش‌نویس قرارداد تبدیل می‌کنید. متن زیر توافقات اولیه بین دو نفر است. لطفاً بر اساس آن، یک پیش‌نویس اولیه قرارداد شامل طرفین، موضوع، مبلغ، مدت و تعهدات اصلی به زبان فارسی و با ساختار استاندارد حقوقی تهیه کن. متن گفتگو: "${conversationText}"`;
+                    const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+
+                    try {
+                        const resultText = await callProxy(payload);
+                        generatedContractTextarea.value = resultText;
+                        generatorResultContainer.classList.remove('hidden');
+                    } catch (error) {
+                        showNotification(error.message, 'error');
+                        displayError(generatorResultContainer, `خطا در تولید قرارداد: ${error.message}`);
+                    } finally {
+                        generatorLoader.classList.add('hidden');
+                    }
+                });
+
+                copyBtn.addEventListener('click', () => {
+                    generatedContractTextarea.select();
+                    document.execCommand('copy');
+                    showNotification('متن قرارداد کپی شد!', 'success');
+                });
             }
+            
+            // --- Customs Calculator Logic ---
+            function setupCalculator() {
+                const calculateBtn = document.getElementById('calculate-btn');
+                if (!calculateBtn) return;
 
-            if(calculateBtn) {
+                const goodsValueInput = document.getElementById('goods-value');
+                const exchangeRateInput = document.getElementById('exchange-rate');
+                const resultArea = document.getElementById('result-area');
+
+                function toEnglishDigits(str) {
+                    if (typeof str !== 'string') return str;
+                    return str.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+                }
+
                 calculateBtn.addEventListener('click', () => {
                     try {
                         const value = parseFloat(toEnglishDigits(goodsValueInput.value || '0').replace(/,/g, ''));
                         const rate = parseFloat(toEnglishDigits(exchangeRateInput.value || '0').replace(/,/g, ''));
-                        if (isNaN(value) || isNaN(rate) || value < 0 || rate < 0) { alert('لطفا مقادیر معتبر وارد کنید.'); return; }
+                        if (isNaN(value) || isNaN(rate) || value < 0 || rate < 0) {
+                            showNotification('لطفا مقادیر معتبر برای ماشین حساب وارد کنید.', 'error');
+                            return;
+                        }
                         const goodsValueRial = Math.floor(value * rate);
                         const freight = Math.floor(goodsValueRial * 0.10);
                         const insurance = Math.floor((goodsValueRial + freight) * 0.005);
@@ -433,16 +507,14 @@
                         resultArea.classList.remove('hidden');
                     } catch (error) {
                         console.error("Calculator error:", error);
-                        alert('خطایی در محاسبه رخ داد. لطفا ورودی خود را بررسی کنید.');
+                        showNotification('خطایی در محاسبه رخ داد. لطفا ورودی خود را بررسی کنید.', 'error');
                     }
                 });
             }
-
-            // --- Floating Action Button (FAB) Logic ---
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 200) fab.classList.remove('hidden');
-                else fab.classList.add('hidden');
-            });
+            
+            // --- Initialize all parts of the page ---
+            setupQararban();
+            setupCalculator();
         });
     </script>
 </body>
