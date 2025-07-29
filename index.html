@@ -84,6 +84,27 @@
         .custom-file-input-label:hover {
             background-color: #3e4c66;
         }
+        /* Prose styles for analysis result */
+        #analysis-result h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.75rem;
+            margin-top: 1.5rem;
+        }
+         #analysis-result p {
+            color: #E0E0E0;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+         #analysis-result blockquote {
+            margin-bottom: 0.75rem;
+         }
+         #analysis-result hr {
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-color: #334155; /* slate-700 */
+         }
     </style>
 </head>
 <body>
@@ -202,7 +223,7 @@
                                 <div class="mb-4 p-4 border border-dashed border-slate-600 rounded-lg bg-slate-800">
                                     <label for="image-upload" class="block text-lg font-semibold text-gray-300 mb-3"><ion-icon name="image-outline" class="ml-2"></ion-icon>بارگذاری تصویر قرارداد</label>
                                     <div class="flex items-center">
-                                        <label class="custom-file-input-label">انتخاب فایل</label>
+                                        <label for="image-upload" class="custom-file-input-label">انتخاب فایل</label>
                                         <span id="file-name-display" class="mr-4 text-sm text-slate-400">فایلی انتخاب نشده</span>
                                         <input type="file" id="image-upload" accept="image/*" class="hidden"/>
                                     </div>
@@ -219,7 +240,7 @@
                             <div class="border-r border-slate-700 pr-8" aria-live="polite">
                                 <div id="analysis-placeholder" class="h-full flex items-center justify-center text-center bg-slate-800 rounded-lg p-8"><div><ion-icon name="document-text-outline" class="text-5xl text-slate-600 mx-auto"></ion-icon><p class="mt-4 text-slate-500">نتیجه تحلیل شما در اینجا نمایش داده خواهد شد.</p></div></div>
                                 <div id="analysis-loader" class="hidden h-full flex items-center justify-center"><div class="loader"></div></div>
-                                <div id="analysis-result" class="hidden prose max-w-none prose-invert"></div>
+                                <div id="analysis-result" class="hidden"></div>
                             </div>
                         </div>
                     </div>
@@ -332,7 +353,6 @@
                     const file = event.target.files[0];
                     if (file) {
                         fileNameDisplay.textContent = file.name;
-                        // OCR Logic
                         performOCR(file);
                     } else {
                         fileNameDisplay.textContent = 'فایلی انتخاب نشده';
@@ -403,11 +423,12 @@
                     ${extraNotes ? `\n\nنکات تکمیلی از طرف کاربر (به این موارد توجه ویژه کن): "${extraNotes}"` : ''}
                     لطفا خروجی را فقط و فقط به صورت یک کد HTML کامل و آماده نمایش، بدون هیچ توضیح اضافی، ارائه بده.
                     این کد HTML باید شامل بخش های زیر باشد و از کلاس های Tailwind CSS که در ادامه می آید استفاده کند:
-                    1.  **داشبورد ریسک:** یک div با کلاس "mb-6 p-4 rounded-lg border border-slate-700 bg-slate-800". داخل آن یک h3 با عنوان "داشبورد ریسک قرارداد" و یک div دیگر برای نمایش سه بخش: "بند پرریسک" با رنگ "text-red-500"، "بند هشدارآمیز" با رنگ "text-yellow-400"، و "بند امن" با رنگ "text-green-500". تعداد هر کدام را تخمین بزن و نمایش بده.
-                    2.  **تحلیل اصلی:** یک div اصلی برای تحلیل. عنوان ها را با تگ <h3> و متن های عادی را با تگ <p> نمایش بده.
-                    3.  **بندهای جایگزین پیشنهادی (اختیاری):** اگر بندی نیاز به اصلاح داشت، یک hr و سپس یک h3 با عنوان "بندهای جایگزین پیشنهادی" قرار بده. برای هر پیشنهاد، یک div با کلاس "p-4 border rounded-lg border-slate-700 bg-slate-900" بساز. داخل آن، بند اصلی را در یک blockquote با کلاس "border-r-4 border-slate-600" و بند پیشنهادی را در یک blockquote با کلاس "border-r-4 border-green-500" نمایش بده.
-                    4.  **تعهدات و تاریخ‌های کلیدی (اختیاری):** اگر تعهد مهمی وجود داشت، یک hr و سپس یک h3 با عنوان "تعهدات و تاریخ‌های کلیدی" و یک لیست ul با کلاس "list-disc list-inside" بساز و موارد را لیست کن.
-                    5.  **سلب مسئولیت:** در انتهای کل خروجی HTML، یک hr و سپس یک p با این متن قرار بده: "<b>سلب مسئولیت:</b> این یک تحلیل اولیه است که توسط هوش مصنوعی تولید شده و برای تصمیم‌گیری نهایی باید با وکیل یا کارشناس حقوقی مشورت شود."
+                    1.  **داشبورد ریسک:** یک div با کلاس "mb-6 p-4 rounded-lg border border-slate-700 bg-slate-800". داخل آن یک h3 با کلاس "font-bold text-xl text-white mb-4" و عنوان "داشبورد ریسک قرارداد" و یک div دیگر برای نمایش سه بخش: "بند پرریسک" با رنگ "text-red-500"، "بند هشدارآمیز" با رنگ "text-yellow-400"، و "بند امن" با رنگ "text-green-500". تعداد هر کدام را تخمین بزن و نمایش بده.
+                    2.  **تحلیل اصلی:** یک div اصلی برای تحلیل. عنوان ها را با تگ <h3 class="font-bold text-xl text-white mt-6 mb-3"> و متن های عادی را با تگ <p class="mb-4 text-gray-300 leading-relaxed"> نمایش بده.
+                    3.  **بندهای جایگزین پیشنهادی (اختیاری):** اگر بندی نیاز به اصلاح داشت، یک hr class="my-6 border-slate-700" و سپس یک h3 با عنوان "بندهای جایگزین پیشنهادی" قرار بده. برای هر پیشنهاد، یک div با کلاس "p-4 border rounded-lg border-slate-700 bg-slate-900 mb-4" بساز. داخل آن، بند اصلی را در یک blockquote با کلاس "border-r-4 border-slate-600 pr-4 mb-3 text-gray-400" و بند پیشنهادی را در یک blockquote با کلاس "border-r-4 border-green-500 pr-4 text-gray-200" نمایش بده.
+                    4.  **تعهدات و تاریخ‌های کلیدی (اختیاری):** اگر تعهد مهمی وجود داشت، یک hr class="my-6 border-slate-700" و سپس یک h3 با عنوان "تعهدات و تاریخ‌های کلیدی" و یک لیست ul با کلاس "list-disc list-inside space-y-2 text-gray-300" بساز و موارد را لیست کن.
+                    5.  **سلب مسئولیت:** در انتهای کل خروجی HTML، یک hr class="my-6 border-slate-700" و سپس یک p با کلاس "text-sm text-gray-500" با این متن قرار بده: "<b>سلب مسئولیت:</b> این یک تحلیل اولیه است که توسط هوش مصنوعی تولید شده و برای تصمیم‌گیری نهایی باید با وکیل یا کارشناس حقوقی مشورت شود."
+                    نکته نهایی: خروجی باید یک قطعه کد HTML تمیز و کامل باشد بدون هیچ کاراکتر اضافی در ابتدا یا انتهای آن.
                     `;
 
                     const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
