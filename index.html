@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display.swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Ionicons for Icons -->
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
@@ -230,9 +230,15 @@
                                     <input type="file" id="image-upload" accept="image/*" class="block w-full text-sm text-slate-500"/>
                                     <div id="ocr-status" class="mt-3 text-sm text-gray-500 h-5"></div>
                                 </div>
-                                <div class="text-center my-4 text-gray-400 font-semibold">-- یا --</div>
-                                <label for="contract-clause" class="block text-lg font-semibold text-gray-700 mb-2">متن بند قرارداد را اینجا وارد کنید:</label>
+                                
+                                <label for="contract-clause" class="block text-lg font-semibold text-gray-700 mb-2">متن بند قرارداد:</label>
                                 <textarea id="contract-clause" rows="8" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="متن مورد نظر برای تحلیل را اینجا وارد یا از تصویر بارگذاری کنید..."></textarea>
+                                
+                                <div class="mt-4">
+                                    <label for="extra-notes" class="block text-lg font-semibold text-gray-700 mb-2">توضیحات تکمیلی (اختیاری):</label>
+                                    <textarea id="extra-notes" rows="3" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="مثال: این قرارداد از طرف کارفرما بررسی شود. به بند مربوط به فسخ توجه ویژه شود..."></textarea>
+                                </div>
+
                                 <div class="text-center mt-4"><button type="button" id="analyze-button" class="w-full bg-accent-color text-white font-bold py-3 px-10 rounded-lg hover-bg-accent-color">تحلیل کن</button></div>
                             </div>
                             <div class="border-r pr-8" aria-live="polite">
@@ -303,13 +309,47 @@
                 const qararbanContainer = document.getElementById('qararban-container');
                 if (!qararbanContainer) return;
 
+                const openModal = () => {
+                    qararbanContainer.classList.remove('hidden');
+                    // Only push state if we are not already on the target URL
+                    if (window.location.pathname !== '/ghararban/') {
+                        history.pushState({ modal: 'qararban' }, 'قراربان', '/ghararban/');
+                    }
+                };
+
+                const closeModal = () => {
+                    qararbanContainer.classList.add('hidden');
+                    // Only push state if we are not on the root URL
+                    if (window.location.pathname !== '/') {
+                         history.pushState({}, '', '/');
+                    }
+                };
+                
+                // Event listeners for opening the modal
+                document.querySelectorAll('[data-action="open-qararban"]').forEach(btn => {
+                    btn.addEventListener('click', openModal);
+                });
+
+                // Event listeners for closing the modal
                 const closeQararbanBtn = qararbanContainer.querySelector('#close-qararban-btn');
                 const qararbanBackdrop = qararbanContainer.querySelector('#qararban-backdrop');
-                document.querySelectorAll('[data-action="open-qararban"]').forEach(btn => {
-                    btn.addEventListener('click', () => qararbanContainer.classList.remove('hidden'));
+                closeQararbanBtn.addEventListener('click', closeModal);
+                qararbanBackdrop.addEventListener('click', closeModal);
+
+                // Handle browser back/forward buttons
+                window.addEventListener('popstate', (event) => {
+                    if (event.state && event.state.modal === 'qararban') {
+                        qararbanContainer.classList.remove('hidden');
+                    } else {
+                        qararbanContainer.classList.add('hidden');
+                    }
                 });
-                closeQararbanBtn.addEventListener('click', () => qararbanContainer.classList.add('hidden'));
-                qararbanBackdrop.addEventListener('click', () => qararbanContainer.classList.add('hidden'));
+
+                // Handle direct URL access or refresh
+                if (window.location.pathname === '/ghararban/') {
+                    openModal();
+                }
+
 
                 const tabButtons = qararbanContainer.querySelectorAll('.tab-button');
                 const tabPanes = qararbanContainer.querySelectorAll('.tab-pane');
@@ -324,15 +364,34 @@
                 const imageUploadInput = qararbanContainer.querySelector('#image-upload');
                 const ocrStatusDiv = qararbanContainer.querySelector('#ocr-status');
                 const clauseInput = qararbanContainer.querySelector('#contract-clause');
+                
+                const ocrStatusTranslations = {
+                    'loading tesseract core': 'در حال بارگذاری هسته تسراکت...',
+                    'initializing tesseract': 'در حال آماده‌سازی تسراکت...',
+                    'initialized tesseract': 'تسراکت آماده شد.',
+                    'loading language traineddata': 'در حال بارگذاری مدل زبان فارسی...',
+                    'loaded language traineddata': 'مدل زبان بارگذاری شد.',
+                    'initializing api': 'در حال آماده‌سازی API...',
+                    'initialized api': 'API آماده شد.',
+                    'recognizing text': 'در حال تشخیص متن...'
+                };
+
                 imageUploadInput.addEventListener('change', async (event) => {
                     const file = event.target.files[0];
                     if (!file) return;
                     ocrStatusDiv.textContent = 'در حال آماده‌سازی موتور OCR...';
                     try {
-                        const worker = await Tesseract.createWorker('fas', 1, { logger: m => {
-                            if (m.status === 'recognizing text') ocrStatusDiv.textContent = `در حال تشخیص متن... ${(m.progress * 100).toFixed(0)}%`;
-                            else ocrStatusDiv.textContent = `وضعیت: ${m.status}`;
-                        }});
+                        const worker = await Tesseract.createWorker('fas', 1, { 
+                            logger: m => {
+                                const translatedStatus = ocrStatusTranslations[m.status] || `وضعیت: ${m.status}`;
+                                if (m.status === 'recognizing text') {
+                                    const progress = (m.progress * 100).toFixed(0);
+                                    ocrStatusDiv.textContent = `${translatedStatus} ${progress}%`;
+                                } else {
+                                    ocrStatusDiv.textContent = translatedStatus;
+                                }
+                            }
+                        });
                         const { data: { text } } = await worker.recognize(file);
                         await worker.terminate();
                         clauseInput.value = text;
@@ -356,22 +415,46 @@
                 const analysisResult = qararbanContainer.querySelector('#analysis-result');
                 const analysisPlaceholder = qararbanContainer.querySelector('#analysis-placeholder');
                 const analysisLoader = qararbanContainer.querySelector('#analysis-loader');
+                const extraNotesInput = qararbanContainer.querySelector('#extra-notes');
+
                 analyzeButton.addEventListener('click', async () => {
                     if (!clauseInput.value.trim()) { showNotification('لطفاً متنی را برای تحلیل وارد کنید.'); return; }
                     analysisPlaceholder.classList.add('hidden');
                     analysisResult.classList.add('hidden');
                     analysisLoader.classList.remove('hidden');
-                    const prompt = `شما یک وکیل متخصص تحلیل قرارداد در ایران هستید. متن زیر یک بند از یک قرارداد است. لطفاً آن را تحلیل کرده و نتیجه را در قالب یک ساختار JSON ارائه بده. متن بند: "${clauseInput.value}"`;
-                    const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", responseSchema: { type: "OBJECT", properties: { "riskLevel": { "type": "STRING" }, "riskColor": { "type": "STRING" }, "analysisText": { "type": "STRING" } } } } };
+                    
+                    const extraNotes = extraNotesInput.value.trim();
+                    
+                    const prompt = `
+                    شما یک وکیل متخصص تحلیل قرارداد در ایران هستید. وظیفه شما تحلیل جامع متن قرارداد زیر و ارائه خروجی به صورت یک کد HTML کامل است.
+                    
+                    متن قرارداد برای تحلیل: "${clauseInput.value}"
+                    ${extraNotes ? `\n\nنکات تکمیلی از طرف کاربر (به این موارد توجه ویژه کن): "${extraNotes}"` : ''}
+                    
+                    لطفا خروجی را فقط و فقط به صورت یک کد HTML کامل و آماده نمایش، بدون هیچ توضیح اضافی، ارائه بده.
+                    این کد HTML باید شامل بخش های زیر باشد و از کلاس های Tailwind CSS که در ادامه می آید استفاده کند:
+                    
+                    1.  **داشبورد ریسک:** یک div با کلاس "mb-6 p-4 bg-slate-50 rounded-lg border". داخل آن یک h3 با عنوان "داشبورد ریسک قرارداد" و یک div دیگر برای نمایش سه بخش: "بند پرریسک" با رنگ "text-red-600"، "بند هشدارآمیز" با رنگ "text-yellow-500"، و "بند امن" با رنگ "text-green-600". تعداد هر کدام را تخمین بزن و نمایش بده.
+                    
+                    2.  **تحلیل اصلی:** یک div اصلی برای تحلیل. عنوان ها را با تگ <h3> و متن های عادی را با تگ <p> نمایش بده.
+                    
+                    3.  **بندهای جایگزین پیشنهادی (اختیاری):** اگر بندی نیاز به اصلاح داشت، یک hr و سپس یک h3 با عنوان "بندهای جایگزین پیشنهادی" قرار بده. برای هر پیشنهاد، یک div با کلاس "p-4 border rounded-lg bg-gray-50" بساز. داخل آن، بند اصلی را در یک blockquote با کلاس "border-r-4 border-gray-300" و بند پیشنهادی را در یک blockquote با کلاس "border-r-4 border-green-500" نمایش بده.
+                    
+                    4.  **تعهدات و تاریخ‌های کلیدی (اختیاری):** اگر تعهد مهمی وجود داشت، یک hr و سپس یک h3 با عنوان "تعهدات و تاریخ‌های کلیدی" و یک لیست ul با کلاس "list-disc list-inside" بساز و موارد را لیست کن.
+                    
+                    5.  **سلب مسئولیت:** در انتهای کل خروجی HTML، یک hr و سپس یک p با این متن قرار بده: "<b>سلب مسئولیت:</b> این یک تحلیل اولیه است که توسط هوش مصنوعی تولید شده و برای تصمیم‌گیری نهایی باید با وکیل یا کارشناس حقوقی مشورت شود."
+                    `;
+
+                    const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+                    
                     try {
-                        const resultJsonString = await callProxy(payload);
-                        const resultObj = JSON.parse(resultJsonString);
-                        const riskColorMap = { "سبز": "green", "زرد": "yellow", "قرمز": "red" };
-                        const riskColor = riskColorMap[resultObj.riskColor] || "gray";
-                        analysisResult.innerHTML = `<div class="space-y-4"><div><h3 class="font-bold">سطح ریسک:</h3><div class="inline-flex items-center px-4 py-1 rounded-full font-bold bg-${riskColor}-100 text-${riskColor}-800 border border-${riskColor}-200">${resultObj.riskLevel}</div></div><div>${resultObj.analysisText.replace(/\*\*(.*?)\*\*/g, '<h3>$1</h3>').replace(/\n/g, '<br>')}</div></div>`;
+                        const resultHtml = await callProxy(payload);
+                        analysisResult.innerHTML = resultHtml;
                         analysisResult.classList.remove('hidden');
                     } catch (error) {
                         showNotification(error.message, 'error');
+                        analysisResult.innerHTML = `<div class="text-red-600">خطا در تحلیل: ${error.message}</div>`;
+                        analysisResult.classList.remove('hidden');
                     } finally {
                         analysisLoader.classList.add('hidden');
                     }
@@ -388,9 +471,15 @@
                     generatorPlaceholder.classList.add('hidden');
                     generatorResult.classList.add('hidden');
                     generatorLoader.classList.remove('hidden');
-                    const prompt = `شما یک دستیار حقوقی هستید که متن گفتگوهای غیررسمی را به پیش‌نویس قرارداد تبدیل می‌کنید. متن زیر را به پیش‌نویس قرارداد تبدیل کن: "${conversationInput.value}"`;
+                    
+                    const disclaimer = "\n\n---\n**سلب مسئولیت:** این یک پیش‌نویس اولیه است که توسط هوش مصنوعی بر اساس اطلاعات شما تولید شده و فاقد اعتبار یک سند حقوقی نهایی است. برای اطمینان کامل، حتماً آن را توسط یک وکیل یا کارشناس حقوقی بازبینی کنید.";
+                    const prompt = `شما یک دستیار حقوقی هستید که متن گفتگوهای غیررسمی را به پیش‌نویس قرارداد تبدیل می‌کنید. متن زیر را به پیش‌نویس قرارداد تبدیل کن: "${conversationInput.value}". در انتهای پاسخ خود، حتما و حتما این متن سلب مسئولیت را اضافه کن: "${disclaimer}"`;
+                    
                     try {
-                        const resultText = await callProxy({ contents: [{ role: "user", parts: [{ text: prompt }] }] });
+                        let resultText = await callProxy({ contents: [{ role: "user", parts: [{ text: prompt }] }] });
+                         if (!resultText.includes('سلب مسئولیت')) {
+                            resultText += disclaimer;
+                        }
                         generatedContractTextarea.value = resultText;
                         generatorResult.classList.remove('hidden');
                     } catch (error) {
