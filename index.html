@@ -292,13 +292,13 @@
             const notificationMessage = document.getElementById('notification-message');
             let notificationTimeout;
 
-            function showNotification(message, type = 'error', duration = 4000) {
+            function showNotification(message, type = 'info', duration = 4000) {
                 if (notificationTimeout) clearTimeout(notificationTimeout);
                 notificationMessage.textContent = message;
                 notification.className = 'fixed top-8 right-8 z-[101] p-4 rounded-lg shadow-xl text-white max-w-sm';
                 if (type === 'success') notification.classList.add('bg-green-600');
                 else if (type === 'info') notification.classList.add('bg-blue-600');
-                else notification.classList.add('bg-red-600');
+                else notification.classList.add('bg-slate-600'); // Neutral color for errors
                 notification.classList.add('show');
                 notificationTimeout = setTimeout(() => notification.classList.remove('show'), duration);
             }
@@ -322,7 +322,6 @@
 
                 const openModal = () => {
                     qararbanContainer.classList.remove('hidden');
-                    // Only push state if we are not already on the target URL
                     if (window.location.pathname !== '/ghararban/') {
                         history.pushState({ modal: 'qararban' }, 'قراربان', '/ghararban/');
                     }
@@ -330,24 +329,20 @@
 
                 const closeModal = () => {
                     qararbanContainer.classList.add('hidden');
-                    // Only push state if we are not on the root URL
                     if (window.location.pathname !== '/') {
                          history.pushState({}, '', '/');
                     }
                 };
                 
-                // Event listeners for opening the modal
                 document.querySelectorAll('[data-action="open-qararban"]').forEach(btn => {
                     btn.addEventListener('click', openModal);
                 });
 
-                // Event listeners for closing the modal
                 const closeQararbanBtn = qararbanContainer.querySelector('#close-qararban-btn');
                 const qararbanBackdrop = qararbanContainer.querySelector('#qararban-backdrop');
                 closeQararbanBtn.addEventListener('click', closeModal);
                 qararbanBackdrop.addEventListener('click', closeModal);
 
-                // Handle browser back/forward buttons
                 window.addEventListener('popstate', (event) => {
                     if (event.state && event.state.modal === 'qararban') {
                         qararbanContainer.classList.remove('hidden');
@@ -356,11 +351,9 @@
                     }
                 });
 
-                // Handle direct URL access or refresh
                 if (window.location.pathname === '/ghararban/') {
                     openModal();
                 }
-
 
                 const tabButtons = qararbanContainer.querySelectorAll('.tab-button');
                 const tabPanes = qararbanContainer.querySelectorAll('.tab-pane');
@@ -435,24 +428,18 @@
                     analysisLoader.classList.remove('hidden');
                     
                     const extraNotes = extraNotesInput.value.trim();
-                    
+                    const friendlyErrorMessage = "متاسفانه در حال حاضر امکان ارتباط با سرویس هوشمند فراهم نشد. لطفاً چند لحظه صبر کرده و دوباره تلاش کنید.";
+
                     const prompt = `
                     شما یک وکیل متخصص تحلیل قرارداد در ایران هستید. وظیفه شما تحلیل جامع متن قرارداد زیر و ارائه خروجی به صورت یک کد HTML کامل است.
-                    
                     متن قرارداد برای تحلیل: "${clauseInput.value}"
                     ${extraNotes ? `\n\nنکات تکمیلی از طرف کاربر (به این موارد توجه ویژه کن): "${extraNotes}"` : ''}
-                    
                     لطفا خروجی را فقط و فقط به صورت یک کد HTML کامل و آماده نمایش، بدون هیچ توضیح اضافی، ارائه بده.
                     این کد HTML باید شامل بخش های زیر باشد و از کلاس های Tailwind CSS که در ادامه می آید استفاده کند:
-                    
                     1.  **داشبورد ریسک:** یک div با کلاس "mb-6 p-4 bg-slate-50 rounded-lg border". داخل آن یک h3 با عنوان "داشبورد ریسک قرارداد" و یک div دیگر برای نمایش سه بخش: "بند پرریسک" با رنگ "text-red-600"، "بند هشدارآمیز" با رنگ "text-yellow-500"، و "بند امن" با رنگ "text-green-600". تعداد هر کدام را تخمین بزن و نمایش بده.
-                    
                     2.  **تحلیل اصلی:** یک div اصلی برای تحلیل. عنوان ها را با تگ <h3> و متن های عادی را با تگ <p> نمایش بده.
-                    
                     3.  **بندهای جایگزین پیشنهادی (اختیاری):** اگر بندی نیاز به اصلاح داشت، یک hr و سپس یک h3 با عنوان "بندهای جایگزین پیشنهادی" قرار بده. برای هر پیشنهاد، یک div با کلاس "p-4 border rounded-lg bg-gray-50" بساز. داخل آن، بند اصلی را در یک blockquote با کلاس "border-r-4 border-gray-300" و بند پیشنهادی را در یک blockquote با کلاس "border-r-4 border-green-500" نمایش بده.
-                    
                     4.  **تعهدات و تاریخ‌های کلیدی (اختیاری):** اگر تعهد مهمی وجود داشت، یک hr و سپس یک h3 با عنوان "تعهدات و تاریخ‌های کلیدی" و یک لیست ul با کلاس "list-disc list-inside" بساز و موارد را لیست کن.
-                    
                     5.  **سلب مسئولیت:** در انتهای کل خروجی HTML، یک hr و سپس یک p با این متن قرار بده: "<b>سلب مسئولیت:</b> این یک تحلیل اولیه است که توسط هوش مصنوعی تولید شده و برای تصمیم‌گیری نهایی باید با وکیل یا کارشناس حقوقی مشورت شود."
                     `;
 
@@ -463,8 +450,8 @@
                         analysisResult.innerHTML = resultHtml;
                         analysisResult.classList.remove('hidden');
                     } catch (error) {
-                        showNotification(error.message, 'error');
-                        analysisResult.innerHTML = `<div class="text-red-600">خطا در تحلیل: ${error.message}</div>`;
+                        showNotification(friendlyErrorMessage, 'error');
+                        analysisResult.innerHTML = `<div class="p-4 bg-slate-100 border-r-4 border-slate-500 text-slate-700"><p class="font-bold">خطا در ارتباط</p><p>${friendlyErrorMessage}</p></div>`;
                         analysisResult.classList.remove('hidden');
                     } finally {
                         analysisLoader.classList.add('hidden');
@@ -494,7 +481,7 @@
                         generatedContractTextarea.value = resultText;
                         generatorResult.classList.remove('hidden');
                     } catch (error) {
-                        showNotification(error.message, 'error');
+                        showNotification("متاسفانه در حال حاضر امکان ارتباط با سرویس هوشمند فراهم نشد. لطفاً چند لحظه صبر کرده و دوباره تلاش کنید.", 'error');
                     } finally {
                         generatorLoader.classList.add('hidden');
                     }
