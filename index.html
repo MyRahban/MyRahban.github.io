@@ -51,6 +51,40 @@
         }
         .card-bg {
              background-color: #161d2d;
+             position: relative;
+             overflow: hidden;
+        }
+        /* Shine effect for cards */
+        .card-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -150%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+            transform: skewX(25deg);
+            transition: right 0.75s ease-in-out;
+        }
+        .card-bg:hover::before {
+            right: 150%;
+        }
+        /* Hero background gradient */
+        #hero::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.1), transparent 60%);
+            z-index: 0;
+            pointer-events: none;
+        }
+        #hero > div {
+            position: relative;
+            z-index: 1;
         }
         .loader {
             border: 5px solid #334155;
@@ -84,7 +118,6 @@
         .custom-file-input-label:hover {
             background-color: #3e4c66;
         }
-        /* Prose styles for analysis result */
         #analysis-result h3 {
             font-size: 1.25rem;
             font-weight: 700;
@@ -137,7 +170,7 @@
 
     <main>
         <!-- Hero Section -->
-        <section id="hero" class="text-white">
+        <section id="hero" class="text-white relative overflow-hidden">
             <div class="container mx-auto px-6 py-32 text-center">
                 <h1 class="text-4xl md:text-6xl font-extrabold mb-4">انتخاب مطمئن برای تصمیم‌های مهم</h1>
                 <p class="text-lg md:text-xl max-w-3xl mx-auto mb-8" style="color: var(--text-light);">گروه کارشناسان رهبان با تخصص ویژه در امور حقوقی، بازرگانی و اداری، همراهی هوشمند برای پیشبرد اهداف و کاهش ریسک‌های کسب‌وکار شماست.</p>
