@@ -7,30 +7,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display.swap" rel="stylesheet">
-    
-    <!-- Ionicons for Icons -->
-    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-    
-    <!-- Tesseract.js for OCR -->
-    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
-    
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&display.swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Vazirmatn', sans-serif;
             scroll-behavior: smooth;
             background-color: #f7fafc;
         }
-        :root {
-            --primary-color: #151450;
-            --accent-color: #F06F11;
-        }
-        .primary-color { color: var(--primary-color); }
-        .bg-primary-color { background-color: var(--primary-color); }
+        .primary-color { color: #151450; }
+        .bg-primary-color { background-color: #151450; }
         .hover-bg-primary-color:hover { background-color: #0d0c3a; }
-        .accent-color { color: var(--accent-color); }
-        .bg-accent-color { background-color: var(--accent-color); }
+        .accent-color { color: #F06F11; }
+        .bg-accent-color { background-color: #F06F11; }
         .hover-bg-accent-color:hover { background-color: #d8630c; }
         
         .service-card {
@@ -47,80 +35,24 @@
             box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
         }
         
-        /* Styles for Qararban Modal (Integrated) */
-        .qararban-container {
-            backdrop-filter: blur(4px);
-        }
-        .tab-active {
-            border-color: var(--accent-color);
-            color: var(--accent-color);
-            background-color: white;
-            font-weight: 700;
-        }
-        .tab-pane { display: none; }
-        .tab-pane.active { display: block; }
-        
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary-color);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        #notification {
-            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        #notification.show {
-            transform: translateX(0);
-            opacity: 1;
-        }
-
         #fab-google-form {
             transition: opacity 0.3s, transform 0.3s;
-        }
-        /* Custom file input style */
-        input[type="file"]::file-selector-button {
-            margin-left: 1rem;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            border-width: 0;
-            font-size: 0.875rem;
-            line-height: 1.25rem;
-            font-weight: 600;
-            background-color: #eef2ff; /* indigo-50 */
-            color: #4338ca; /* indigo-700 */
-            cursor: pointer;
-        }
-        input[type="file"]::file-selector-button:hover {
-            background-color: #e0e7ff; /* indigo-100 */
         }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
-
-    <!-- Notification Element for Qararban -->
-    <div id="notification" class="fixed top-8 right-8 z-[101] p-4 rounded-lg shadow-xl text-white max-w-sm">
-        <p id="notification-message"></p>
-    </div>
 
     <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
             <div class="font-extrabold text-2xl primary-color">رهبان</div>
             <div class="hidden md:flex items-center space-x-8 space-x-reverse">
                 <a href="#services" class="text-gray-600 hover:text-[#151450] font-semibold">خدمات</a>
+                <!-- Link to Qararban Subdomain -->
+                <a href="https://www.myrahban.ir/ghararban/" class="text-gray-600 hover:text-[#151450] font-semibold">قراربان</a>
                 <a href="#calculator" class="text-gray-600 hover:text-[#151450] font-semibold">ماشین حساب گمرکی</a>
                 <a href="#why-outsource" class="text-gray-600 hover:text-[#151450] font-semibold">چرا برون‌سپاری؟</a>
                 <a href="#process" class="text-gray-600 hover:text-[#151450] font-semibold">فرآیند کار</a>
                 <a href="#contact" class="text-gray-600 hover:text-[#151450] font-semibold">تماس با ما</a>
-                <button data-action="open-qararban" class="bg-primary-color hover-bg-primary-color text-white font-bold py-2 px-5 rounded-lg transition-colors">✨ قراربان</button>
             </div>
             <button id="menu-btn" class="md:hidden primary-color">
                 <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
@@ -128,16 +60,15 @@
         </nav>
         <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 border-t">
              <a href="#services" class="block py-2 text-gray-600 font-semibold">خدمات</a>
+             <a href="https://www.myrahban.ir/ghararban/" class="block py-2 text-gray-600 font-semibold">قراربان</a>
              <a href="#calculator" class="block py-2 text-gray-600 font-semibold">ماشین حساب گمرکی</a>
              <a href="#why-outsource" class="block py-2 text-gray-600 font-semibold">چرا برون‌سپاری؟</a>
              <a href="#process" class="block py-2 text-gray-600 font-semibold">فرآیند کار</a>
              <a href="#contact" class="block py-2 text-gray-600 font-semibold">تماس با ما</a>
-             <button data-action="open-qararban" class="w-full block py-2 font-semibold bg-primary-color text-white text-center mt-2 rounded-lg">✨ قراربان</button>
         </div>
     </header>
 
     <main>
-        <!-- All other sections of the main page remain the same -->
         <section id="hero" class="bg-primary-color min-h-screen flex items-center justify-center">
             <div class="container mx-auto px-6 py-24 text-center">
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4">انتخاب مطمئن برای تصمیم‌های مهم</h1>
@@ -150,11 +81,10 @@
             <div class="container mx-auto px-6 text-center">
                 <h2 class="text-3xl md:text-4xl font-extrabold mb-4 primary-color">معرفی قراربان: دستیار هوشمند قرارداد شما</h2>
                 <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-8">با استفاده از جدیدترین محصول ما، قراردادهای خود را با قدرت هوش مصنوعی تحلیل، تولید و مدیریت کنید. قراربان، محصولی نوآورانه از گروه کارشناسان رهبان.</p>
-                <button data-action="open-qararban" class="bg-accent-color text-white font-bold py-3 px-8 rounded-lg text-lg hover-bg-accent-color transition-colors shadow-lg">ورود به پلتفرم قراربان</button>
+                <a href="https://www.myrahban.ir/ghararban/" class="bg-accent-color text-white font-bold py-3 px-8 rounded-lg text-lg hover-bg-accent-color transition-colors shadow-lg">ورود به پلتفرم قراربان</a>
             </div>
         </section>
 
-        <!-- Services, Calculator, Why Outsource, Process sections go here... -->
         <section id="services" class="py-20 bg-white">
             <div class="container mx-auto px-6">
                 <div class="text-center mb-16">
@@ -169,6 +99,7 @@
                 </div>
             </div>
         </section>
+
         <section id="calculator" class="py-20">
             <div class="container mx-auto px-6">
                 <div class="text-center mb-12"><h2 class="text-3xl md:text-4xl font-extrabold mb-3 primary-color">ماشین حساب گمرکی</h2><p class="text-gray-600 text-lg">هزینه های ترخیص کالای خود را به صورت جامع محاسبه کنید.</p></div>
@@ -182,7 +113,41 @@
                 </div>
             </div>
         </section>
-        <!-- other sections... -->
+
+        <section id="why-outsource" class="py-20 bg-white">
+             <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-extrabold mb-3 primary-color">چرا برون‌سپاری به رهبان؟</h2>
+                     <p class="text-gray-600 text-lg">مزایای استراتژیک انتخاب ما به عنوان ناظر بیرونی و شریک کسب‌وکار شما.</p>
+                </div>
+                <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div class="bg-gray-50 p-6 rounded-lg border"><h4 class="text-xl font-bold mb-3">۱. کاهش چشمگیر هزینه‌ها</h4><p class="text-gray-600">هزینه سالانه استخدام نیروی متخصص برای تمام این خدمات می‌تواند بیش از یک میلیارد تومان باشد. با برون‌سپاری به رهبان، این هزینه حداقل ۷۰ درصد کاهش می‌یابد.</p></div>
+                     <div class="bg-gray-50 p-6 rounded-lg border"><h4 class="text-xl font-bold mb-3">۲. کاهش چالش‌های روابط کار</h4><p class="text-gray-600">شما درگیر چالش‌های استخدامی و روابط کارگری نخواهید بود، زیرا هیچ رابطه استخدامی مستقیمی بین شما و کارشناسان ما وجود ندارد.</p></div>
+                     <div class="bg-gray-50 p-6 rounded-lg border"><h4 class="text-xl font-bold mb-3">۳. شناسایی خطاهای سیستماتیک</h4><p class="text-gray-600">به عنوان یک ناظر بیرونی، ما الگوهای تکراری، اشکالات سیستمی و شکاف‌های قانونی در فرآیندهای شما را شناسایی می‌کنیم که اغلب از دید نیروهای داخلی پنهان می‌ماند.</p></div>
+                    <div class="bg-gray-50 p-6 rounded-lg border"><h4 class="text-xl font-bold mb-3">۴. دسترسی به داده‌های مقایسه‌ای صنعت</h4><p class="text-gray-600">ما به شما نشان می‌دهیم که شرکت‌های هم‌صنعت شما چگونه با چالش‌های مشابه حقوقی، گمرکی و مالیاتی برخورد کرده‌اند و از چه استانداردهایی پیروی می‌کنند.</p></div>
+                </div>
+             </div>
+        </section>
+
+        <section id="process" class="py-20">
+            <div class="container mx-auto px-6">
+               <div class="text-center mb-16">
+                   <h2 class="text-3xl md:text-4xl font-extrabold mb-3 primary-color">فرآیند آنالیز ریسک کسب‌وکار شما</h2>
+                   <p class="text-gray-600 text-lg">یک مسیر شفاف ۵ مرحله‌ای برای شناسایی و رفع چالش‌های پیش روی شما.</p>
+               </div>
+               <div class="relative max-w-4xl mx-auto">
+                   <div class="hidden md:block absolute h-1 bg-gray-200 w-full top-1/2 -translate-y-1/2"></div>
+                   <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۱</div><h4 class="font-bold">بازدید و عارضه‌یابی</h4><p class="text-sm text-gray-500">بازدید حضوری و ارائه گزارش اولیه</p></div>
+                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۲</div><h4 class="font-bold">تحلیل داده و اسناد</h4><p class="text-sm text-gray-500">بررسی مدارک و شناسایی ایرادات</p></div>
+                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۳</div><h4 class="font-bold">ارائه راهکار</h4><p class="text-sm text-gray-500">گزارش ثانویه و راهکارهای پیشنهادی</p></div>
+                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۴</div><h4 class="font-bold">اجرا و نمایندگی</h4><p class="text-sm text-gray-500">رفع ایرادات و اخذ مجوزها</p></div>
+                       <div class="text-center relative"><div class="bg-primary-color text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 z-10 relative">۵</div><h4 class="font-bold">پشتیبانی و پیگیری</h4><p class="text-sm text-gray-500">پیگیری مستمر امور اجرایی</p></div>
+                   </div>
+               </div>
+            </div>
+       </section>
+        
     </main>
     
     <footer id="contact" class="bg-primary-color text-white mt-12">
@@ -200,274 +165,30 @@
     
     <a href="https://forms.gle/cJdyKmKY4Y4HRQHKA" target="_blank" id="fab-google-form" class="hidden fixed bottom-8 right-8 bg-accent-color text-white w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-lg transform hover:scale-110 transition-transform z-40 opacity-80 hover:opacity-100" title="فرم نظرسنجی/درخواست">📝</a>
 
-    <!-- Qararban Modal (Replaces AI Chat) -->
-    <div id="qararban-container" class="hidden fixed inset-0 z-[100] p-4 transition-opacity duration-300 qararban-container">
-        <div id="qararban-backdrop" class="absolute inset-0 bg-gray-900/50"></div>
-        <div class="relative w-full max-w-6xl mx-auto mt-10 h-[90vh] bg-slate-100 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-            <div class="flex-shrink-0 p-4 border-b bg-white flex justify-between items-center">
-                <header class="text-center">
-                    <h1 class="text-2xl font-bold primary-color">قراربان</h1>
-                    <p class="text-md text-gray-500">پلتفرم جامع مدیریت و تحلیل هوشمند قرارداد</p>
-                </header>
-                <button id="close-qararban-btn" class="text-gray-400 hover:text-gray-800 text-4xl">&times;</button>
-            </div>
-            
-            <div class="p-4 md:p-8 overflow-y-auto">
-                <nav class="flex flex-wrap justify-center bg-slate-200 rounded-t-lg p-2 gap-2">
-                    <button data-tab="analyzer" class="tab-button tab-active flex items-center text-base font-semibold py-2 px-4 rounded-md transition-colors duration-300">
-                        <ion-icon name="scan-outline" class="ml-2"></ion-icon>تحلیل‌گر
-                    </button>
-                    <button data-tab="generator" class="tab-button flex items-center text-gray-600 text-base font-semibold py-2 px-4 rounded-md hover:bg-white transition-colors duration-300">
-                        <ion-icon name="create-outline" class="ml-2"></ion-icon>مولد قرارداد
-                    </button>
-                </nav>
-
-                <div id="tab-content" class="bg-white p-6 md:p-8 rounded-b-2xl shadow-lg border border-gray-200 min-h-[60vh]">
-                    <!-- Tab 1: Clause Analyzer -->
-                    <div id="analyzer-tab-content" class="tab-pane active">
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            <div>
-                                <!-- OCR Section -->
-                                <div class="mb-4 p-4 border border-dashed rounded-lg bg-slate-50">
-                                    <label for="image-upload" class="block text-lg font-semibold text-gray-700 mb-3">
-                                        <ion-icon name="image-outline" class="ml-2"></ion-icon>
-                                        بارگذاری تصویر قرارداد
-                                    </label>
-                                    <input type="file" id="image-upload" accept="image/*" class="block w-full text-sm text-slate-500"/>
-                                    <div id="ocr-status" class="mt-3 text-sm text-gray-500 h-5"></div>
-                                </div>
-                                <div class="text-center my-4 text-gray-400 font-semibold">-- یا --</div>
-                                
-                                <!-- Textarea Section -->
-                                <label for="contract-clause" class="block text-lg font-semibold text-gray-700 mb-2">متن بند قرارداد را اینجا وارد کنید:</label>
-                                <textarea id="contract-clause" rows="8" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow duration-300 resize-y" placeholder="متن مورد نظر برای تحلیل را اینجا وارد یا از تصویر بارگذاری کنید..."></textarea>
-                                <div class="text-center mt-4">
-                                    <button type="button" id="analyze-button" class="w-full bg-accent-color text-white font-bold py-3 px-10 rounded-lg hover-bg-accent-color focus:outline-none focus:ring-4 focus:ring-orange-300 transition-all duration-300">تحلیل کن</button>
-                                </div>
-                            </div>
-                            <div id="analysis-result-container" class="border-r pr-8" aria-live="polite">
-                                <div id="analysis-placeholder" class="h-full flex items-center justify-center text-center bg-gray-50 rounded-lg p-8">
-                                    <div><ion-icon name="document-text-outline" class="text-5xl text-gray-300 mx-auto"></ion-icon><p class="mt-4 text-gray-500">نتیجه تحلیل شما در اینجا نمایش داده خواهد شد.</p></div>
-                                </div>
-                                <div id="analysis-loader" class="hidden h-full flex items-center justify-center"><div class="loader"></div></div>
-                                <div id="analysis-result" class="hidden prose max-w-none"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Tab 2: Smart Template Generator -->
-                    <div id="generator-tab-content" class="tab-pane">
-                        <div class="text-center"><h2 class="text-2xl font-bold text-gray-800 mb-2">مولد هوشمند قرارداد</h2><p class="text-gray-500 mb-6">متن گفتگوی واتساپ، صورت‌جلسه یا توافقات شفاهی خود را وارد کنید تا به پیش‌نویس اولیه یک قرارداد تبدیل شود.</p></div>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            <div>
-                                <label for="conversation-input" class="block text-lg font-semibold text-gray-700 mb-2">متن توافقات:</label>
-                                <textarea id="conversation-input" rows="10" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow duration-300 resize-y" placeholder="مثال: سلام، توافق کردیم پروژه طراحی سایت رو با مبلغ ۲۰ میلیون تومان در ۴۵ روز انجام بدم..."></textarea>
-                                <div class="text-center mt-4"><button type="button" id="generate-button" class="w-full bg-accent-color text-white font-bold py-3 px-10 rounded-lg hover-bg-accent-color focus:outline-none focus:ring-4 focus:ring-orange-300 transition-all duration-300">تبدیل به قرارداد</button></div>
-                            </div>
-                            <div id="generator-result-container" class="border-r pr-8" aria-live="polite">
-                                <div id="generator-placeholder" class="h-full flex items-center justify-center text-center bg-gray-50 rounded-lg p-8">
-                                    <div><ion-icon name="create-outline" class="text-5xl text-gray-300 mx-auto"></ion-icon><p class="mt-4 text-gray-500">پیش‌نویس قرارداد شما اینجا نمایش داده می‌شود.</p></div>
-                                </div>
-                                <div id="generator-loader" class="hidden h-full flex items-center justify-center"><div class="loader"></div></div>
-                                <div id="generator-result" class="hidden prose max-w-none">
-                                    <textarea id="generated-contract" readonly class="w-full h-96 p-4 border rounded-lg bg-gray-50 font-mono text-sm"></textarea>
-                                    <div class="text-center mt-4"><button type="button" id="copy-btn" class="bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300">کپی متن</button></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- START: CONFIGURATION ---
-            const PROXY_ENDPOINT = 'https://complete-faustine-myrahban-ada7be97.koyeb.app/api/generate';
-            // --- END: CONFIGURATION ---
-
-            // --- Notification Function (Defined Globally for all parts to use) ---
-            const notification = document.getElementById('notification');
-            const notificationMessage = document.getElementById('notification-message');
-            let notificationTimeout;
-
-            function showNotification(message, type = 'error', duration = 4000) {
-                if (notificationTimeout) clearTimeout(notificationTimeout);
-                notificationMessage.textContent = message;
-                notification.className = 'fixed top-8 right-8 z-[101] p-4 rounded-lg shadow-xl text-white max-w-sm'; // Reset classes
-                if (type === 'success') notification.classList.add('bg-green-600');
-                else if (type === 'info') notification.classList.add('bg-blue-600');
-                else notification.classList.add('bg-red-600');
-                notification.classList.add('show');
-                notificationTimeout = setTimeout(() => notification.classList.remove('show'), duration);
-            }
-
-            // --- General Page Logic (Menu, FAB) ---
+            // --- General Page Logic (Menu, FAB, etc.) ---
             const menuBtn = document.getElementById('menu-btn');
             const mobileMenu = document.getElementById('mobile-menu');
             const fab = document.getElementById('fab-google-form');
 
-            menuBtn.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 200) fab.classList.remove('hidden');
-                else fab.classList.add('hidden');
-            });
-
-            // --- Qararban Modal Setup ---
-            // This function sets up all listeners for the Qararban modal.
-            function setupQararban() {
-                const qararbanContainer = document.getElementById('qararban-container');
-                if (!qararbanContainer) return; // Exit if modal not on page
-
-                // Modal Open/Close Controls
-                const closeQararbanBtn = qararbanContainer.querySelector('#close-qararban-btn');
-                const qararbanBackdrop = qararbanContainer.querySelector('#qararban-backdrop');
-                document.querySelectorAll('[data-action="open-qararban"]').forEach(btn => {
-                    btn.addEventListener('click', () => qararbanContainer.classList.remove('hidden'));
-                });
-                closeQarbanBtn.addEventListener('click', () => qararbanContainer.classList.add('hidden'));
-                qararbanBackdrop.addEventListener('click', () => qararbanContainer.classList.add('hidden'));
-
-                // --- Scoped Qararban Functionality ---
-                // By selecting elements from within 'qararbanContainer', we avoid conflicts.
-                const tabButtons = qararbanContainer.querySelectorAll('.tab-button');
-                const tabPanes = qararbanContainer.querySelectorAll('.tab-pane');
-                const analyzeButton = qararbanContainer.querySelector('#analyze-button');
-                const clauseInput = qararbanContainer.querySelector('#contract-clause');
-                const analysisResultContainer = qararbanContainer.querySelector('#analysis-result');
-                const analysisPlaceholder = qararbanContainer.querySelector('#analysis-placeholder');
-                const analysisLoader = qararbanContainer.querySelector('#analysis-loader');
-                const generateButton = qararbanContainer.querySelector('#generate-button');
-                const conversationInput = qararbanContainer.querySelector('#conversation-input');
-                const generatorResultContainer = qararbanContainer.querySelector('#generator-result');
-                const generatorPlaceholder = qararbanContainer.querySelector('#generator-placeholder');
-                const generatorLoader = qararbanContainer.querySelector('#generator-loader');
-                const generatedContractTextarea = qararbanContainer.querySelector('#generated-contract');
-                const copyBtn = qararbanContainer.querySelector('#copy-btn');
-                const imageUploadInput = qararbanContainer.querySelector('#image-upload');
-                const ocrStatusDiv = qararbanContainer.querySelector('#ocr-status');
-
-                // Tab switching
-                tabButtons.forEach(button => {
-                    button.addEventListener('click', () => {
-                        const targetTab = button.dataset.tab;
-                        tabButtons.forEach(btn => btn.classList.toggle('tab-active', btn.dataset.tab === targetTab));
-                        tabPanes.forEach(pane => pane.classList.toggle('active', pane.id === `${targetTab}-tab-content`));
-                    });
-                });
-                
-                // OCR Logic
-                imageUploadInput.addEventListener('change', async (event) => {
-                    const file = event.target.files[0];
-                    if (!file) return;
-                    ocrStatusDiv.textContent = 'در حال آماده‌سازی موتور OCR...';
-                    try {
-                        const worker = await Tesseract.createWorker('fas', 1, {
-                            logger: m => {
-                                if (m.status === 'recognizing text') {
-                                    ocrStatusDiv.textContent = `در حال تشخیص متن... ${(m.progress * 100).toFixed(0)}%`;
-                                } else { ocrStatusDiv.textContent = `وضعیت: ${m.status}`; }
-                            },
-                        });
-                        ocrStatusDiv.textContent = 'موتور OCR آماده است. در حال پردازش تصویر...';
-                        const { data: { text } } = await worker.recognize(file);
-                        await worker.terminate();
-                        clauseInput.value = text;
-                        ocrStatusDiv.textContent = 'متن با موفقیت استخراج شد!';
-                        showNotification('متن از تصویر استخراج و در کادر قرار گرفت.', 'success');
-                    } catch (error) {
-                        console.error('OCR Error:', error);
-                        ocrStatusDiv.textContent = 'خطا در تشخیص متن.';
-                        showNotification('متاسفانه در استخراج متن از تصویر خطایی رخ داد.', 'error');
-                    }
-                });
-
-                // API Call Logic
-                async function callProxy(payload) {
-                    try {
-                        const response = await fetch(PROXY_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                        const result = await response.json();
-                        if (!response.ok) throw new Error(result.error || 'خطای ناشناخته در سرور پراکسی.');
-                        if (result.candidates && result.candidates[0]?.content?.parts[0]) return result.candidates[0].content.parts[0].text;
-                        else throw new Error("پاسخ معتبری از سرویس دریافت نشد. ممکن است محتوای شما ناقض قوانین ایمنی باشد.");
-                    } catch (error) {
-                        console.error("Error calling proxy:", error);
-                        throw error;
-                    }
-                }
-                
-                function displayError(container, message) {
-                    container.innerHTML = `<div class="p-4 bg-red-50 border-r-4 border-red-500"><p class="font-bold text-red-800">خطا</p><p class="text-red-700">${message}</p></div>`;
-                    container.classList.remove('hidden');
-                }
-
-                // Analyzer Logic
-                analyzeButton.addEventListener('click', async () => {
-                    const clauseText = clauseInput.value.trim();
-                    if (!clauseText) { showNotification('لطفاً متنی را برای تحلیل وارد کنید.'); return; }
-                    
-                    analysisPlaceholder.classList.add('hidden');
-                    analysisResultContainer.classList.add('hidden');
-                    analysisLoader.classList.remove('hidden');
-
-                    const prompt = `شما یک وکیل متخصص تحلیل قرارداد در ایران هستید. متن زیر یک بند از یک قرارداد است. لطفاً آن را تحلیل کرده و نتیجه را در قالب یک ساختار JSON ارائه بده. متن بند: "${clauseText}"`;
-                    const analysisSchema = { type: "OBJECT", properties: { "riskLevel": { "type": "STRING", "enum": ["کم", "متوسط", "بالا"] }, "riskColor": { "type": "STRING", "enum": ["سبز", "زرد", "قرمز"] }, "analysisText": { "type": "STRING" } }, required: ["riskLevel", "riskColor", "analysisText"] };
-                    const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", responseSchema: analysisSchema } };
-
-                    try {
-                        const resultJsonString = await callProxy(payload);
-                        const resultObj = JSON.parse(resultJsonString);
-                        const riskColorMap = { "سبز": "green", "زرد": "yellow", "قرمز": "red" };
-                        const riskColor = riskColorMap[resultObj.riskColor] || "gray";
-                        const formattedText = resultObj.analysisText.replace(/\*\*(.*?)\*\*/g, '<h3 class="font-bold text-lg primary-color mt-4 mb-2">$1</h3>').replace(/\* (.*?)(?=\n|\* |$)/g, '<li class="mr-4">$1</li>').replace(/\n/g, '<br>');
-                        analysisResultContainer.innerHTML = `<div class="space-y-4"><div><h3 class="font-bold text-lg primary-color mb-2">سطح ریسک:</h3><div class="inline-flex items-center px-4 py-1 rounded-full text-base font-bold bg-${riskColor}-100 text-${riskColor}-800 border border-${riskColor}-200">ریسک ${resultObj.riskLevel}</div></div><div><ul>${formattedText}</ul></div></div>`;
-                        analysisResultContainer.classList.remove('hidden');
-                    } catch (apiError) {
-                        showNotification(apiError.message, 'error');
-                        displayError(analysisResultContainer, `${apiError.message}`);
-                    } finally {
-                        analysisLoader.classList.add('hidden');
-                    }
-                });
-
-                // Generator Logic
-                generateButton.addEventListener('click', async () => {
-                    const conversationText = conversationInput.value.trim();
-                    if (!conversationText) { showNotification('لطفاً متن توافقات را وارد کنید.'); return; }
-
-                    generatorPlaceholder.classList.add('hidden');
-                    generatorResultContainer.classList.add('hidden');
-                    generatorLoader.classList.remove('hidden');
-                    
-                    const prompt = `شما یک دستیار حقوقی هستید که متن گفتگوهای غیررسمی را به پیش‌نویس قرارداد تبدیل می‌کنید. متن زیر توافقات اولیه بین دو نفر است. لطفاً بر اساس آن، یک پیش‌نویس اولیه قرارداد شامل طرفین، موضوع، مبلغ، مدت و تعهدات اصلی به زبان فارسی و با ساختار استاندارد حقوقی تهیه کن. متن گفتگو: "${conversationText}"`;
-                    const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-
-                    try {
-                        const resultText = await callProxy(payload);
-                        generatedContractTextarea.value = resultText;
-                        generatorResultContainer.classList.remove('hidden');
-                    } catch (error) {
-                        showNotification(error.message, 'error');
-                        displayError(generatorResultContainer, `خطا در تولید قرارداد: ${error.message}`);
-                    } finally {
-                        generatorLoader.classList.add('hidden');
-                    }
-                });
-
-                copyBtn.addEventListener('click', () => {
-                    generatedContractTextarea.select();
-                    document.execCommand('copy');
-                    showNotification('متن قرارداد کپی شد!', 'success');
+            if (menuBtn) {
+                menuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
                 });
             }
-            
-            // --- Customs Calculator Logic ---
-            function setupCalculator() {
-                const calculateBtn = document.getElementById('calculate-btn');
-                if (!calculateBtn) return;
 
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 200) {
+                    fab.classList.remove('hidden');
+                } else {
+                    fab.classList.add('hidden');
+                }
+            });
+
+            // --- Customs Calculator Logic ---
+            const calculateBtn = document.getElementById('calculate-btn');
+            if (calculateBtn) {
                 const goodsValueInput = document.getElementById('goods-value');
                 const exchangeRateInput = document.getElementById('exchange-rate');
                 const resultArea = document.getElementById('result-area');
@@ -482,7 +203,7 @@
                         const value = parseFloat(toEnglishDigits(goodsValueInput.value || '0').replace(/,/g, ''));
                         const rate = parseFloat(toEnglishDigits(exchangeRateInput.value || '0').replace(/,/g, ''));
                         if (isNaN(value) || isNaN(rate) || value < 0 || rate < 0) {
-                            showNotification('لطفا مقادیر معتبر برای ماشین حساب وارد کنید.', 'error');
+                            alert('لطفا مقادیر معتبر برای ماشین حساب وارد کنید.');
                             return;
                         }
                         const goodsValueRial = Math.floor(value * rate);
@@ -507,14 +228,10 @@
                         resultArea.classList.remove('hidden');
                     } catch (error) {
                         console.error("Calculator error:", error);
-                        showNotification('خطایی در محاسبه رخ داد. لطفا ورودی خود را بررسی کنید.', 'error');
+                        alert('خطایی در محاسبه رخ داد. لطفا ورودی خود را بررسی کنید.');
                     }
                 });
             }
-            
-            // --- Initialize all parts of the page ---
-            setupQararban();
-            setupCalculator();
         });
     </script>
 </body>
