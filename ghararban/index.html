@@ -390,31 +390,72 @@
                     analysisLoader.classList.remove('hidden');
                     
                     const extraNotes = extraNotesInput.value.trim();
-                    const disclaimer = "\n\n---\n**سلب مسئولیت:** این یک تحلیل اولیه است که توسط هوش مصنوعی تولید شده و برای تصمیم‌گیری نهایی باید با وکیل یا کارشناس حقوقی مشورت شود.";
-                    let prompt = `شما یک وکیل متخصص تحلیل قرارداد در ایران هستید. متن زیر یک بند از یک قرارداد است. لطفاً آن را تحلیل کن. متن بند: "${clauseInput.value}"`;
-                    if (extraNotes) {
-                        prompt += `\n\n**نکات تکمیلی از طرف کاربر (به این موارد توجه ویژه کن):** ${extraNotes}`;
-                    }
-                    prompt += `\n\nدر انتهای پاسخ خود، حتما و حتما این متن سلب مسئولیت را اضافه کن: "${disclaimer}"`;
+                    const disclaimer = `\n\n---\n**سلب مسئولیت:** این یک تحلیل اولیه است که توسط هوش مصنوعی تولید شده و برای تصمیم‌گیری نهایی باید با وکیل یا کارشناس حقوقی مشورت شود.`;
+                    
+                    let prompt = `شما یک وکیل متخصص تحلیل قرارداد در ایران هستید. وظیفه شما تحلیل جامع متن قرارداد زیر است.
+                    متن قرارداد: "${clauseInput.value}"
+                    ${extraNotes ? `\n\nنکات تکمیلی از طرف کاربر (به این موارد توجه ویژه کن): "${extraNotes}"` : ''}
+                    
+                    لطفا خروجی را فقط و فقط به صورت یک ساختار JSON ارائه بده. این JSON باید شامل کلیدهای زیر باشد:
+                    1. "riskDashboard": یک آبجکت شامل سه کلید عددی: "redClauses" (تعداد بندهای پرریسک)، "yellowClauses" (تعداد بندهای هشدارآمیز)، "greenClauses" (تعداد بندهای امن).
+                    2. "mainAnalysis": تحلیل متنی کامل و جامع قرارداد.
+                    3. "suggestedClauses": آرایه‌ای از آبجکت‌ها. هر آبجکت شامل دو کلید است: "originalClause" (متن بند پرریسک) و "suggestion" (متن بند جایگزین پیشنهادی). اگر بندی برای پیشنهاد نبود، این آرایه را خالی بگذار.
+                    4. "keyObligations": آرایه‌ای از رشته‌ها که هر رشته یک تعهد یا تاریخ کلیدی استخراج شده از متن را توصیف می‌کند.
+                    
+                    در انتهای مقدار کلید "mainAnalysis"، حتما و حتما این متن سلب مسئولیت را اضافه کن: "${disclaimer}"`;
 
                     const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
                     
                     try {
                         let resultText = await callProxy(payload);
-                        // Ensure disclaimer is there, sometimes the model might forget
-                        if (!resultText.includes('سلب مسئولیت')) {
-                            resultText += disclaimer;
-                        }
-                        const formattedText = resultText
-                            .replace(/\*\*(.*?)\*\*/g, '<h3 class="font-bold text-lg primary-color mt-4 mb-2">$1</h3>')
-                            .replace(/\* (.*?)(?=\n|\* |$)/g, '<li class="mr-4">$1</li>')
-                            .replace(/---/g, '<hr class="my-4">')
-                            .replace(/\n/g, '<br>');
+                        const resultObj = JSON.parse(resultText);
 
-                        analysisResult.innerHTML = `<div class="space-y-4">${formattedText}</div>`;
+                        // Render Risk Dashboard
+                        const dashboardHtml = `
+                            <div class="mb-6 p-4 bg-slate-50 rounded-lg border">
+                                <h3 class="text-lg font-bold primary-color mb-3">داشبورد ریسک قرارداد</h3>
+                                <div class="flex justify-around text-center">
+                                    <div><div class="text-3xl font-extrabold text-red-600">${resultObj.riskDashboard.redClauses}</div><div class="text-sm text-gray-500">بند پرریسک</div></div>
+                                    <div><div class="text-3xl font-extrabold text-yellow-500">${resultObj.riskDashboard.yellowClauses}</div><div class="text-sm text-gray-500">بند هشدارآمیز</div></div>
+                                    <div><div class="text-3xl font-extrabold text-green-600">${resultObj.riskDashboard.greenClauses}</div><div class="text-sm text-gray-500">بند امن</div></div>
+                                </div>
+                            </div>`;
+
+                        // Render Main Analysis
+                        const analysisHtml = `<div class="prose max-w-none">${resultObj.mainAnalysis.replace(/\*\*(.*?)\*\*/g, '<h3>$1</h3>').replace(/\n/g, '<br>')}</div>`;
+                        
+                        // Render Suggested Clauses
+                        let suggestionsHtml = '';
+                        if(resultObj.suggestedClauses && resultObj.suggestedClauses.length > 0) {
+                            suggestionsHtml = '<hr class="my-6"><h3 class="text-xl font-bold primary-color mb-4">بندهای جایگزین پیشنهادی</h3><div class="space-y-4">';
+                            resultObj.suggestedClauses.forEach(item => {
+                                suggestionsHtml += `<div class="p-4 border rounded-lg bg-gray-50">
+                                    <p class="text-sm text-gray-500 mb-2">برای بند:</p>
+                                    <blockquote class="border-r-4 border-gray-300 pr-4 mb-3 text-gray-600">${item.originalClause}</blockquote>
+                                    <p class="text-sm text-green-700 font-semibold mb-2">پیشنهاد می‌شود:</p>
+                                    <blockquote class="border-r-4 border-green-500 pr-4 text-gray-800">${item.suggestion}</blockquote>
+                                </div>`;
+                            });
+                            suggestionsHtml += '</div>';
+                        }
+
+                        // Render Key Obligations
+                        let obligationsHtml = '';
+                        if(resultObj.keyObligations && resultObj.keyObligations.length > 0) {
+                            obligationsHtml = '<hr class="my-6"><h3 class="text-xl font-bold primary-color mb-4">تعهدات و تاریخ‌های کلیدی</h3><ul class="list-disc list-inside space-y-2">';
+                            resultObj.keyObligations.forEach(item => {
+                                obligationsHtml += `<li class="text-gray-700">${item}</li>`;
+                            });
+                            obligationsHtml += '</ul>';
+                        }
+
+                        analysisResult.innerHTML = dashboardHtml + analysisHtml + suggestionsHtml + obligationsHtml;
                         analysisResult.classList.remove('hidden');
+
                     } catch (error) {
                         showNotification(error.message, 'error');
+                        analysisResult.innerHTML = `<div class="text-red-600">خطا در تحلیل: ${error.message}</div>`;
+                        analysisResult.classList.remove('hidden');
                     } finally {
                         analysisLoader.classList.add('hidden');
                     }
