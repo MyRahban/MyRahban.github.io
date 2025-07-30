@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa" dir="rtl" style="visibility: hidden; opacity: 0;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -204,7 +204,7 @@
                <div class="max-w-4xl mx-auto">
                    <div class="flex items-center justify-between relative">
                        <!-- The connecting line -->
-                       <div class="hidden md:block absolute w-full h-0.5 bg-slate-700 top-1/2 transform -translate-y-1/2"></div>
+                       <div class="hidden md:block absolute w-full h-0.5 bg-slate-700 top-10 transform -translate-y-1/2"></div>
                        
                        <!-- The steps -->
                        <div class="flex flex-col items-center relative z-10 w-1/5">
@@ -304,6 +304,12 @@
     </div>
 
     <script>
+        // Shows the page once the DOM is ready, preventing FOUC
+        window.addEventListener('DOMContentLoaded', function() {
+            document.documentElement.style.visibility = 'visible';
+            document.documentElement.style.opacity = '1';
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
             // --- CONFIGURATION ---
             const PROXY_ENDPOINT = 'https://complete-faustine-myrahban-ada7be97.koyeb.app/api/generate';
