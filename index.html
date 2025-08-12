@@ -206,7 +206,11 @@
             <h1 class="font-bold text-3xl mb-2">ورود / ثبت‌نام</h1>
             <p class="mb-8" style="color: var(--text-muted);">برای ادامه، شماره موبایل خود را وارد کنید.</p>
             <div id="phone-input-container">
-                <input type="tel" id="phone-number" class="w-full p-3 text-center text-lg" placeholder="مثال: 09123456789">
+                <!-- Modified Phone Input -->
+                <div class="flex items-center border border-slate-600 rounded-md overflow-hidden bg-[#161d2d]">
+                    <span class="px-4 text-lg text-gray-400 border-l border-slate-600">+98</span>
+                    <input type="tel" id="phone-number-suffix" class="w-full p-3 text-left text-lg bg-transparent focus:outline-none" placeholder="9123456789" dir="ltr">
+                </div>
                 <button id="send-otp-btn" class="btn-primary w-full mt-4 py-3">ارسال کد تایید</button>
             </div>
             <div id="otp-input-container" class="hidden mt-4">
@@ -363,7 +367,7 @@
             const logoutBtn = document.getElementById('logout-btn');
             const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
             const phoneInputContainer = document.getElementById('phone-input-container');
-            const phoneNumberInput = document.getElementById('phone-number');
+            const phoneNumberSuffixInput = document.getElementById('phone-number-suffix'); // Updated ID
             const sendOtpBtn = document.getElementById('send-otp-btn');
             const otpInputContainer = document.getElementById('otp-input-container');
             const otpCodeInput = document.getElementById('otp-code');
@@ -413,7 +417,7 @@
             recaptchaVerifier.render().then(widgetId => window.recaptchaWidgetId = widgetId);
 
             sendOtpBtn.addEventListener('click', () => {
-                const phoneNumber = "+98" + phoneNumberInput.value.slice(1);
+                const phoneNumber = "+98" + phoneNumberSuffixInput.value; // Construct full number
                 const appVerifier = window.recaptchaVerifier;
                 sendOtpBtn.disabled = true;
                 sendOtpBtn.textContent = 'در حال ارسال...';
