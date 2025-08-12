@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl" style="visibility: hidden; opacity: 0;">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>رهبان - خدمات بازرگانی و حقوقی</title>
+    <title>رهبان - پلتفرم هوشمند حقوقی - بازرگانی</title>
 
     <!-- Favicon -->
     <link rel="icon" href="/favicon.png" type="image/png">
@@ -24,88 +24,101 @@
     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
     
     <style>
+        :root {
+            --bg-dark-gradient-start: #0c071a;
+            --bg-dark-gradient-end: #000000;
+            --card-bg: rgba(22, 21, 38, 0.7);
+            --card-border: #2a2640;
+            --card-hover-border: #4b60d1;
+            --accent-purple: #4b60d1;
+            --accent-purple-hover: #5a70e3;
+            --text-primary: #ffffff;
+            --text-secondary: #c5c0e7;
+            --text-muted: #a09cb8;
+        }
+
         body {
             font-family: 'Vazirmatn', sans-serif;
             scroll-behavior: smooth;
-            background-color: #0B1120; /* Dark blue background */
-            color: #E0E0E0; /* Light gray text */
+            background-color: var(--bg-dark-gradient-end);
+            background-image: linear-gradient(180deg, var(--bg-dark-gradient-start), var(--bg-dark-gradient-end));
+            color: var(--text-secondary);
         }
-        :root {
-            --primary-dark: #0B1120;
-            --primary-light: #1E293B; /* Slate 800 */
-            --accent-blue: #4b60d1; /* LegalOn's Blue */
-            --accent-blue-hover: #4052b8; /* Darker blue for hover */
-            --text-light: #9CA3AF; /* Gray 400 */
-        }
+
+        h1, h2, h3, h4 { color: var(--text-primary); }
+
         .btn-primary {
-            background-color: var(--accent-blue);
+            background-color: var(--accent-purple);
             color: white;
+            font-weight: bold;
+            padding: 0.8rem 2rem;
+            border-radius: 0.5rem;
             transition: background-color 0.3s ease, transform 0.2s ease;
+            border: 1px solid transparent;
         }
         .btn-primary:hover {
-            background-color: var(--accent-blue-hover);
+            background-color: var(--accent-purple-hover);
             transform: translateY(-2px);
         }
-        .section-bg {
-            background-color: var(--primary-light);
+        .btn-primary:disabled {
+            background-color: #37364e;
+            cursor: not-allowed;
+            transform: none;
         }
+        
         .card-bg {
-             background-color: #161d2d;
+             background-color: var(--card-bg);
+             border: 1px solid var(--card-border);
+             transition: border-color 0.3s ease, transform 0.3s ease;
+        }
+        .card-bg:hover {
+            transform: translateY(-5px);
+            border-color: var(--card-hover-border);
+        }
+        .card-bg::before { display: none; }
+
+        #hero {
+             background: linear-gradient(145deg, rgba(75, 96, 209, 0.15) 0%, rgba(12, 7, 26, 0) 40%);
              position: relative;
              overflow: hidden;
         }
-        /* Shine effect for cards */
-        .card-bg::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: -150%;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
-            transform: skewX(25deg);
-            transition: right 0.75s ease-in-out;
+        #hero::before { display: none; }
+        #hero > div { position: relative; z-index: 1; }
+
+        header.main-header {
+            background-color: rgba(12, 7, 26, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--card-border);
         }
-        .card-bg:hover::before {
-            right: 150%;
-        }
-        /* Hero background gradient */
-        #hero::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(75, 96, 209, 0.1), transparent 60%);
-            z-index: 0;
-            pointer-events: none;
-        }
-        #hero > div {
-            position: relative;
-            z-index: 1;
-        }
-        .loader {
-            border: 5px solid #334155;
-            border-top: 5px solid var(--accent-blue);
+
+        #process .step-item {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
+            width: 5rem; height: 5rem;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: bold;
+            margin: 0 auto 1rem auto;
+            position: relative; z-index: 10;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        #process .step-line {
+            position: absolute; height: 2px;
+            background-color: var(--card-border);
+            width: 100%; top: 2.5rem; left: 0; z-index: 5;
         }
-        #notification {
-            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
-            transform: translateX(100%);
-            opacity: 0;
+        
+        #qararban-container .modal-content-area { background-color: var(--bg-dark-gradient-start); }
+        
+        textarea, input[type="text"], input[type="tel"] {
+            background-color: #161d2d !important;
+            border: 1px solid var(--card-border) !important;
+            color: var(--text-primary);
+            border-radius: 0.375rem;
         }
-        #notification.show {
-            transform: translateX(0);
-            opacity: 1;
+        textarea:focus, input:focus {
+            border-color: var(--accent-purple) !important;
+            box-shadow: 0 0 0 2px rgba(75, 96, 209, 0.3);
+            outline: none;
         }
         .custom-file-input-label {
             background-color: #2c3a52;
@@ -118,161 +131,176 @@
         .custom-file-input-label:hover {
             background-color: #3e4c66;
         }
-        /* Prose styles for analysis result */
-        #analysis-result h3 {
+        .tab-button.tab-active { background-color: var(--accent-purple); color: white; }
+        
+        .loader {
+            border: 5px solid #334155;
+            border-top: 5px solid var(--accent-purple);
+            border-radius: 50%;
+            width: 50px; height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        #notification {
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            transform: translateX(100%); opacity: 0;
+        }
+        #notification.show { transform: translateX(0); opacity: 1; }
+
+        .fullscreen-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 1rem;
+        }
+        .role-selection-card, .auth-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        .role-button {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 2px solid var(--card-border);
+            border-radius: 0.5rem;
             font-size: 1.25rem;
             font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        .role-button:hover {
+            background-color: var(--accent-purple);
+            border-color: var(--accent-purple);
             color: white;
-            margin-bottom: 0.75rem;
-            margin-top: 1.5rem;
+            transform: translateY(-3px);
         }
-         #analysis-result p {
-            color: #E0E0E0;
-            line-height: 1.7;
-            margin-bottom: 1rem;
-        }
-         #analysis-result blockquote {
-            margin-bottom: 0.75rem;
-         }
-         #analysis-result hr {
-            margin-top: 1.5rem;
-            margin-bottom: 1.5rem;
-            border-color: #334155; /* slate-700 */
-         }
     </style>
 </head>
-<body>
+<body class="text-lg">
 
     <div id="notification" class="fixed top-8 right-8 z-[101] p-4 rounded-lg shadow-xl text-white max-w-sm">
         <p id="notification-message"></p>
     </div>
 
-    <!-- Header -->
-    <header class="bg-slate-900/80 backdrop-blur-sm sticky top-0 z-50 border-b border-slate-700">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="font-bold text-3xl text-white">رهبان</div>
-            <div class="hidden md:flex items-center space-x-8 space-x-reverse">
-                <a href="#services" class="text-gray-300 hover:text-white font-semibold">خدمات</a>
-                <a href="#process" class="text-gray-300 hover:text-white font-semibold">فرآیند کار</a>
-                <a href="#contact" class="text-gray-300 hover:text-white font-semibold">تماس با ما</a>
-                <button data-action="open-qararban" class="btn-primary font-bold py-2 px-5 rounded-lg">✨ قراربان</button>
-            </div>
-            <button id="menu-btn" class="md:hidden text-white">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-            </button>
-        </nav>
-        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 border-t border-slate-700">
-             <a href="#services" class="block py-2 text-gray-300 hover:text-white font-semibold">خدمات</a>
-             <a href="#process" class="block py-2 text-gray-300 hover:text-white font-semibold">فرآیند کار</a>
-             <a href="#contact" class="block py-2 text-gray-300 hover:text-white font-semibold">تماس با ما</a>
-             <button data-action="open-qararban" class="w-full block py-2 mt-2 font-semibold btn-primary text-white text-center rounded-lg">✨ قراربان</button>
+    <!-- Role Selection Screen -->
+    <div id="role-selection-screen" class="fullscreen-container">
+        <div class="role-selection-card">
+            <h1 class="font-bold text-3xl mb-2">به رهبان خوش آمدید</h1>
+            <p class="mb-8" style="color: var(--text-muted);">لطفاً نقش خود را برای ورود به پلتفرم انتخاب کنید.</p>
+            <button class="role-button" data-role="employer">کارفرما هستم</button>
+            <button class="role-button" data-role="employee">کارگر هستم</button>
         </div>
-    </header>
+    </div>
 
-    <main>
-        <!-- Hero Section -->
-        <section id="hero" class="text-white relative overflow-hidden">
-            <div class="container mx-auto px-6 py-32 text-center">
-                <h1 class="text-4xl md:text-6xl font-extrabold mb-4">انتخاب مطمئن برای تصمیم‌های مهم</h1>
-                <p class="text-lg md:text-xl max-w-3xl mx-auto mb-8" style="color: var(--text-light);">گروه کارشناسان رهبان با تخصص ویژه در امور حقوقی، بازرگانی و اداری، همراهی هوشمند برای پیشبرد اهداف و کاهش ریسک‌های کسب‌وکار شماست.</p>
-                <button data-action="open-qararban" class="btn-primary font-bold py-4 px-10 rounded-lg text-lg shadow-lg">ورود به پلتفرم هوشمند قراربان</button>
+    <!-- Auth Screen -->
+    <div id="auth-screen" class="fullscreen-container hidden">
+        <div class="auth-card">
+            <h1 class="font-bold text-3xl mb-2">ورود / ثبت‌نام</h1>
+            <p class="mb-8" style="color: var(--text-muted);">برای ادامه، شماره موبایل خود را وارد کنید.</p>
+            <div id="phone-input-container">
+                <input type="tel" id="phone-number" class="w-full p-3 text-center text-lg" placeholder="مثال: 09123456789">
+                <button id="send-otp-btn" class="btn-primary w-full mt-4 py-3">ارسال کد تایید</button>
             </div>
-        </section>
-
-        <!-- Services Section -->
-        <section id="services" class="py-20 section-bg">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-3 text-white">خدمات جامع حقوقی و بازرگانی</h2>
-                    <p class="text-lg" style="color: var(--text-light);">با ارائه بهترین راه حل و تدابیر، یاری‌گر شما هستیم.</p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <div class="card-bg p-8 rounded-xl shadow-lg border border-slate-700"><h3 class="text-xl font-bold mb-3 text-white">امور حقوقی</h3><p style="color: var(--text-light);">تحلیل و تدوین قراردادها، مشاوره تخصصی و نمایندگی در دعاوی کار.</p></div>
-                    <div class="card-bg p-8 rounded-xl shadow-lg border border-slate-700"><h3 class="text-xl font-bold mb-3 text-white">امور بازرگانی</h3><p style="color: var(--text-light);">انجام فرآیندهای ثبت سفارش، اظهار گمرکی و ترخیص کالا از مناطق ویژه.</p></div>
-                    <div class="card-bg p-8 rounded-xl shadow-lg border border-slate-700"><h3 class="text-xl font-bold mb-3 text-white">جذب و استخدام</h3><p style="color: var(--text-light);">تأمین نیروی انسانی متخصص و متعهد برای واحدهای صنعتی و تولیدی.</p></div>
-                    <div class="card-bg p-8 rounded-xl shadow-lg border border-slate-700"><h3 class="text-xl font-bold mb-3 text-white">امور مالی و مالیاتی</h3><p style="color: var(--text-light);">کاهش ریسک جرائم مالیاتی و بیمه‌ای و تسهیل امور بانکی و ارزی.</p></div>
-                </div>
+            <div id="otp-input-container" class="hidden mt-4">
+                <p class="mb-4" style="color: var(--text-muted);">کد ۶ رقمی ارسال شده را وارد کنید.</p>
+                <input type="text" id="otp-code" class="w-full p-3 text-center text-2xl tracking-[1rem]" placeholder="------" maxlength="6">
+                <button id="verify-otp-btn" class="btn-primary w-full mt-4 py-3">تایید و ورود</button>
             </div>
-        </section>
+            <div id="recaptcha-container" class="mt-4 flex justify-center"></div>
+        </div>
+    </div>
 
-        <!-- Process Section -->
-        <section id="process" class="py-20">
+    <!-- Main Content (hidden by default) -->
+    <div id="main-content" class="hidden">
+        <header class="main-header sticky top-0 z-50">
+            <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <div class="font-bold text-3xl text-white">رهبان</div>
+                <div class="hidden md:flex items-center space-x-8 space-x-reverse">
+                    <a href="#services" class="text-gray-300 hover:text-white font-semibold transition-colors">خدمات</a>
+                    <a href="#process" class="text-gray-300 hover:text-white font-semibold transition-colors">فرآیند کار</a>
+                    <a href="#contact" class="text-gray-300 hover:text-white font-semibold transition-colors">تماس با ما</a>
+                    <button data-action="open-qararban" class="btn-primary py-2 px-5">✨ قراربان</button>
+                    <button id="logout-btn" class="hidden text-red-400 hover:text-red-300 font-semibold transition-colors">خروج</button>
+                </div>
+                <button id="menu-btn" class="md:hidden text-white">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </nav>
+            <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 border-t" style="border-color: var(--card-border);">
+                 <a href="#services" class="block py-2 text-gray-300 hover:text-white font-semibold">خدمات</a>
+                 <a href="#process" class="block py-2 text-gray-300 hover:text-white font-semibold">فرآیند کار</a>
+                 <a href="#contact" class="block py-2 text-gray-300 hover:text-white font-semibold">تماس با ما</a>
+                 <button data-action="open-qararban" class="w-full block py-2 mt-2 btn-primary text-white text-center">✨ قراربان</button>
+                 <button id="mobile-logout-btn" class="hidden w-full block py-2 mt-2 text-red-400 hover:text-red-300 font-semibold text-center rounded-lg">خروج</button>
+            </div>
+        </header>
+
+        <main>
+            <section id="hero">
+                <div class="container mx-auto px-6 py-32 text-center">
+                    <h1 class="text-4xl md:text-6xl font-extrabold mb-4">انتخاب مطمئن برای تصمیم‌های مهم</h1>
+                    <p class="text-lg md:text-xl max-w-3xl mx-auto mb-8" style="color: var(--text-secondary);">گروه کارشناسان رهبان با تخصص ویژه در امور حقوقی، بازرگانی و اداری، همراهی هوشمند برای پیشبرد اهداف و کاهش ریسک‌های کسب‌وکار شماست.</p>
+                    <button data-action="open-qararban" class="btn-primary py-4 px-10 text-lg shadow-lg">ورود به پلتفرم هوشمند قراربان</button>
+                </div>
+            </section>
+            <section id="services" class="py-20">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-16">
+                        <h2 class="text-3xl md:text-4xl font-bold mb-3">خدمات جامع حقوقی و بازرگانی</h2>
+                        <p class="text-lg" style="color: var(--text-muted);">با ارائه بهترین راه حل و تدابیر، یاری‌گر شما هستیم.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div class="card-bg p-8 rounded-xl shadow-lg"><h3 class="text-xl font-bold mb-3">امور حقوقی</h3><p style="color: var(--text-secondary);">تحلیل و تدوین قراردادها، مشاوره تخصصی و نمایندگی در دعاوی کار.</p></div>
+                        <div class="card-bg p-8 rounded-xl shadow-lg"><h3 class="text-xl font-bold mb-3">امور بازرگانی</h3><p style="color: var(--text-secondary);">انجام فرآیندهای ثبت سفارش، اظهار گمرکی و ترخیص کالا از مناطق ویژه.</p></div>
+                        <div class="card-bg p-8 rounded-xl shadow-lg"><h3 class="text-xl font-bold mb-3">جذب و استخدام</h3><p style="color: var(--text-secondary);">تأمین نیروی انسانی متخصص و متعهد برای واحدهای صنعتی و تولیدی.</p></div>
+                        <div class="card-bg p-8 rounded-xl shadow-lg"><h3 class="text-xl font-bold mb-3">امور مالی و مالیاتی</h3><p style="color: var(--text-secondary);">کاهش ریسک جرائم مالیاتی و بیمه‌ای و تسهیل امور بانکی و ارزی.</p></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer id="contact" class="mt-12 border-t py-12" style="border-color: var(--card-border); background-color: rgba(12, 7, 26, 0.5);">
             <div class="container mx-auto px-6 text-center">
-               <div class="text-center mb-16">
-                   <h2 class="text-3xl md:text-4xl font-bold mb-3 text-white">فرآیند آنالیز ریسک کسب‌وکار</h2>
-                   <p class="text-lg" style="color: var(--text-light);">یک مسیر شفاف ۵ مرحله‌ای برای شناسایی و رفع چالش‌های پیش روی شما.</p>
-               </div>
-               <div class="max-w-4xl mx-auto">
-                   <div class="flex items-center justify-between relative">
-                       <!-- The connecting line -->
-                       <div class="hidden md:block absolute w-full h-0.5 bg-slate-700 top-10 transform -translate-y-1/2"></div>
-                       
-                       <!-- The steps -->
-                       <div class="flex flex-col items-center relative z-10 w-1/5">
-                           <div class="bg-slate-800 border-2 border-slate-700 text-white w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">۱</div>
-                           <h4 class="font-bold text-white text-sm md:text-base">بازدید و عارضه‌یابی</h4>
-                       </div>
-                       <div class="flex flex-col items-center relative z-10 w-1/5">
-                           <div class="bg-slate-800 border-2 border-slate-700 text-white w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">۲</div>
-                           <h4 class="font-bold text-white text-sm md:text-base">تحلیل داده و اسناد</h4>
-                       </div>
-                       <div class="flex flex-col items-center relative z-10 w-1/5">
-                           <div class="bg-slate-800 border-2 border-slate-700 text-white w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">۳</div>
-                           <h4 class="font-bold text-white text-sm md:text-base">ارائه راهکار</h4>
-                       </div>
-                       <div class="flex flex-col items-center relative z-10 w-1/5">
-                           <div class="bg-slate-800 border-2 border-slate-700 text-white w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">۴</div>
-                           <h4 class="font-bold text-white text-sm md:text-base">اجرا و نمایندگی</h4>
-                       </div>
-                       <div class="flex flex-col items-center relative z-10 w-1/5">
-                           <div class="bg-slate-800 border-2 border-slate-700 text-white w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">۵</div>
-                           <h4 class="font-bold text-white text-sm md:text-base">پشتیبانی و پیگیری</h4>
-                       </div>
-                   </div>
-               </div>
+                <h2 class="text-2xl font-bold mb-4">گروه کارشناسان رهبان</h2>
+                <p class="max-w-xl mx-auto mb-8" style="color: var(--text-muted);">برای دریافت مشاوره و شروع همکاری با ما در تماس باشید.</p>
+                 <div class="flex flex-col md:flex-row justify-center items-center gap-6 text-lg">
+                    <a href="mailto:MyRahban@gmail.com" class="font-bold hover:text-white transition-colors">MyRahban@gmail.com</a>
+                    <span class="hidden md:block" style="color: var(--text-muted);">|</span>
+                    <a href="tel:09128547287" class="font-bold hover:text-white transition-colors">۰۹۱۲۸۵۴۷۲۸۷</a>
+                 </div>
+                 <p class="mt-6" style="color: var(--text-muted);">آدرس: منطقه ویژه اقتصادی سلفچگان - میدان امام خمینی - مجتمع حسینی - پلاک 8</p>
             </div>
-       </section>
-    </main>
+        </footer>
+    </div>
     
-    <footer id="contact" class="mt-12 border-t border-slate-800 section-bg">
-        <div class="container mx-auto px-6 py-12 text-center">
-            <h2 class="text-2xl font-bold mb-4 text-white">گروه کارشناسان رهبان</h2>
-            <p class="max-w-xl mx-auto mb-8" style="color: var(--text-light);">برای دریافت مشاوره و شروع همکاری با ما در تماس باشید.</p>
-             <div class="flex flex-col md:flex-row justify-center items-center gap-6 text-lg">
-                <a href="mailto:MyRahban@gmail.com" class="font-bold text-white">MyRahban@gmail.com</a>
-                <span class="hidden md:block text-gray-500">|</span>
-                <a href="tel:09128547287" class="font-bold text-white">۰۹۱۲۸۵۴۷۲۸۷</a>
-             </div>
-             <p class="mt-6" style="color: var(--text-light);">آدرس: منطقه ویژه اقتصادی سلفچگان - میدان امام خمینی - مجتمع حسینی - پلاک 8</p>
-        </div>
-    </footer>
-
-    <!-- Floating Action Button -->
-    <a href="https://forms.gle/cJdyKmKY4Y4HRQHKA" target="_blank" id="fab-google-form" class="hidden fixed bottom-8 right-8 bg-white text-slate-800 w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-lg transform hover:scale-110 transition-transform z-40" title="فرم نظرسنجی/درخواست">
-        📝
-    </a>
-
-    <!-- Qararban Modal -->
     <div id="qararban-container" class="hidden fixed inset-0 z-[100] p-4 flex items-center justify-center">
         <div id="qararban-backdrop" class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-        <div class="relative w-full max-w-6xl card-bg rounded-2xl shadow-2xl flex flex-col max-h-[90vh] border border-slate-700">
-            <div class="flex-shrink-0 p-4 border-b border-slate-700 flex justify-between items-center">
+        <div class="relative w-full max-w-6xl modal-content-area rounded-2xl shadow-2xl flex flex-col max-h-[90vh] border" style="border-color: var(--card-border);">
+            <div class="flex-shrink-0 p-4 border-b flex justify-between items-center" style="border-color: var(--card-border);">
                 <header class="text-center">
-                    <h1 class="text-2xl font-bold text-white">قراربان</h1>
-                    <p class="text-md" style="color: var(--text-light);">پلتفرم جامع مدیریت و تحلیل هوشمند قرارداد</p>
+                    <h1 class="text-2xl font-bold">قراربان</h1>
+                    <p class="text-md" style="color: var(--text-muted);">پلتفرم جامع مدیریت و تحلیل هوشمند قرارداد</p>
                 </header>
                 <button id="close-qararban-btn" class="text-gray-400 hover:text-white text-4xl">&times;</button>
             </div>
             <div class="p-4 md:p-8 overflow-y-auto">
-                <nav class="flex flex-wrap justify-center bg-slate-800 rounded-lg p-2 gap-2">
+                <nav class="flex flex-wrap justify-center bg-black/20 rounded-lg p-2 gap-2">
                     <button data-tab="analyzer" class="tab-button tab-active flex items-center text-base font-semibold py-2 px-4 rounded-md transition-colors duration-300"><ion-icon name="scan-outline" class="ml-2"></ion-icon>تحلیل‌گر</button>
-                    <button data-tab="generator" class="tab-button flex items-center text-gray-400 text-base font-semibold py-2 px-4 rounded-md hover:bg-slate-700 transition-colors duration-300"><ion-icon name="create-outline" class="ml-2"></ion-icon>مولد قرارداد</button>
+                    <button data-tab="generator" class="tab-button flex items-center text-gray-400 text-base font-semibold py-2 px-4 rounded-md hover:bg-slate-700/50 transition-colors duration-300"><ion-icon name="create-outline" class="ml-2"></ion-icon>مولد قرارداد</button>
                 </nav>
                 <div class="p-6 md:p-8 rounded-b-2xl min-h-[60vh]">
                     <div id="analyzer-tab-content" class="tab-pane active">
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             <div>
-                                <div class="mb-4 p-4 border border-dashed border-slate-600 rounded-lg bg-slate-800">
+                                <div class="mb-4 p-4 border border-dashed border-slate-600 rounded-lg bg-slate-800/50">
                                     <label for="image-upload" class="block text-lg font-semibold text-gray-300 mb-3"><ion-icon name="image-outline" class="ml-2"></ion-icon>بارگذاری تصویر قرارداد</label>
                                     <div class="flex items-center">
                                         <label for="image-upload" class="custom-file-input-label">انتخاب فایل</label>
@@ -282,40 +310,64 @@
                                     <div id="ocr-status" class="mt-3 text-sm text-gray-500 h-5"></div>
                                 </div>
                                 <label for="contract-clause" class="block text-lg font-semibold text-gray-300 mb-2">متن قرارداد:</label>
-                                <textarea id="contract-clause" rows="8" class="w-full p-4 bg-slate-800 border border-slate-600 text-white rounded-lg focus:ring-2" style="border-color: var(--accent-blue);" placeholder="متن مورد نظر برای تحلیل را اینجا وارد یا از تصویر بارگذاری کنید..."></textarea>
+                                <textarea id="contract-clause" rows="8" class="w-full p-4" placeholder="متن مورد نظر برای تحلیل را اینجا وارد یا از تصویر بارگذاری کنید..."></textarea>
                                 <div class="mt-4">
                                     <label for="extra-notes" class="block text-lg font-semibold text-gray-300 mb-2">توضیحات تکمیلی (اختیاری):</label>
-                                    <textarea id="extra-notes" rows="3" class="w-full p-4 bg-slate-800 border border-slate-600 text-white rounded-lg focus:ring-2" style="border-color: var(--accent-blue);" placeholder="مثال: این قرارداد از طرف کارفرما بررسی شود..."></textarea>
+                                    <textarea id="extra-notes" rows="3" class="w-full p-4" placeholder="مثال: این قرارداد از طرف کارفرما بررسی شود..."></textarea>
                                 </div>
-                                <div class="text-center mt-4"><button type="button" id="analyze-button" class="w-full btn-primary font-bold py-3 px-10 rounded-lg">تحلیل کن</button></div>
+                                <div class="text-center mt-4"><button type="button" id="analyze-button" class="w-full btn-primary font-bold py-3 px-10">تحلیل کن</button></div>
                             </div>
                             <div class="border-r border-slate-700 pr-8" aria-live="polite">
-                                <div id="analysis-placeholder" class="h-full flex items-center justify-center text-center bg-slate-800 rounded-lg p-8"><div><ion-icon name="document-text-outline" class="text-5xl text-slate-600 mx-auto"></ion-icon><p class="mt-4 text-slate-500">نتیجه تحلیل شما در اینجا نمایش داده خواهد شد.</p></div></div>
+                                <div id="analysis-placeholder" class="h-full flex items-center justify-center text-center bg-slate-800/50 rounded-lg p-8"><div><ion-icon name="document-text-outline" class="text-5xl text-slate-600 mx-auto"></ion-icon><p class="mt-4 text-slate-500">نتیجه تحلیل شما در اینجا نمایش داده خواهد شد.</p></div></div>
                                 <div id="analysis-loader" class="hidden h-full flex items-center justify-center"><div class="loader"></div></div>
-                                <div id="analysis-result" class="hidden"></div>
+                                <div id="analysis-result" class="hidden prose prose-invert max-w-none"></div>
                             </div>
                         </div>
                     </div>
-                    <div id="generator-tab-content" class="tab-pane">
-                         <!-- Generator content can be added here -->
+                    <div id="generator-tab-content" class="hidden">
+                         <div class="h-full flex items-center justify-center text-center bg-slate-800/50 rounded-lg p-8"><div><ion-icon name="construct-outline" class="text-5xl text-slate-600 mx-auto"></ion-icon><p class="mt-4 text-slate-500">قابلیت مولد قرارداد به زودی اضافه خواهد شد.</p></div></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore-compat.js"></script>
+
     <script>
-        // Shows the page once the DOM is ready, preventing FOUC
-        window.addEventListener('DOMContentLoaded', function() {
-            document.documentElement.style.visibility = 'visible';
-            document.documentElement.style.opacity = '1';
-        });
-
         document.addEventListener('DOMContentLoaded', () => {
-            // --- CONFIGURATION ---
-            const PROXY_ENDPOINT = 'https://complete-faustine-myrahban-ada7be97.koyeb.app/api/generate';
+            // Your web app's Firebase configuration
+            const firebaseConfig = {
+              apiKey: "AIzaSyD1ivpfcIjDbGcA10c1pdVjmXFu4NvKA6s",
+              authDomain: "ghararban.firebaseapp.com",
+              projectId: "ghararban",
+              storageBucket: "ghararban.appspot.com",
+              messagingSenderId: "583997455040",
+              appId: "1:583997455040:web:dfdeb420c5148770a80b25",
+              measurementId: "G-RQCLLFV81N"
+            };
 
-            // --- NOTIFICATION SYSTEM ---
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+
+            let selectedRole = null;
+
+            const roleSelectionScreen = document.getElementById('role-selection-screen');
+            const authScreen = document.getElementById('auth-screen');
+            const mainContent = document.getElementById('main-content');
+            const logoutBtn = document.getElementById('logout-btn');
+            const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+            const phoneInputContainer = document.getElementById('phone-input-container');
+            const phoneNumberInput = document.getElementById('phone-number');
+            const sendOtpBtn = document.getElementById('send-otp-btn');
+            const otpInputContainer = document.getElementById('otp-input-container');
+            const otpCodeInput = document.getElementById('otp-code');
+            const verifyOtpBtn = document.getElementById('verify-otp-btn');
             const notification = document.getElementById('notification');
             const notificationMessage = document.getElementById('notification-message');
             let notificationTimeout;
@@ -325,95 +377,118 @@
                 notificationMessage.textContent = message;
                 notification.className = 'fixed top-8 right-8 z-[101] p-4 rounded-lg shadow-xl text-white max-w-sm';
                 if (type === 'success') notification.classList.add('bg-green-600');
-                else if (type === 'info') notification.classList.add('bg-blue-600');
-                else notification.classList.add('bg-slate-600');
+                else if (type === 'error') notification.classList.add('bg-red-600');
+                else notification.classList.add('bg-blue-600');
                 notification.classList.add('show');
                 notificationTimeout = setTimeout(() => notification.classList.remove('show'), duration);
             }
 
-            // --- GENERAL PAGE LOGIC ---
-            function setupGeneralPage() {
-                const menuBtn = document.getElementById('menu-btn');
-                const mobileMenu = document.getElementById('mobile-menu');
-                const fab = document.getElementById('fab-google-form');
-                menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-                window.addEventListener('scroll', () => {
-                    if (window.scrollY > 300) {
-                        fab.classList.remove('hidden');
-                    } else {
-                        fab.classList.add('hidden');
-                    }
-                });
+            function showScreen(screen) {
+                roleSelectionScreen.classList.add('hidden');
+                authScreen.classList.add('hidden');
+                mainContent.classList.add('hidden');
+                screen.classList.remove('hidden');
             }
 
-            // --- QARARBAN MODAL LOGIC ---
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    showScreen(mainContent);
+                    logoutBtn.classList.remove('hidden');
+                    mobileLogoutBtn.classList.remove('hidden');
+                } else {
+                    showScreen(roleSelectionScreen);
+                    logoutBtn.classList.add('hidden');
+                    mobileLogoutBtn.classList.add('hidden');
+                }
+            });
+
+            document.querySelectorAll('.role-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    selectedRole = e.target.dataset.role;
+                    showScreen(authScreen);
+                });
+            });
+
+            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
+            recaptchaVerifier.render().then(widgetId => window.recaptchaWidgetId = widgetId);
+
+            sendOtpBtn.addEventListener('click', () => {
+                const phoneNumber = "+98" + phoneNumberInput.value.slice(1);
+                const appVerifier = window.recaptchaVerifier;
+                sendOtpBtn.disabled = true;
+                sendOtpBtn.textContent = 'در حال ارسال...';
+                auth.signInWithPhoneNumber(phoneNumber, appVerifier)
+                    .then(confirmationResult => {
+                        window.confirmationResult = confirmationResult;
+                        showNotification('کد تایید با موفقیت ارسال شد.', 'success');
+                        phoneInputContainer.classList.add('hidden');
+                        otpInputContainer.classList.remove('hidden');
+                    }).catch(error => {
+                        showNotification('خطا در ارسال کد. لطفاً شماره را بررسی کرده و دوباره تلاش کنید.', 'error');
+                        grecaptcha.reset(window.recaptchaWidgetId);
+                    }).finally(() => {
+                        sendOtpBtn.disabled = false;
+                        sendOtpBtn.textContent = 'ارسال کد تایید';
+                    });
+            });
+
+            verifyOtpBtn.addEventListener('click', () => {
+                const code = otpCodeInput.value;
+                if (code.length !== 6) return showNotification('کد تایید باید ۶ رقمی باشد.', 'error');
+                verifyOtpBtn.disabled = true;
+                verifyOtpBtn.textContent = 'در حال بررسی...';
+                confirmationResult.confirm(code).then(result => {
+                    if (result.additionalUserInfo.isNewUser) {
+                        const user = result.user;
+                        db.collection('users').doc(user.uid).set({
+                            role: selectedRole,
+                            phoneNumber: user.phoneNumber,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }).then(() => {
+                            const roleText = selectedRole === 'employer' ? 'کارفرما' : 'کارگر';
+                            showNotification(`ثبت‌نام شما به عنوان ${roleText} با موفقیت انجام شد.`, 'success');
+                        }).catch(dbError => showNotification('خطا در ذخیره سازی نقش کاربر.', 'error'));
+                    } else {
+                        showNotification('ورود با موفقیت انجام شد!', 'success');
+                    }
+                }).catch(error => showNotification('کد وارد شده صحیح نیست.', 'error'))
+                  .finally(() => {
+                    verifyOtpBtn.disabled = false;
+                    verifyOtpBtn.textContent = 'تایید و ورود';
+                  });
+            });
+
+            const handleLogout = () => auth.signOut().then(() => showNotification('شما با موفقیت خارج شدید.'));
+            logoutBtn.addEventListener('click', handleLogout);
+            mobileLogoutBtn.addEventListener('click', handleLogout);
+
+            // --- Qararban Modal Logic ---
+            const qararbanContainer = document.getElementById('qararban-container');
             function setupQararbanModal() {
-                const qararbanContainer = document.getElementById('qararban-container');
                 if (!qararbanContainer) return;
 
-                const openModal = () => {
-                    qararbanContainer.classList.remove('hidden');
-                    if (window.location.pathname !== '/qararban/') {
-                        history.pushState({ modal: 'qararban' }, 'قراربان', '/qararban/');
-                    }
-                };
+                const openModal = () => qararbanContainer.classList.remove('hidden');
+                const closeModal = () => qararbanContainer.classList.add('hidden');
 
-                const closeModal = () => {
-                    qararbanContainer.classList.add('hidden');
-                    if (window.location.pathname !== '/') {
-                         history.pushState({}, '', '/');
-                    }
-                };
-                
-                document.querySelectorAll('[data-action="open-qararban"]').forEach(btn => {
-                    btn.addEventListener('click', openModal);
-                });
+                document.querySelectorAll('[data-action="open-qararban"]').forEach(btn => btn.addEventListener('click', openModal));
+                qararbanContainer.querySelector('#close-qararban-btn').addEventListener('click', closeModal);
+                qararbanContainer.querySelector('#qararban-backdrop').addEventListener('click', closeModal);
 
-                const closeQararbanBtn = qararbanContainer.querySelector('#close-qararban-btn');
-                const qararbanBackdrop = qararbanContainer.querySelector('#qararban-backdrop');
-                closeQararbanBtn.addEventListener('click', closeModal);
-                qararbanBackdrop.addEventListener('click', closeModal);
-
-                window.addEventListener('popstate', (event) => {
-                    if (event.state && event.state.modal === 'qararban') {
-                        qararbanContainer.classList.remove('hidden');
-                    } else {
-                        qararbanContainer.classList.add('hidden');
-                    }
-                });
-
-                if (window.location.pathname === '/ghararban/') {
-                    openModal();
-                }
-
-                const tabButtons = qararbanContainer.querySelectorAll('.tab-button');
-                const tabPanes = qararbanContainer.querySelectorAll('.tab-pane');
-                tabButtons.forEach(button => {
-                    button.addEventListener('click', () => {
-                        const targetTab = button.dataset.tab;
-                        tabButtons.forEach(btn => {
-                            btn.classList.toggle('tab-active', btn.dataset.tab === targetTab);
-                            if(btn.dataset.tab !== targetTab) {
-                                btn.classList.add('text-gray-400', 'hover:bg-slate-700');
-                                btn.classList.remove('tab-active');
-                            }
-                        });
-                        tabPanes.forEach(pane => pane.classList.toggle('active', pane.id === `${targetTab}-tab-content`));
-                    });
-                });
-                
                 const imageUploadInput = qararbanContainer.querySelector('#image-upload');
                 const ocrStatusDiv = qararbanContainer.querySelector('#ocr-status');
                 const clauseInput = qararbanContainer.querySelector('#contract-clause');
                 const fileNameDisplay = qararbanContainer.querySelector('#file-name-display');
-
+                const analyzeButton = qararbanContainer.querySelector('#analyze-button');
+                const analysisResult = qararbanContainer.querySelector('#analysis-result');
+                const analysisPlaceholder = qararbanContainer.querySelector('#analysis-placeholder');
+                const analysisLoader = qararbanContainer.querySelector('#analysis-loader');
+                const extraNotesInput = qararbanContainer.querySelector('#extra-notes');
+                
                 imageUploadInput.addEventListener('change', (event) => {
                     const file = event.target.files[0];
                     if (file) {
                         fileNameDisplay.textContent = file.name;
                         performOCR(file);
-                    } else {
-                        fileNameDisplay.textContent = 'فایلی انتخاب نشده';
                     }
                 });
 
@@ -452,33 +527,21 @@
                     }
                 }
 
-                async function callProxy(payload) {
-                    const response = await fetch(PROXY_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                    const result = await response.json();
-                    if (!response.ok) throw new Error(result.error?.message || 'خطای ناشناخته در سرور پراکسی.');
-                    if (result.candidates && result.candidates[0]?.content?.parts[0]) return result.candidates[0].content.parts[0].text;
-                    throw new Error("پاسخ معتبری از سرویس دریافت نشد.");
-                }
-
-                const analyzeButton = qararbanContainer.querySelector('#analyze-button');
-                const analysisResult = qararbanContainer.querySelector('#analysis-result');
-                const analysisPlaceholder = qararbanContainer.querySelector('#analysis-placeholder');
-                const analysisLoader = qararbanContainer.querySelector('#analysis-loader');
-                const extraNotesInput = qararbanContainer.querySelector('#extra-notes');
-
                 analyzeButton.addEventListener('click', async () => {
-                    if (!clauseInput.value.trim()) { showNotification('لطفاً متنی را برای تحلیل وارد کنید.'); return; }
+                    if (!clauseInput.value.trim()) return showNotification('لطفاً متنی را برای تحلیل وارد کنید.');
+                    
                     analysisPlaceholder.classList.add('hidden');
                     analysisResult.classList.add('hidden');
                     analysisLoader.classList.remove('hidden');
-                    
-                    const extraNotes = extraNotesInput.value.trim();
+                    analyzeButton.disabled = true;
+
+                    const PROXY_ENDPOINT = 'https://complete-faustine-myrahban-ada7be97.koyeb.app/api/generate';
                     const friendlyErrorMessage = "متاسفانه در حال حاضر امکان ارتباط با سرویس هوشمند فراهم نشد. لطفاً چند لحظه صبر کرده و دوباره تلاش کنید.";
 
                     const prompt = `
                     شما یک وکیل متخصص تحلیل قرارداد در ایران هستید. وظیفه شما تحلیل جامع متن قرارداد زیر و ارائه خروجی به صورت یک کد HTML کامل است.
                     متن قرارداد برای تحلیل: "${clauseInput.value}"
-                    ${extraNotes ? `\n\nنکات تکمیلی از طرف کاربر (به این موارد توجه ویژه کن): "${extraNotes}"` : ''}
+                    ${extraNotesInput.value.trim() ? `\n\nنکات تکمیلی از طرف کاربر (به این موارد توجه ویژه کن): "${extraNotesInput.value.trim()}"` : ''}
                     لطفا خروجی را فقط و فقط به صورت یک کد HTML کامل و آماده نمایش، بدون هیچ توضیح اضافی، ارائه بده.
                     این کد HTML باید شامل بخش های زیر باشد و از کلاس های Tailwind CSS که در ادامه می آید استفاده کند:
                     1.  **داشبورد ریسک:** یک div با کلاس "mb-6 p-4 rounded-lg border border-slate-700 bg-slate-800". داخل آن یک h3 با کلاس "font-bold text-xl text-white mb-4" و عنوان "داشبورد ریسک قرارداد" و یک div دیگر برای نمایش سه بخش: "بند پرریسک: " با رنگ "text-red-500"، "بند هشدارآمیز: " با رنگ "text-yellow-400"، و "بند امن: " با رنگ "text-green-500". تعداد هر کدام را تخمین بزن و نمایش بده.
@@ -489,25 +552,46 @@
                     نکته نهایی: خروجی باید یک قطعه کد HTML تمیز و کامل باشد بدون هیچ کاراکتر اضافی در ابتدا یا انتهای آن.
                     `;
 
-                    const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-                    
                     try {
-                        const resultHtml = await callProxy(payload);
+                        const response = await fetch(PROXY_ENDPOINT, { 
+                            method: 'POST', 
+                            headers: { 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }] }) 
+                        });
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        const result = await response.json();
+                        const resultHtml = result.candidates[0]?.content?.parts[0]?.text;
+                        if (!resultHtml) throw new Error("پاسخ معتبری از سرویس دریافت نشد.");
+
                         analysisResult.innerHTML = resultHtml;
                         analysisResult.classList.remove('hidden');
+
+                        // Save analysis to Firestore for the logged-in user
+                        const user = auth.currentUser;
+                        if (user) {
+                            db.collection('users').doc(user.uid).collection('analyses').add({
+                                requestText: clauseInput.value,
+                                extraNotes: extraNotesInput.value.trim(),
+                                resultHtml: resultHtml,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            }).catch(err => console.error("Error saving analysis:", err));
+                        }
+
                     } catch (error) {
                         showNotification(friendlyErrorMessage, 'error');
                         analysisResult.innerHTML = `<div class="p-4 bg-slate-800 border-r-4 border-slate-600 text-slate-300"><p class="font-bold">خطا در ارتباط</p><p>${friendlyErrorMessage}</p></div>`;
                         analysisResult.classList.remove('hidden');
                     } finally {
                         analysisLoader.classList.add('hidden');
+                        analyzeButton.disabled = false;
                     }
                 });
             }
             
-            // --- INITIALIZE ALL PAGE MODULES ---
-            setupGeneralPage();
             setupQararbanModal();
+            const menuBtn = document.getElementById('menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if(menuBtn) menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
         });
     </script>
 </body>
